@@ -99,6 +99,40 @@ class HyperGSScriptTests(unittest.TestCase):
             result = json.loads(advanced.stdout)
             self.assertEqual(result["to"], "phase-01-concept")
 
+    def test_first_playable_requires_capture_and_unambiguous_discipline_reviews(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            project = Path(temporary) / "game"
+            project.mkdir()
+            initialized = run_script("init_project.py", str(project), "--phase", "phase-03-first-playable")
+            self.assertEqual(initialized.returncode, 0, initialized.stderr)
+
+            for name in ("GDD.md", "TECH.md", "UIUX.md", "ART.md", "ROADMAP.md"):
+                (project / ".hypergs" / "docs" / name).write_text(
+                    f"# {name}\n\nProject-specific acceptance content.\n", encoding="utf-8"
+                )
+            evidence = project / ".hypergs" / "evidence" / "phase-03-first-playable"
+            evidence.mkdir(parents=True)
+            for name in ("build.md", "playtest.md"):
+                (evidence / name).write_text(f"# {name}\n\nObserved runtime evidence.\n", encoding="utf-8")
+            for name in ("gameplay-review.md", "uiux-review.md", "art-review.md", "producer-review.md"):
+                (evidence / name).write_text("# Review\n\nPASS — observed in runtime capture.\n", encoding="utf-8")
+
+            no_capture = run_script("phase_check.py", str(project), "--json")
+            self.assertEqual(no_capture.returncode, 1)
+            self.assertIn("runtime-capture", [problem["name"] for problem in json.loads(no_capture.stdout)["problems"]])
+
+            (evidence / "gameplay.png").write_bytes(b"representative-runtime-capture")
+            passed = run_script("phase_check.py", str(project), "--json")
+            self.assertEqual(passed.returncode, 0, passed.stdout)
+
+            (evidence / "art-review.md").write_text(
+                "# Art Review\n\nFAIL — placeholder gameplay presentation remains.\n", encoding="utf-8"
+            )
+            rejected = run_script("phase_check.py", str(project), "--json")
+            self.assertEqual(rejected.returncode, 1)
+            problems = json.loads(rejected.stdout)["problems"]
+            self.assertIn("art-review.md", [problem["name"] for problem in problems])
+
 
 if __name__ == "__main__":
     unittest.main()

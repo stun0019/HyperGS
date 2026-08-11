@@ -16,4 +16,6 @@ A phase gate is an evidence review, not a calendar milestone.
 4. Record exceptions as explicit producer decisions; never silently waive them.
 5. Advance with `phase_advance.py` only after a pass.
 
+For First Playable, structural passage additionally requires a runtime capture and four discipline reviews. Open the capture and inspect it at the original target aspect ratio; file presence alone is not evidence of visual quality. Require video, an image sequence, or direct runtime observation for animation and impact-timing claims. Treat any `FAIL` verdict from gameplay, UI/UX, art, or producer review as a failed gate until the defect is fixed and retested.
+
 Structural scripts can prove presence and non-empty content. They cannot prove game quality, fun, correctness, or production readiness by themselves.

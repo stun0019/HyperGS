@@ -25,8 +25,10 @@
     {
       "id": "phase-03-first-playable",
       "name": "First Playable",
-      "required_docs": ["GDD.md", "TECH.md", "ROADMAP.md"],
-      "required_evidence": ["playtest.md"],
+      "required_docs": ["GDD.md", "TECH.md", "UIUX.md", "ART.md", "ROADMAP.md"],
+      "required_evidence": ["build.md", "playtest.md", "gameplay-review.md", "uiux-review.md", "art-review.md", "producer-review.md"],
+      "requires_runtime_capture": true,
+      "required_pass_reviews": ["gameplay-review.md", "uiux-review.md", "art-review.md", "producer-review.md"],
       "next": "phase-04-vertical-slice"
     },
     {

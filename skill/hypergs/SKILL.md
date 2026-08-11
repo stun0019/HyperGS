@@ -12,6 +12,7 @@ Run the user's game project as an evidence-driven studio workflow. Respond in th
 - Treat role names as display labels. Route all work by immutable role IDs.
 - Inspect the workspace before proposing changes. Preserve existing user work.
 - Prefer a thin playable vertical slice over broad disconnected systems.
+- Distinguish an internal functional prototype from a player-facing First Playable. When a user asks to make or build a game without explicitly requesting a rough prototype, default the delivery target to a presentation-ready First Playable.
 - Make reasonable, reversible assumptions and record them. Ask only for decisions that materially change scope, platform, engine, cost, or external state.
 - Produce working artifacts, implementation, tests, and evidence when the request authorizes changes. Do not stop at advice or sample code.
 - Never call a build playable, validated, or complete unless it was actually run or verified.
@@ -98,6 +99,8 @@ For each run:
 9. Evaluate the gate without relaxing criteria after seeing the result.
 
 Use [acceptance-criteria.md](references/standards/acceptance-criteria.md), [code-quality.md](references/standards/code-quality.md), [phase-gates.md](references/standards/phase-gates.md), and [priority-levels.md](references/standards/priority-levels.md) as applicable.
+
+For player-facing builds, read [prototype-quality.md](references/standards/prototype-quality.md). Do not present or advance a functional or visual prototype as a First Playable. First Playable review requires runtime capture plus separate gameplay, UI/UX, art, and producer acceptance.
 
 ## Select an engine adapter
 

@@ -26,6 +26,8 @@ ROLE_IDS = (
     "data_analyst",
 )
 
+RUNTIME_CAPTURE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".mp4", ".webm"}
+
 
 def now_iso() -> str:
     return datetime.now().astimezone().isoformat(timespec="seconds")
@@ -204,6 +206,23 @@ def assess_phase(project: Path, phase_id: str) -> dict[str, Any]:
         valid, reason = is_substantive_document(evidence_root / name)
         if not valid:
             problems.append({"kind": "evidence", "name": name, "reason": reason or "invalid"})
+    if phase.get("requires_runtime_capture"):
+        captures = [
+            path
+            for path in evidence_root.rglob("*")
+            if path.is_file() and path.suffix.lower() in RUNTIME_CAPTURE_EXTENSIONS
+        ] if evidence_root.is_dir() else []
+        if not captures:
+            problems.append({"kind": "evidence", "name": "runtime-capture", "reason": "missing"})
+    for name in phase.get("required_pass_reviews", []):
+        review_path = evidence_root / name
+        if not review_path.is_file():
+            continue
+        content = review_path.read_text(encoding="utf-8").upper()
+        has_pass = "PASS" in content
+        has_fail = "FAIL" in content
+        if not has_pass or has_fail:
+            problems.append({"kind": "review", "name": name, "reason": "missing_unambiguous_pass"})
     return {
         "phase": phase_id,
         "phase_name": phase["name"],
