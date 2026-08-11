@@ -14,7 +14,11 @@ Lead: Producer. Support: Game Designer, Client Engineer, Server Engineer when ne
 - Engine, platform, input, build, data, performance, and asset-pipeline decisions
 - Primary player flow, visual benchmark plan, milestone roadmap, and acceptance criteria
 - Separate Gameplay Prototype and Visual Prototype checks at target device scale; neither may be reported as a First Playable
+- Architecture and test paths for persistence, networking, shared state, social presence, or other systems implied by the public genre label
+- A locked representative art benchmark that proves player, enemy, environment, animation, VFX, and UI can coexist under one producible visual grammar
+- Gin and Forza approval that the art and VFX direction is grounded in user intent plus current, sourced, relevant gameplay references
+- A production animation plan proving that real-time player and enemy actors will not ship as static cutouts
 
 ## Exit gate
 
-Pass when `GDD.md`, `TECH.md`, `UIUX.md`, `ART.md`, and `ROADMAP.md` define one thin first-playable slice with owned risks and test steps. The Gameplay Prototype must prove the core rules and input-to-outcome loop. The Visual Prototype must prove gameplay scale, UI hierarchy, animation and impact language, environment depth, and visual coherence in the runtime. Record both as internal milestones; do not advance merely because debug controls and placeholder geometry are operable.
+Pass when `GDD.md`, `TECH.md`, `UIUX.md`, `ART.md`, `VISUAL_BENCHMARK.md`, and `ROADMAP.md` define one thin first-playable slice with owned risks and test steps. The Gameplay Prototype must prove the core rules and input-to-outcome loop. The Visual Prototype must prove gameplay scale, UI hierarchy, animated player and enemy states, impact language, environment depth, and visual coherence in the runtime. Genre-system prototypes must prove the riskiest persistence, networking, simulation, or social claim where applicable. Do not advance merely because static images, debug controls, placeholder geometry, genre-themed UI, or one impressive unsourced image are operable.

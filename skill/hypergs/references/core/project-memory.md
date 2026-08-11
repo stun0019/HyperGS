@@ -21,6 +21,7 @@ Maintain durable project context under `.hypergs/`:
 |   |-- TECH.md
 |   |-- UIUX.md
 |   |-- ART.md
+|   |-- VISUAL_BENCHMARK.md
 |   |-- MARKET.md
 |   |-- ANALYTICS.md
 |   |-- ROADMAP.md

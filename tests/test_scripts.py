@@ -106,7 +106,7 @@ class HyperGSScriptTests(unittest.TestCase):
             initialized = run_script("init_project.py", str(project), "--phase", "phase-03-first-playable")
             self.assertEqual(initialized.returncode, 0, initialized.stderr)
 
-            for name in ("GDD.md", "TECH.md", "UIUX.md", "ART.md", "ROADMAP.md"):
+            for name in ("GDD.md", "TECH.md", "UIUX.md", "ART.md", "VISUAL_BENCHMARK.md", "ROADMAP.md"):
                 (project / ".hypergs" / "docs" / name).write_text(
                     f"# {name}\n\nProject-specific acceptance content.\n", encoding="utf-8"
                 )
@@ -114,7 +114,7 @@ class HyperGSScriptTests(unittest.TestCase):
             evidence.mkdir(parents=True)
             for name in ("build.md", "playtest.md"):
                 (evidence / name).write_text(f"# {name}\n\nObserved runtime evidence.\n", encoding="utf-8")
-            for name in ("gameplay-review.md", "uiux-review.md", "art-review.md", "producer-review.md"):
+            for name in ("gameplay-review.md", "genre-review.md", "market-visual-review.md", "animation-review.md", "uiux-review.md", "art-review.md", "producer-review.md"):
                 (evidence / name).write_text("# Review\n\nPASS — observed in runtime capture.\n", encoding="utf-8")
 
             no_capture = run_script("phase_check.py", str(project), "--json")
@@ -132,6 +132,39 @@ class HyperGSScriptTests(unittest.TestCase):
             self.assertEqual(rejected.returncode, 1)
             problems = json.loads(rejected.stdout)["problems"]
             self.assertIn("art-review.md", [problem["name"] for problem in problems])
+
+            (evidence / "art-review.md").write_text(
+                "# Art Review\n\nPASS — presentation verified.\n", encoding="utf-8"
+            )
+            (evidence / "genre-review.md").write_text(
+                "# Genre Review\n\nFAIL — the isolated arena fight does not prove an MMORPG.\n", encoding="utf-8"
+            )
+            genre_rejected = run_script("phase_check.py", str(project), "--json")
+            self.assertEqual(genre_rejected.returncode, 1)
+            problems = json.loads(genre_rejected.stdout)["problems"]
+            self.assertIn("genre-review.md", [problem["name"] for problem in problems])
+
+            (evidence / "genre-review.md").write_text(
+                "# Genre Review\n\nPASS — the public label matches observed systems.\n", encoding="utf-8"
+            )
+            (evidence / "market-visual-review.md").write_text(
+                "# Market Visual Review\n\nFAIL — sources are undated and VFX was judged from a still.\n", encoding="utf-8"
+            )
+            market_visual_rejected = run_script("phase_check.py", str(project), "--json")
+            self.assertEqual(market_visual_rejected.returncode, 1)
+            problems = json.loads(market_visual_rejected.stdout)["problems"]
+            self.assertIn("market-visual-review.md", [problem["name"] for problem in problems])
+
+            (evidence / "market-visual-review.md").write_text(
+                "# Market Visual Review\n\nPASS — dated sources and gameplay captures verified.\n", encoding="utf-8"
+            )
+            (evidence / "animation-review.md").write_text(
+                "# Animation Review\n\nFAIL — player and enemy remain static cutouts.\n", encoding="utf-8"
+            )
+            animation_rejected = run_script("phase_check.py", str(project), "--json")
+            self.assertEqual(animation_rejected.returncode, 1)
+            problems = json.loads(animation_rejected.stdout)["problems"]
+            self.assertIn("animation-review.md", [problem["name"] for problem in problems])
 
 
 if __name__ == "__main__":

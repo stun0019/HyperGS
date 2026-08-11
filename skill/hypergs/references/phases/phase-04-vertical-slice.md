@@ -13,6 +13,7 @@ Lead: Producer. Support: all roles with deliverables in the slice.
 - A representative beginning-to-end gameplay segment
 - Near-target visual and interaction quality
 - Representative content pipeline, performance, instrumentation, and service behavior
+- Representative proof that the public genre label survives a beginning-to-end slice; online and MMO claims include production-like service and multi-client evidence
 - Measured production risks and a credible cost model
 
 ## Exit gate

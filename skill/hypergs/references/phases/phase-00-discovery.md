@@ -11,9 +11,10 @@ Lead: Producer. Support: Game Designer, Market Analyst, and technical specialist
 ## Required outcomes
 
 - One-sentence vision, target player, platform, session shape, and experience pillars
+- Genre Promise Contract with observable expectations and an honest fallback label
 - Explicit constraints, non-goals, assumptions, and unknowns
 - A smallest test that could invalidate the idea cheaply
 
 ## Exit gate
 
-Pass when `GAME.md` is specific enough to compare options and the next discovery risk has an owner. Do not require a complete design or production plan.
+Pass when `GAME.md` is specific enough to compare options, each named genre has observable player promises, and the next discovery risk has an owner. Do not require a complete design or production plan.

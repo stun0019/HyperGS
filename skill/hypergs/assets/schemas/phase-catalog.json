@@ -11,7 +11,7 @@
     {
       "id": "phase-01-concept",
       "name": "Concept",
-      "required_docs": ["GAME.md", "GDD.md", "MARKET.md"],
+      "required_docs": ["GAME.md", "GDD.md", "MARKET.md", "VISUAL_BENCHMARK.md"],
       "required_evidence": [],
       "next": "phase-02-pre-production"
     },
@@ -25,10 +25,10 @@
     {
       "id": "phase-03-first-playable",
       "name": "First Playable",
-      "required_docs": ["GDD.md", "TECH.md", "UIUX.md", "ART.md", "ROADMAP.md"],
-      "required_evidence": ["build.md", "playtest.md", "gameplay-review.md", "uiux-review.md", "art-review.md", "producer-review.md"],
+      "required_docs": ["GDD.md", "TECH.md", "UIUX.md", "ART.md", "VISUAL_BENCHMARK.md", "ROADMAP.md"],
+      "required_evidence": ["build.md", "playtest.md", "gameplay-review.md", "genre-review.md", "market-visual-review.md", "animation-review.md", "uiux-review.md", "art-review.md", "producer-review.md"],
       "requires_runtime_capture": true,
-      "required_pass_reviews": ["gameplay-review.md", "uiux-review.md", "art-review.md", "producer-review.md"],
+      "required_pass_reviews": ["gameplay-review.md", "genre-review.md", "market-visual-review.md", "animation-review.md", "uiux-review.md", "art-review.md", "producer-review.md"],
       "next": "phase-04-vertical-slice"
     },
     {

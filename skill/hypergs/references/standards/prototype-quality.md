@@ -37,6 +37,7 @@ A player-facing action game First Playable must satisfy all applicable criteria 
 - The primary action has real gameplay resolution: anticipation, active timing or range, hit detection, hit reaction, recovery, and a visible outcome.
 - Combat feedback includes suitable animation, impact VFX, hit flash or equivalent confirmation, knockback or reaction, brief impact timing such as hit stop when appropriate, damage or state feedback, and restrained camera response.
 - At least idle, locomotion, primary action, and hit/reaction states are visually distinct for the player and representative enemies.
+- In real-time character-driven games, those states must be genuinely animated through sprite sheets, Spine or equivalent skeletal animation, or 3D rigs. Moving a static cutout, swapping unanimated poses, or using camera motion around a still character does not pass.
 - HUD preserves the gameplay view, establishes hierarchy, and does not dominate the screen. Required combat information is readable without covering the action.
 - The environment establishes foreground, play plane, background depth, grounding, and enough landmarks or detail to read the combat space.
 - Character, environment, VFX, and UI share a coherent visual language. A styled HUD over placeholder gameplay art fails integration review.
@@ -54,7 +55,7 @@ Store First Playable evidence under `.hypergs/evidence/phase-03-first-playable/`
 - At least one runtime capture (`.png`, `.jpg`, `.jpeg`, `.webp`, `.gif`, `.mp4`, or `.webm`) showing the actual gameplay build at target scale.
 - `gameplay-review.md`: Game Designer verdict against core loop, controls, combat resolution, and feedback.
 - `uiux-review.md`: UI/UX Designer verdict against input, hierarchy, obstruction, readability, and target-device use.
-- `art-review.md`: Art Director verdict against scale, animation, effects, environment depth, and visual coherence.
+- `art-review.md`: Art Director verdict against the runtime-review categories in `art-style-system.md`, including scale, animation, effects, environment depth, visual coherence, provenance, and repeatability.
 - `producer-review.md`: Producer reconciliation, unresolved defects, delivery-intent match, and final pass or fail.
 
 Each review must say `PASS` or `FAIL`, cite observed runtime evidence, and list blocking defects. Missing, contradictory, screenshot-free, or purely aspirational reviews fail the gate. The producer cannot override a specialist failure without fixing and retesting the defect.

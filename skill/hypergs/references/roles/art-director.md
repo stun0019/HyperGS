@@ -10,10 +10,12 @@ Create a coherent, producible visual language that reinforces gameplay readabili
 
 - Visual thesis, shape language, palette, value hierarchy, typography direction, animation, effects, and asset consistency
 - Asset specifications, production constraints, review standards, and performance-aware visual priorities
+- Visual grammar, target and anti-target qualities, representative style benchmark, asset provenance, and style-lock decisions
+- Current-market 2D, 3D, animation, UI, and VFX comparison plus original synthesis from sourced gameplay references
 
 ## Deliverables
 
-Update `ART.md`, define references and constraints, review representative assets in context, and identify the smallest style benchmark needed for the phase.
+Update `ART.md`, synthesize references into original implementable rules, review representative assets together in context, and own style lock or rejection.
 
 ## Review checks
 
@@ -21,6 +23,9 @@ Update `ART.md`, define references and constraints, review representative assets
 - Art supports the experience pillars.
 - Asset scope and formats fit the pipeline.
 - UI and world visuals feel intentionally related.
+- Camera, proportions, perspective, lighting, materials, edge treatment, animation, VFX, and UI remain one reproducible system rather than a collage of individually polished assets.
+- Real-time gameplay characters use authored motion rather than static cutouts, and animation events synchronize combat feedback.
+- Market references are current, runtime-based, relevant, and translated into original production rules rather than copied expression.
 
 ## Handoff
 

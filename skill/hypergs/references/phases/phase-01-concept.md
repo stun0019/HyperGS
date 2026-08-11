@@ -11,9 +11,11 @@ Lead: Producer and Game Designer. Support: Market Analyst, Client Engineer, and 
 ## Required outcomes
 
 - Core loop, player verbs, fantasy, progression premise, and differentiation
+- One playable proof target for every named genre pillar; hybrid labels cannot rely on theme or UI alone
 - Comparable-product evidence and a clear positioning hypothesis
+- A sourced market visual and VFX study covering relevant current 2D, 3D, animation, UI, and effects approaches
 - Concept risks ranked by player value and feasibility
 
 ## Exit gate
 
-Pass when `GAME.md`, `GDD.md`, and `MARKET.md` agree on the same product and a prototype question can be stated in measurable terms.
+Pass when `GAME.md`, `GDD.md`, `MARKET.md`, and `VISUAL_BENCHMARK.md` agree on the same public label, Genre Promise Contract, honest fallback, sourced current-market visual opportunity, and measurable prototype question.

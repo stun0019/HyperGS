@@ -22,6 +22,7 @@ Update `TECH.md`, document contracts, implement services and tests, and provide 
 - Client input is validated.
 - Retries are idempotent where required.
 - Secrets and personal data are not committed.
+- Online, shared-world, persistence, and MMO claims are backed by multi-client and recovery evidence at the scale actually tested.
 
 ## Handoff
 

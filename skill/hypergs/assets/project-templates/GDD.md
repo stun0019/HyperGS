@@ -2,6 +2,10 @@
 
 ## Design Goals
 
+## Genre Pillars and Proof
+
+For each named genre or reference-game pillar, define its loop, visible runtime signals, required state, acceptance evidence, and integration with the other pillars.
+
 ## Player Actions
 
 ## Core Rules

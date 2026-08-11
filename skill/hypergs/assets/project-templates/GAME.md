@@ -12,6 +12,10 @@ Define the primary audience, platform, session length, and accessibility needs.
 
 List three testable qualities the experience must preserve.
 
+## Genre Promise Contract
+
+List the public label, each genre pillar, player-visible verbs, required systems, First Playable proof, deferred scope, and the honest fallback label.
+
 ## Core Loop
 
 Describe the shortest repeatable player loop.
