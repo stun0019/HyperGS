@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "profile_name": "HyperGS Originals",
+  "preset": "default",
+  "locale": "zh-TW",
+  "roles": {
+    "producer": {"display_name": "Andy", "title_en": "Producer", "title_zh_tw": "製作人"},
+    "game_designer": {"display_name": "Bryce", "title_en": "Game Designer", "title_zh_tw": "遊戲企劃"},
+    "client_engineer": {"display_name": "Chris", "title_en": "Client Engineer", "title_zh_tw": "Client 程式"},
+    "server_engineer": {"display_name": "Dobby", "title_en": "Server Engineer", "title_zh_tw": "Server 程式"},
+    "uiux_designer": {"display_name": "Ebby", "title_en": "UI/UX Designer", "title_zh_tw": "UI/UX 設計"},
+    "art_director": {"display_name": "Forza", "title_en": "Art Director", "title_zh_tw": "美術指導"},
+    "market_analyst": {"display_name": "Gin", "title_en": "Market Analyst", "title_zh_tw": "市場分析"},
+    "data_analyst": {"display_name": "Hermes", "title_en": "Data Analyst", "title_zh_tw": "數據分析"}
+  }
+}

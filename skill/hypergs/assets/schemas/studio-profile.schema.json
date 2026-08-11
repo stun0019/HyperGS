@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HyperGS Studio Profile",
+  "type": "object",
+  "required": ["schema_version", "profile_name", "preset", "locale", "roles"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "profile_name": {"type": "string", "minLength": 1, "maxLength": 80},
+    "preset": {"enum": ["default", "titles", "custom"]},
+    "locale": {"type": "string", "minLength": 2, "maxLength": 20},
+    "roles": {
+      "type": "object",
+      "required": ["producer", "game_designer", "client_engineer", "server_engineer", "uiux_designer", "art_director", "market_analyst", "data_analyst"]
+    }
+  },
+  "additionalProperties": false
+}

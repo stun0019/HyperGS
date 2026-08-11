@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "phases": [
+    {
+      "id": "phase-00-discovery",
+      "name": "Discovery",
+      "required_docs": ["GAME.md"],
+      "required_evidence": [],
+      "next": "phase-01-concept"
+    },
+    {
+      "id": "phase-01-concept",
+      "name": "Concept",
+      "required_docs": ["GAME.md", "GDD.md", "MARKET.md"],
+      "required_evidence": [],
+      "next": "phase-02-pre-production"
+    },
+    {
+      "id": "phase-02-pre-production",
+      "name": "Pre-production",
+      "required_docs": ["GDD.md", "TECH.md", "UIUX.md", "ART.md", "ROADMAP.md"],
+      "required_evidence": [],
+      "next": "phase-03-first-playable"
+    },
+    {
+      "id": "phase-03-first-playable",
+      "name": "First Playable",
+      "required_docs": ["GDD.md", "TECH.md", "ROADMAP.md"],
+      "required_evidence": ["playtest.md"],
+      "next": "phase-04-vertical-slice"
+    },
+    {
+      "id": "phase-04-vertical-slice",
+      "name": "Vertical Slice",
+      "required_docs": ["GDD.md", "TECH.md", "UIUX.md", "ART.md", "ROADMAP.md", "ANALYTICS.md"],
+      "required_evidence": ["build.md", "playtest.md", "performance.md"],
+      "next": "phase-05-production"
+    },
+    {
+      "id": "phase-05-production",
+      "name": "Production",
+      "required_docs": ["GDD.md", "TECH.md", "ROADMAP.md", "ANALYTICS.md"],
+      "required_evidence": ["build.md", "test-summary.md"],
+      "next": "phase-06-alpha"
+    },
+    {
+      "id": "phase-06-alpha",
+      "name": "Alpha",
+      "required_docs": ["GDD.md", "TECH.md", "ROADMAP.md", "ANALYTICS.md"],
+      "required_evidence": ["build.md", "test-summary.md", "content-audit.md"],
+      "next": "phase-07-beta"
+    },
+    {
+      "id": "phase-07-beta",
+      "name": "Beta",
+      "required_docs": ["ROADMAP.md", "ANALYTICS.md", "MARKET.md"],
+      "required_evidence": ["build.md", "test-summary.md", "beta-report.md"],
+      "next": "phase-08-polish"
+    },
+    {
+      "id": "phase-08-polish",
+      "name": "Polish",
+      "required_docs": ["ROADMAP.md", "UIUX.md", "ART.md"],
+      "required_evidence": ["release-candidate.md", "performance.md", "accessibility.md"],
+      "next": "phase-09-release"
+    },
+    {
+      "id": "phase-09-release",
+      "name": "Release",
+      "required_docs": ["ROADMAP.md", "MARKET.md", "ANALYTICS.md"],
+      "required_evidence": ["release-candidate.md", "release-checklist.md", "rollback-plan.md"],
+      "next": "phase-10-live-ops"
+    },
+    {
+      "id": "phase-10-live-ops",
+      "name": "Live Operations",
+      "required_docs": ["ROADMAP.md", "ANALYTICS.md", "CHANGELOG.md"],
+      "required_evidence": ["health-report.md"],
+      "next": null
+    }
+  ]
+}

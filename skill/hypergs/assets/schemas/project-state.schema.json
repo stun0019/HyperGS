@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HyperGS Project State",
+  "type": "object",
+  "required": ["schema_version", "project_name", "engine", "target_platform", "current_phase", "gate_status", "created_at", "updated_at", "history"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "project_name": {"type": "string", "minLength": 1},
+    "engine": {"type": "string", "minLength": 1},
+    "target_platform": {"type": "string", "minLength": 1},
+    "current_phase": {"type": "string", "minLength": 1},
+    "gate_status": {"enum": ["not_started", "in_progress", "passed", "blocked"]},
+    "created_at": {"type": "string"},
+    "updated_at": {"type": "string"},
+    "history": {"type": "array"}
+  },
+  "additionalProperties": true
+}

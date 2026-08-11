@@ -1,0 +1,4 @@
+interface:
+  display_name: "HyperGS"
+  short_description: "Build games through structured studio workflows"
+  default_prompt: "Use $hypergs to plan and execute the next phase of my game project."
