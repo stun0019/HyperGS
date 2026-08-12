@@ -36,6 +36,7 @@ A player-facing action game First Playable must satisfy all applicable criteria 
 - Controls match the target platform. For touch action games, use a movement stick or equivalent directional control and a deliberate action cluster; debug left/right button rows fail unless explicitly approved.
 - The primary action has real gameplay resolution: anticipation, active timing or range, hit detection, hit reaction, recovery, and a visible outcome.
 - Combat feedback includes suitable animation, impact VFX, hit flash or equivalent confirmation, knockback or reaction, brief impact timing such as hit stop when appropriate, damage or state feedback, and restrained camera response.
+- Representative player-facing events use an authored anticipation, action, impact or reveal, resolution, and recovery structure as applicable. Generic one-size-fits-all tweens do not prove presentation quality.
 - At least idle, locomotion, primary action, and hit/reaction states are visually distinct for the player and representative enemies.
 - In real-time character-driven games, those states must be genuinely animated through sprite sheets, Spine or equivalent skeletal animation, or 3D rigs. Moving a static cutout, swapping unanimated poses, or using camera motion around a still character does not pass.
 - HUD preserves the gameplay view, establishes hierarchy, and does not dominate the screen. Required combat information is readable without covering the action.
@@ -56,9 +57,10 @@ Store First Playable evidence under `.hypergs/evidence/phase-03-first-playable/`
 - `gameplay-review.md`: Game Designer verdict against core loop, controls, combat resolution, and feedback.
 - `uiux-review.md`: UI/UX Designer verdict against input, hierarchy, obstruction, readability, and target-device use.
 - `art-review.md`: Art Director verdict against the runtime-review categories in `art-style-system.md`, including scale, animation, effects, environment depth, visual coherence, provenance, and repeatability.
+- `motion-presentation-review.md`: Art Director and Client Engineer verdict against event beats, animation, VFX, camera, UI, audio, interruption, accessibility, recovery, provenance, and performance.
 - `producer-review.md`: Producer reconciliation, unresolved defects, delivery-intent match, and final pass or fail.
 
-Each review must say `PASS` or `FAIL`, cite observed runtime evidence, and list blocking defects. Missing, contradictory, screenshot-free, or purely aspirational reviews fail the gate. The producer cannot override a specialist failure without fixing and retesting the defect.
+Each review must say `PASS` or `FAIL`, cite observed runtime evidence, and list blocking defects. Missing, contradictory, screenshot-free, motion-capture-free where timing is claimed, or purely aspirational reviews fail the gate. The producer cannot override a specialist failure without fixing and retesting the defect.
 
 Do not treat capture-file presence as visual proof. Open and inspect every representative capture at its original aspect ratio. Record:
 

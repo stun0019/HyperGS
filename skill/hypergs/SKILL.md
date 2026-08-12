@@ -32,7 +32,8 @@ Run the user's game project as an evidence-driven studio workflow. Respond in th
    - Retain the user's original game request and continue it after onboarding.
 4. Run `python scripts/detect_project.py <project-root> --json`.
 5. If `.hypergs/state.json` is absent and the user authorized project creation or modification, initialize it with `init_project.py`. Otherwise, report what initialization would create.
-6. Run `python scripts/project_status.py <project-root> --json` and use its state as the execution baseline.
+6. If `.hypergs/state.json` exists, run `python scripts/sync_project_templates.py <project-root> --check --json`. When required templates are missing and the user authorized project changes, rerun without `--check`; never overwrite existing project documents.
+7. Run `python scripts/project_status.py <project-root> --json` and use its state as the execution baseline.
 
 Read [orchestration.md](references/core/orchestration.md), [role-routing.md](references/core/role-routing.md), and [project-memory.md](references/core/project-memory.md) for the operating model. Read only the role, workflow, phase, engine, and standard references needed for the current request.
 
@@ -47,6 +48,7 @@ Read [orchestration.md](references/core/orchestration.md), [role-routing.md](ref
 | Add services, persistence, networking, or accounts | [backend-feature.md](references/workflows/backend-feature.md) |
 | Create or improve interaction flows and screens | [uiux-feature.md](references/workflows/uiux-feature.md) |
 | Establish or review visual direction and assets | [art-review.md](references/workflows/art-review.md) |
+| Plan, implement, or review animation, VFX, audio, camera, reward, or cinematic presentation | [motion-presentation.md](references/workflows/motion-presentation.md) |
 | Tune economy, difficulty, progression, or rewards | [balance-review.md](references/workflows/balance-review.md) |
 | Diagnose and fix a defect | [bug-fix.md](references/workflows/bug-fix.md) |
 | Review quality or readiness | [qa-review.md](references/workflows/qa-review.md) |
@@ -106,6 +108,8 @@ For player-facing builds, read [prototype-quality.md](references/standards/proto
 For new concepts, hybrid genres, or any genre-readiness review, read [genre-promise.md](references/standards/genre-promise.md). Require runtime proof for each named genre pillar and use an honest narrower label when online, persistence, social, simulation, or scale promises are not yet implemented.
 
 For visual direction, asset creation, or art review, read [art-style-system.md](references/standards/art-style-system.md). Lock a reusable visual grammar with a representative in-runtime benchmark before producing assets broadly; reject individually polished assets that do not belong to the same camera, proportion, lighting, material, edge, animation, VFX, and UI system.
+
+For player-facing motion, reward sequences, combat impact, slot-style presentation, cinematic transitions, or audio-reactive feedback, read [motion-presentation-system.md](references/standards/motion-presentation-system.md). Require event-level beats, production-ready asset provenance, runtime synchronization, reduced-motion behavior, performance budgets, and motion capture. Do not substitute generic tweens, screen shake, particles, or CSS transitions for authored presentation.
 
 Before locking art direction or combat effects, read [market-visual-benchmark.md](references/standards/market-visual-benchmark.md). Start with user-provided references when available, then research current successful 2D or 3D games on the target platform using dated, cited popularity evidence from sources such as Steam, App Store, or Google Play and direct gameplay captures. Benchmark world art, characters, animation, UI, and VFX separately; block style lock when research is unsourced, stale, based only on promotional art, or disconnected from production constraints.
 

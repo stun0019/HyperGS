@@ -11,10 +11,11 @@ Deliver a responsive, maintainable, testable player-facing runtime on the target
 - Client architecture, game state, input, camera, rendering, audio integration, and local persistence
 - Network client behavior and graceful failure states
 - Build reproducibility, automated checks, profiling, and device constraints
+- Event-driven presentation orchestration, authored marker synchronization, audio integration, cancellation, recovery, reduced-motion variants, and runtime budgets
 
 ## Deliverables
 
-Update `TECH.md`, implement the requested slice, add proportionate tests, and provide build or runtime evidence.
+Update `TECH.md`, `ANIMATION_EVENTS.json`, and affected asset paths; implement the requested slice, add proportionate tests, and provide build or runtime evidence.
 
 ## Review checks
 
@@ -22,6 +23,7 @@ Update `TECH.md`, implement the requested slice, add proportionate tests, and pr
 - Core behavior is deterministic enough to test.
 - Failures are visible and recoverable.
 - Performance stays within the current phase budget.
+- Presentation never owns authoritative gameplay outcomes and returns input, UI, camera, and audio to a stable state after completion or interruption.
 
 ## Handoff
 

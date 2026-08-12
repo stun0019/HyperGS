@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "events": [
+    {
+      "id": "replace.with.stable.event.id",
+      "trigger": "replace.with.authoritative.gameplay.event",
+      "completion_signal": "replace.with.presentation.complete.event",
+      "intensity": "routine",
+      "input_policy": "Describe whether input remains active, queues, or locks.",
+      "interruption_policy": "Describe replace, queue, cancel, and forced recovery behavior.",
+      "skippable": true,
+      "reduced_motion": true,
+      "recovery_state": "replace.with.stable.state",
+      "performance_budget": {
+        "max_duration_ms": 1000,
+        "max_simultaneous_particles": 0,
+        "max_audio_voices": 1
+      },
+      "beats": [
+        {
+          "phase": "resolution",
+          "start_ms": 0,
+          "duration_ms": 250,
+          "channels": ["ui"],
+          "asset_ids": [],
+          "completion_marker": "resolution.complete"
+        },
+        {
+          "phase": "recovery",
+          "start_ms": 250,
+          "duration_ms": 150,
+          "channels": ["ui", "gameplay"],
+          "asset_ids": [],
+          "completion_marker": "recovery.complete"
+        }
+      ]
+    }
+  ]
+}

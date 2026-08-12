@@ -10,10 +10,11 @@ Make player goals, choices, system state, errors, and recovery understandable ac
 
 - Player journeys, information architecture, navigation, interaction states, feedback, and accessibility
 - Screen inventory, wireframes, empty/loading/error states, and usability criteria
+- UI motion hierarchy, count-up and reveal behavior, input locking, skip affordances, reduced motion, flash safety, and transition recovery
 
 ## Deliverables
 
-Update `UIUX.md`, create the smallest useful flow specification or prototype, and provide review criteria that can be verified in the running build.
+Update `UIUX.md` and affected presentation beats, create the smallest useful flow specification or prototype, and provide review criteria that can be verified in the running build.
 
 ## Review checks
 

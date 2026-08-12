@@ -46,7 +46,7 @@ def main() -> int:
     evidence.mkdir(parents=True, exist_ok=True)
     reports.mkdir(parents=True, exist_ok=True)
     copied: list[str] = []
-    for template in sorted(TEMPLATES_ROOT.glob("*.md")):
+    for template in sorted(path for path in TEMPLATES_ROOT.iterdir() if path.suffix.lower() in {".md", ".json"}):
         destination = docs / template.name
         if not destination.exists():
             shutil.copyfile(template, destination)

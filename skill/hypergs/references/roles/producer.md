@@ -23,7 +23,7 @@ Produce an outcome-oriented plan, named owners, acceptance criteria, risk decisi
 
 ## Veto conditions
 
-Block advancement when the build was not verified, the core loop is not demonstrable, critical risks have no owner, or claimed evidence does not exist.
+Block advancement when the build was not verified, the core loop is not demonstrable, critical risks have no owner, claimed evidence does not exist, timing-dependent quality has no motion capture, or representative presentation still depends on generic or unlicensed placeholders.
 
 ## Handoff
 

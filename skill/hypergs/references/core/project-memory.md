@@ -22,6 +22,10 @@ Maintain durable project context under `.hypergs/`:
 |   |-- UIUX.md
 |   |-- ART.md
 |   |-- VISUAL_BENCHMARK.md
+|   |-- MOTION.md
+|   |-- PRESENTATION_BEATS.md
+|   |-- ASSET_MANIFEST.json
+|   |-- ANIMATION_EVENTS.json
 |   |-- MARKET.md
 |   |-- ANALYTICS.md
 |   |-- ROADMAP.md

@@ -18,24 +18,31 @@
     {
       "id": "phase-02-pre-production",
       "name": "Pre-production",
-      "required_docs": ["GDD.md", "TECH.md", "UIUX.md", "ART.md", "ROADMAP.md"],
+      "required_docs": ["GDD.md", "TECH.md", "UIUX.md", "ART.md", "VISUAL_BENCHMARK.md", "MOTION.md", "PRESENTATION_BEATS.md", "ASSET_MANIFEST.json", "ANIMATION_EVENTS.json", "ROADMAP.md"],
       "required_evidence": [],
+      "requires_presentation_specs": true,
       "next": "phase-03-first-playable"
     },
     {
       "id": "phase-03-first-playable",
       "name": "First Playable",
-      "required_docs": ["GDD.md", "TECH.md", "UIUX.md", "ART.md", "VISUAL_BENCHMARK.md", "ROADMAP.md"],
-      "required_evidence": ["build.md", "playtest.md", "gameplay-review.md", "genre-review.md", "market-visual-review.md", "animation-review.md", "uiux-review.md", "art-review.md", "producer-review.md"],
+      "required_docs": ["GDD.md", "TECH.md", "UIUX.md", "ART.md", "VISUAL_BENCHMARK.md", "MOTION.md", "PRESENTATION_BEATS.md", "ASSET_MANIFEST.json", "ANIMATION_EVENTS.json", "ROADMAP.md"],
+      "required_evidence": ["build.md", "playtest.md", "gameplay-review.md", "genre-review.md", "market-visual-review.md", "animation-review.md", "motion-presentation-review.md", "uiux-review.md", "art-review.md", "producer-review.md"],
       "requires_runtime_capture": true,
-      "required_pass_reviews": ["gameplay-review.md", "genre-review.md", "market-visual-review.md", "animation-review.md", "uiux-review.md", "art-review.md", "producer-review.md"],
+      "requires_still_capture": true,
+      "requires_motion_capture": true,
+      "requires_presentation_specs": true,
+      "required_pass_reviews": ["gameplay-review.md", "genre-review.md", "market-visual-review.md", "animation-review.md", "motion-presentation-review.md", "uiux-review.md", "art-review.md", "producer-review.md"],
       "next": "phase-04-vertical-slice"
     },
     {
       "id": "phase-04-vertical-slice",
       "name": "Vertical Slice",
-      "required_docs": ["GDD.md", "TECH.md", "UIUX.md", "ART.md", "ROADMAP.md", "ANALYTICS.md"],
-      "required_evidence": ["build.md", "playtest.md", "performance.md"],
+      "required_docs": ["GDD.md", "TECH.md", "UIUX.md", "ART.md", "MOTION.md", "PRESENTATION_BEATS.md", "ASSET_MANIFEST.json", "ANIMATION_EVENTS.json", "ROADMAP.md", "ANALYTICS.md"],
+      "required_evidence": ["build.md", "playtest.md", "performance.md", "motion-presentation-review.md"],
+      "requires_motion_capture": true,
+      "requires_presentation_specs": true,
+      "required_pass_reviews": ["motion-presentation-review.md"],
       "next": "phase-05-production"
     },
     {

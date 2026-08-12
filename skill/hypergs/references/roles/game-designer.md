@@ -13,6 +13,7 @@ Turn the experience vision into understandable rules, meaningful choices, progre
 - Progression, economy requirements, difficulty curves, and content pacing
 - Gameplay acceptance criteria and playtest questions
 - Genre Promise Contract, hybrid-pillar integration, and honest fallback labels
+- Player-facing event intent, information timing, intensity hierarchy, reward reveal, input policy, and recovery state
 
 ## Deliverables
 

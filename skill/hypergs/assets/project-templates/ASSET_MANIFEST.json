@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "assets": [
+    {
+      "id": "replace.with.stable.asset.id",
+      "type": "vfx",
+      "source": "placeholder",
+      "provenance": "Replace with the creator, generator, source package, or purchase record.",
+      "license_status": "pending",
+      "runtime_path": "replace/with/runtime/path",
+      "version": "0.1.0",
+      "owner": "art_director",
+      "status": "planned",
+      "fallback": "Describe the safe runtime fallback."
+    }
+  ]
+}

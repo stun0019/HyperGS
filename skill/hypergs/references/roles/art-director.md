@@ -12,10 +12,11 @@ Create a coherent, producible visual language that reinforces gameplay readabili
 - Asset specifications, production constraints, review standards, and performance-aware visual priorities
 - Visual grammar, target and anti-target qualities, representative style benchmark, asset provenance, and style-lock decisions
 - Current-market 2D, 3D, animation, UI, and VFX comparison plus original synthesis from sourced gameplay references
+- Motion direction, event hierarchy, intensity tiers, presentation beats, and final visual timing approval
 
 ## Deliverables
 
-Update `ART.md`, synthesize references into original implementable rules, review representative assets together in context, and own style lock or rejection.
+Update `ART.md` and `MOTION.md`, synthesize references into original implementable rules, review representative assets and presentation events together in context, and own style lock or rejection.
 
 ## Review checks
 

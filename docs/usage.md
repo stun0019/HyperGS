@@ -38,6 +38,10 @@ HyperGS, rename the server engineer to Daniel for this project only.
 HyperGS, review release readiness but do not publish anything.
 ```
 
+```text
+HyperGS, create and validate the motion-presentation plan for one commercial-quality reward event, including animation, VFX, camera, UI, audio, interruption, reduced motion, performance budgets, and video evidence.
+```
+
 ## Naming scope
 
 User-wide names apply to every project unless a project contains `.hypergs/studio-profile.json`. A project profile overrides the user profile. Display names do not affect internal role IDs.

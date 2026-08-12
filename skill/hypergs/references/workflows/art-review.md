@@ -6,7 +6,7 @@ Lead: Art Director. Support: UI/UX Designer, Client Engineer, Game Designer, and
 
 ## Procedure
 
-1. Read `market-visual-benchmark.md` and `art-style-system.md`.
+1. Read `market-visual-benchmark.md`, `art-style-system.md`, and `motion-presentation-system.md` when presentation timing materially affects the request.
 2. Verify that `VISUAL_BENCHMARK.md` uses user direction plus current, dated popularity evidence and direct gameplay captures from relevant 2D, 3D, or mixed-pipeline comparables.
 3. Compare the runtime against both the market synthesis and the locked camera, scale, perspective, shape, palette, value, lighting, material, edge, animation, VFX, and UI grammar in `ART.md`.
 4. Review VFX in motion by effect family, timing, intensity hierarchy, readability, accessibility, and performance; do not approve timing claims from a still image.
@@ -15,7 +15,7 @@ Lead: Art Director. Support: UI/UX Designer, Client Engineer, Game Designer, and
 7. Inspect provenance and production repeatability; distinguish a coherent asset family from unrelated polished outputs.
 8. Separate objective grammar violations and readability defects from taste preferences.
 9. Prioritize changes that improve player comprehension or establish a reusable asset rule.
-10. Validate a representative player, enemy, environment, action VFX, and HUD benchmark together in the runtime.
+10. Validate a representative player, enemy, environment, action VFX, HUD, and complete presentation event together in the runtime.
 11. For a First Playable, reject static cutout gameplay actors, debug-scale characters, absent action or reaction animation, flat or empty staging, primitive placeholder effects, incompatible perspective or lighting, mismatched rendering finish, and UI/gameplay style mismatch.
 
 ## Completion

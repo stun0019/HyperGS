@@ -67,6 +67,8 @@ Do not treat upscaling, filters, color grading, or shared darkness as a substitu
 
 ## Runtime review
 
+Read `motion-presentation-system.md` when animation, VFX, camera, UI transitions, reward sequences, cinematics, or audio-reactive feedback materially affect the player experience. Keep visual grammar in `ART.md` and event execution rules in `MOTION.md`, `PRESENTATION_BEATS.md`, and `ANIMATION_EVENTS.json`.
+
 Open original-resolution captures and inspect motion where timing matters. Record an explicit `PASS` or `FAIL` in `art-review.md` for:
 
 - camera and perspective compatibility;
