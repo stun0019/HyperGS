@@ -3,15 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>末班電梯</title>
+<title>末班電梯：夜班紀錄</title>
 <style>
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 :root {
   color-scheme: dark;
-  font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-  background: #080a0a;
-  color: #d8d9cf;
+  font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+  background: #070a08;
+  color: #d9dccd;
 }
 
 body {
@@ -19,23 +21,36 @@ body {
   min-height: 100dvh;
   display: grid;
   place-items: center;
+  background: radial-gradient(ellipse at center, #1c251f, #070a08 70%);
 }
 
-button { font: inherit; cursor: pointer; }
-button:disabled { cursor: default; opacity: .35; }
-button:focus-visible { outline: 3px solid #e2c789; outline-offset: 3px; }
+button {
+  font: inherit;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: .32;
+  cursor: default;
+}
+
+button:focus-visible {
+  outline: 2px solid #eed09b;
+  outline-offset: 3px;
+}
 
 #game {
+  position: relative;
   width: min(100vw, 56.25dvh, 720px);
   aspect-ratio: 9 / 16;
-  position: relative;
-  overflow: hidden;
   container-type: inline-size;
-  background: #151917;
-  box-shadow: 0 0 100px #000;
+  overflow: hidden;
+  background: #111910;
+  box-shadow: 0 0 90px #000a;
 }
 
-.screen {
+.game-layout {
   position: absolute;
   inset: 0;
   display: flex;
@@ -43,692 +58,1390 @@ button:focus-visible { outline: 3px solid #e2c789; outline-offset: 3px; }
 }
 
 header {
-  height: 12%;
-  flex-shrink: 0;
-  padding: 5cqw 6cqw 3cqw;
-  background: #111512;
-  border-bottom: 1px solid #41463a;
+  flex: 0 0 11%;
+  padding: 3.8cqw 5cqw 2cqw;
+  background: #111810;
+  border-bottom: 1px solid #424c3a;
 }
 
-.topline {
+.header-top {
   display: flex;
   justify-content: space-between;
-  font-size: 2.3cqw;
-  letter-spacing: .35cqw;
-  color: #8e9788;
+  color: #89967c;
+  font-size: 2.2cqw;
+  letter-spacing: .28cqw;
 }
 
-.status {
+.header-main {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: space-between;
-  margin-top: 2cqw;
+  margin-top: 1.6cqw;
 }
 
-.brand { font-size: 4cqw; letter-spacing: 1cqw; }
+.title {
+  font-size: 4.1cqw;
+  letter-spacing: .9cqw;
+}
 
 #floor {
-  font-family: monospace;
-  font-size: 6cqw;
-  color: #d2ad68;
-  text-shadow: 0 0 15px #bc86334d;
+  color: #d9b777;
+  font: 6cqw monospace;
+  text-shadow: 0 0 18px #b9803944;
 }
 
 .scene {
-  height: 47%;
-  flex-shrink: 0;
   position: relative;
+  flex: 0 0 40%;
   overflow: hidden;
-  background: #090c0a;
+  background: #080e09;
 }
 
-.ceiling {
-  position: absolute;
-  top: 0;
-  left: 12%;
-  width: 76%;
-  height: 5%;
-  background: #bbbda7;
-  box-shadow: 0 6px 35px #d6d9ae45;
-  animation: flicker 7s infinite;
-}
-
-.wall {
-  position: absolute;
-  inset: 8% 9% 0;
-  background:
-    repeating-linear-gradient(90deg, transparent 0 16%, #0003 16.2% 16.5%),
-    linear-gradient(90deg, #20271f, #495042 48%, #293127);
-  border: 1.8cqw solid #141a15;
-  box-shadow: inset 0 0 45px #000;
-}
-
-.wall::after {
-  content: "";
-  position: absolute;
-  inset: 65% 0 auto;
-  height: 1.4cqw;
-  background: linear-gradient(#727969, #252e24);
-  box-shadow: 0 4px 9px #000;
-}
-
-.scene-floor {
-  position: absolute;
-  bottom: 0;
+canvas {
+  display: block;
   width: 100%;
-  height: 14%;
-  background: linear-gradient(#30362b, #11170f);
-  clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%);
+  height: 100%;
 }
 
-.camera {
+.camera-label,
+.scene-caption {
   position: absolute;
-  top: 10%;
-  left: 14%;
-  font: 2cqw monospace;
-  color: #a7b297;
-  letter-spacing: .25cqw;
-  z-index: 5;
-}
-
-.camera::before {
-  content: "";
-  display: inline-block;
-  width: 1.2cqw;
-  height: 1.2cqw;
-  background: #b55545;
-  margin-right: 1.4cqw;
-}
-
-.person {
-  position: absolute;
-  width: 43%;
-  height: 79%;
-  bottom: 3%;
-  left: 28.5%;
-  filter: drop-shadow(8px 10px 10px #0008);
-  transition: opacity .25s;
-}
-
-.hair {
-  position: absolute;
-  width: 43%;
-  height: 27%;
-  left: 28.5%;
-  top: 2%;
-  background: #171b18;
-  border-radius: 48% 48% 25% 25%;
+  left: 5cqw;
   z-index: 3;
+  font-size: 2.1cqw;
+  letter-spacing: .2cqw;
+  color: #c0ccb0;
+  pointer-events: none;
 }
 
-.face {
-  position: absolute;
-  width: 35%;
-  height: 24%;
-  top: 6%;
-  left: 32.5%;
-  background: linear-gradient(90deg, #858373, #bbb29b 55%, #888471);
-  border-radius: 42% 42% 44% 44%;
-  z-index: 4;
-  box-shadow: inset 0 3cqw 0 #171b18, inset -1cqw 0 2cqw #0005;
-}
-
-.eyes {
-  position: absolute;
-  top: 46%;
-  left: 16%;
-  width: 68%;
+.camera-label {
+  top: 3cqw;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 1.5cqw;
 }
 
-.eyes i {
-  width: 23%;
-  height: .7cqw;
-  background: #252b25;
-  box-shadow: 0 -.8cqw 0 #514f43;
+.record-light {
+  display: inline-block;
+  width: 1cqw;
+  height: 1cqw;
+  background: #c47956;
 }
 
-.mouth {
+.scene-caption {
+  bottom: 3cqw;
+  background: #080e09bb;
+  padding: 1cqw 1.8cqw;
+}
+
+.grain {
   position: absolute;
-  bottom: 21%;
-  left: 37%;
-  width: 27%;
-  height: .45cqw;
-  background: #5a5548;
-}
-
-.neck {
-  position: absolute;
-  width: 15%;
-  height: 12%;
-  top: 25%;
-  left: 42.5%;
-  background: #8b8775;
-  z-index: 2;
-}
-
-.coat {
-  position: absolute;
-  width: 100%;
-  height: 66%;
-  top: 29%;
-  background: linear-gradient(90deg, #252e2b, var(--coat, #46534b) 50%, #202a27);
-  clip-path: polygon(27% 0, 73% 0, 91% 12%, 100% 100%, 0 100%, 9% 12%);
-  border-radius: 20% 20% 0 0;
-  z-index: 2;
-}
-
-.coat::before {
-  content: "";
-  position: absolute;
-  left: 32%;
-  width: 36%;
-  height: 46%;
-  background: #899081;
-  clip-path: polygon(0 0, 50% 15%, 100% 0, 50% 100%);
-}
-
-.coat::after {
-  content: "";
-  position: absolute;
-  top: 23%;
-  bottom: 0;
-  left: 50%;
-  width: 1px;
-  background: #a5b6a03b;
-}
-
-.badge {
-  position: absolute;
-  top: 51%;
-  left: 65%;
-  width: 12%;
-  height: 8%;
-  background: #b8b89d;
-  border-top: 1cqw solid #686f5c;
-  transform: rotate(-6deg);
-  z-index: 3;
-}
-
-.person.red .eyes i {
-  background: #d0523e;
-  box-shadow: 0 0 9px #e43723;
-}
-
-.person.smile .mouth {
-  width: 54%;
-  left: 23%;
-  height: 2cqw;
-  border-bottom: .6cqw solid #483b31;
-  background: transparent;
-  border-radius: 0 0 50% 50%;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  background: repeating-linear-gradient(
+    transparent 0 3px,
+    #0002 3px 4px
+  );
+  box-shadow: inset 0 0 55px #0009;
 }
 
 .door {
   position: absolute;
+  z-index: 5;
   top: 0;
+  bottom: 0;
   width: 50%;
-  height: 100%;
-  z-index: 10;
   background:
-    repeating-linear-gradient(90deg, #ffffff02 0 1px, transparent 1px 5px),
-    linear-gradient(90deg, #30372f, #616758 70%, #353d32);
-  border: 1px solid #141b13;
-  transition: transform .55s ease-in-out;
+    repeating-linear-gradient(
+      90deg,
+      #ffffff03 0 1px,
+      transparent 1px 5px
+    ),
+    linear-gradient(90deg, #2e382b, #616951 65%, #343d2e);
+  border: 1px solid #111a0e;
+  transition: transform .55s ease;
 }
-.door.left { left: 0; transform: translateX(-100%); }
-.door.right { right: 0; transform: translateX(100%); }
-.closed .door { transform: translateX(0); }
 
-.vignette {
+.door-left {
+  left: 0;
+  transform: translateX(-100%);
+}
+
+.door-right {
+  right: 0;
+  transform: translateX(100%);
+}
+
+.scene.closed .door {
+  transform: translateX(0);
+}
+
+.scan-beam {
   position: absolute;
-  inset: 0;
+  z-index: 4;
+  left: 10%;
+  right: 10%;
+  top: -5%;
+  height: 2px;
+  opacity: 0;
+  background: #d0e4b1;
+  box-shadow: 0 0 25px 8px #a6d48244;
   pointer-events: none;
-  z-index: 12;
-  background: radial-gradient(ellipse at 50% 40%, transparent 25%, #0008 100%);
 }
 
-.scanlines {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 13;
-  opacity: .18;
-  background: repeating-linear-gradient(transparent 0 3px, #000 3px 4px);
+.scene.scanning .scan-beam {
+  animation: scan 1s linear;
 }
 
-.scene-label {
-  position: absolute;
-  bottom: 4%;
-  left: 6%;
-  z-index: 14;
-  color: #c5cbb9;
-  font-size: 2.1cqw;
-  letter-spacing: .25cqw;
+@keyframes scan {
+  0% { top: 10%; opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 95%; opacity: 0; }
 }
 
 .console {
   flex: 1;
   min-height: 0;
-  padding: 4cqw 6cqw;
-  background: linear-gradient(#20271f, #121810);
-  border-top: 1px solid #626953;
+  padding: 3cqw 5cqw 2cqw;
+  background: linear-gradient(#222d1f, #10180f);
+  border-top: 1px solid #5a664b;
   display: flex;
   flex-direction: column;
-  gap: 2.5cqw;
+  gap: 2.2cqw;
 }
 
-.progress-row {
+.resources {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr 1fr;
+  gap: 2cqw;
+}
+
+.resource {
+  border-right: 1px solid #435039;
+  padding-right: 1cqw;
+}
+
+.resource:last-child {
+  border: 0;
+}
+
+.resource-label {
+  color: #92a282;
+  font-size: 2cqw;
+  margin-bottom: .8cqw;
+}
+
+.resource-value {
+  font: 3.6cqw monospace;
+  color: #d6dabb;
+}
+
+.resource-value.danger {
+  color: #e39979;
+}
+
+.power-track {
+  width: 90%;
+  height: .5cqw;
+  margin-top: 1cqw;
+  background: #0b1209;
+}
+
+#powerFill {
+  height: 100%;
+  background: #b6c18b;
+  transition: width .3s;
+}
+
+.shift-row {
   display: flex;
   justify-content: space-between;
-  font-size: 2.4cqw;
-  color: #9da88f;
+  color: #aab49b;
+  font-size: 2.2cqw;
 }
 
-#integrity { color: #d4b579; letter-spacing: .3cqw; }
-
-.tabs { display: flex; gap: 4cqw; }
+.tabs {
+  display: flex;
+  gap: 3.4cqw;
+  border-bottom: 1px solid #405036;
+}
 
 .tab {
-  padding: 0 0 1.2cqw;
   border: 0;
   border-bottom: 2px solid transparent;
-  color: #849079;
+  padding: 0 0 1.5cqw;
   background: transparent;
   font-size: 2.7cqw;
+  color: #89997a;
 }
-.tab.active { color: #dacba6; border-color: #c1a470; }
+
+.tab.active {
+  color: #e1cca1;
+  border-bottom-color: #c9a86c;
+}
 
 .panel {
   flex: 1;
   min-height: 0;
-  padding: 3cqw;
-  background: #0b120c;
-  border: 1px solid #3b4834;
-  box-shadow: inset 0 0 20px #0004;
-  overflow: auto;
+  overflow-y: auto;
+  background: #0c150c;
+  border: 1px solid #3d5034;
+  padding: 2.7cqw 3cqw;
+  scrollbar-width: thin;
 }
 
-.panel-title {
-  color: #d0bd90;
+#panelTitle {
   font-size: 3cqw;
-  margin-bottom: 1.6cqw;
+  color: #d9c49a;
+  margin-bottom: 1.4cqw;
   letter-spacing: .2cqw;
 }
 
-.panel-content {
+#panelText {
   margin: 0;
-  color: #b8c0ac;
-  font-size: 2.7cqw;
-  line-height: 1.8;
   white-space: pre-line;
+  font-size: 2.6cqw;
+  line-height: 1.75;
+  color: #b8c5aa;
 }
 
 #feedback {
-  min-height: 7.2cqw;
-  color: #aab69d;
-  font-size: 2.55cqw;
+  flex: 0 0 7.8cqw;
+  overflow-y: auto;
+  color: #b3bea4;
+  font-size: 2.5cqw;
   line-height: 1.5;
 }
 
 .actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3cqw;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 2cqw;
 }
 
 .action {
-  min-height: 10cqw;
-  border: 1px solid #6e7257;
-  background: #3b4431;
-  color: #e3dfc5;
-  font-size: 3.2cqw;
-  letter-spacing: 1cqw;
+  min-height: 10.5cqw;
+  border: 1px solid #667b50;
+  background: #36452b;
+  color: #e0e4c5;
+  font-size: 3cqw;
 }
-.action.reject { background: #332c25; border-color: #6e5140; color: #cfad91; }
-.action:not(:disabled):active { transform: translateY(2px); }
+
+.action small {
+  display: block;
+  margin-top: .5cqw;
+  color: #a9b897;
+  font-size: 1.9cqw;
+  letter-spacing: .05cqw;
+}
+
+.action.reject {
+  background: #392e22;
+  border-color: #765740;
+  color: #d6b398;
+}
+
+.action.inspect {
+  background: #25342b;
+  border-color: #556b53;
+}
+
+.action:not(:disabled):active {
+  transform: translateY(2px);
+}
 
 footer {
   text-align: center;
-  color: #65715d;
-  font-size: 1.9cqw;
-  letter-spacing: .3cqw;
+  color: #6d7f5e;
+  font-size: 1.85cqw;
+  letter-spacing: .18cqw;
 }
 
 .overlay {
   position: absolute;
+  z-index: 20;
   inset: 0;
-  z-index: 30;
-  background: #081009ec;
-  padding: 10cqw;
+  padding: 8cqw;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+  background:
+    radial-gradient(ellipse at 70% 20%, #3e503223, transparent 70%),
+    #0a120af5;
 }
 
-.overlay[hidden] { display: none; }
-.eyebrow { color: #a79770; font: 2.3cqw monospace; letter-spacing: .6cqw; }
+.overlay[hidden] {
+  display: none;
+}
 
-h1 {
-  font-size: 10cqw;
+.overlay-tag {
+  font: 2.3cqw monospace;
+  letter-spacing: .5cqw;
+  color: #b09a70;
+}
+
+.overlay h1 {
+  font-size: 9cqw;
   line-height: 1.4;
-  letter-spacing: 1.4cqw;
+  letter-spacing: 1cqw;
   font-weight: 400;
-  margin: 5cqw 0;
+  margin: 4cqw 0;
+  white-space: pre-line;
 }
 
 .overlay p {
-  font-size: 3.1cqw;
-  line-height: 2;
-  color: #aab69e;
+  margin: 0 0 5cqw;
   white-space: pre-line;
-  margin: 0 0 7cqw;
+  font-size: 2.9cqw;
+  line-height: 1.9;
+  color: #b4c0a6;
 }
 
-.overlay .action { width: 100%; }
-
-@keyframes flicker {
-  0%, 92%, 96%, 100% { opacity: .8; }
-  93%, 95% { opacity: .25; }
+.overlay .action {
+  width: 100%;
+  min-height: 11cqw;
 }
+
+.overlay-note {
+  width: 100%;
+  text-align: center;
+  color: #768969;
+  font-size: 2.1cqw;
+  margin-top: 3cqw;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation: none !important; transition: none !important; }
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
 }
 </style>
 </head>
+
 <body>
-<main id="game" aria-label="末班電梯遊戲">
-  <div class="screen">
+<main id="game">
+  <div class="game-layout">
     <header>
-      <div class="topline">
-        <span>永安大樓 / 夜間值勤</span>
+      <div class="header-top">
+        <span>永安大樓 / 夜間管理室</span>
         <span id="clock">02:13</span>
       </div>
-      <div class="status">
-        <span class="brand">末班電梯</span>
+      <div class="header-main">
+        <span class="title">末班電梯</span>
         <span id="floor">01 F</span>
       </div>
     </header>
 
     <section class="scene closed" id="scene" aria-label="電梯監視畫面">
-      <div class="ceiling"></div>
-      <div class="wall"></div>
-      <div class="scene-floor"></div>
-      <div class="camera">CAM 04 / LIVE</div>
+      <canvas id="view" width="720" height="512"
+        aria-label="乘客、證件與鏡面監視畫面。文字線索可於觀察頁查看。">
+      </canvas>
 
-      <div class="person" id="person" aria-hidden="true">
-        <div class="hair"></div>
-        <div class="neck"></div>
-        <div class="face">
-          <div class="eyes"><i></i><i></i></div>
-          <div class="mouth"></div>
-        </div>
-        <div class="coat"></div>
-        <div class="badge"></div>
+      <div class="camera-label">
+        <span class="record-light"></span>
+        <span id="cameraText">CAM 04 / STANDBY</span>
       </div>
 
-      <div class="door left"></div>
-      <div class="door right"></div>
-      <div class="vignette"></div>
-      <div class="scanlines"></div>
-      <div class="scene-label" id="sceneLabel">等待夜班管理員登入</div>
+      <div class="scene-caption" id="sceneCaption">
+        等待管理員登入
+      </div>
+
+      <div class="scan-beam"></div>
+      <div class="grain"></div>
+      <div class="door door-left"></div>
+      <div class="door door-right"></div>
     </section>
 
     <section class="console">
-      <div class="progress-row">
-        <span id="progress">本夜乘客 01 / 08</span>
-        <span id="integrity">電力 3 / 3</span>
+      <div class="resources">
+        <div class="resource">
+          <div class="resource-label">檢查電力</div>
+          <div class="resource-value" id="powerText">90%</div>
+          <div class="power-track"><div id="powerFill"></div></div>
+        </div>
+        <div class="resource">
+          <div class="resource-label">門禁完整度</div>
+          <div class="resource-value" id="securityText">3 / 3</div>
+        </div>
+        <div class="resource">
+          <div class="resource-label">住戶投訴</div>
+          <div class="resource-value" id="complaintText">0 / 3</div>
+        </div>
       </div>
 
-      <nav class="tabs" aria-label="檢查資料">
-        <button class="tab active" data-tab="passenger">乘客資料</button>
-        <button class="tab" data-tab="inspect">觀察乘客</button>
+      <div class="shift-row">
+        <span id="shiftText">第一時段</span>
+        <span id="progressText">乘客 01 / 12</span>
+      </div>
+
+      <nav class="tabs" aria-label="乘客檢查資料">
+        <button class="tab active" data-tab="card">證件</button>
+        <button class="tab" data-tab="observe">觀察</button>
         <button class="tab" data-tab="rules">值勤規則</button>
+        <button class="tab" data-tab="log">紀錄</button>
       </nav>
 
       <div class="panel">
-        <div class="panel-title" id="panelTitle"></div>
-        <p class="panel-content" id="panelContent"></p>
+        <div id="panelTitle"></div>
+        <p id="panelText"></p>
       </div>
 
       <div id="feedback" role="status" aria-live="polite">
-        請核對資料，再決定是否放行。
+        等待值勤開始。
       </div>
 
       <div class="actions">
-        <button class="action reject" id="reject" disabled>拒絕搭乘</button>
-        <button class="action" id="accept" disabled>允許進入</button>
+        <button class="action reject" id="reject" disabled>
+          拒載
+          <small>阻擋異常</small>
+        </button>
+        <button class="action inspect" id="inspect" disabled>
+          深入檢查
+          <small id="inspectCost">消耗 18% 電力</small>
+        </button>
+        <button class="action" id="accept" disabled>
+          放行
+          <small>運送住戶</small>
+        </button>
       </div>
-      <footer>值勤期間，請勿離開操作台。</footer>
+
+      <footer>正常運送回充 10% / 正確拒載回充 4%</footer>
     </section>
   </div>
 
   <section class="overlay" id="overlay">
-    <div class="eyebrow" id="overlayTag">NIGHT SHIFT / 001</div>
-    <h1 id="overlayTitle">末班<br>電梯</h1>
-    <p id="overlayText">凌晨兩點十三分。
-你接手了一棟沒有住滿的大樓。
-
-檢查乘客資料與外觀，依照規則放行。
-每次誤判會損失一格電力。
-完成八次判斷，撐到交班。</p>
-    <button class="action" id="start">開始值勤</button>
+    <div class="overlay-tag" id="overlayTag">NIGHT SHIFT / 001</div>
+    <h1 id="overlayTitle">末班電梯</h1>
+    <p id="overlayText"></p>
+    <button class="action" id="overlayButton">開始值勤</button>
+    <div class="overlay-note" id="overlayNote">
+      720 × 1280 / 直式互動遊戲
+    </div>
   </section>
 </main>
 
 <script>
 "use strict";
 
-const passengers = [
-  {
-    name: "林先生", floor: 5, card: "05-02",
-    quote: "今天又加班了……麻煩五樓。",
-    look: "一名疲倦的上班族。\n瞳孔呈深褐色，嘴角沒有異常。\n他低頭握著公事包，沒有說話。",
-    type: "", coat: "#4b584f",
-    safe: true, reason: "樓層、證件與外觀皆符合規則。"
-  },
-  {
-    name: "陳小姐", floor: 13, card: "13-01",
-    quote: "十三樓。你知道在哪裡的。",
-    look: "她的衣服一塵不染。\n眼睛與嘴角沒有異常。\n證件上確實印著十三樓。",
-    type: "", coat: "#605448",
-    safe: false, reason: "本棟只有十二層，十三樓並不存在。"
-  },
-  {
-    name: "張先生", floor: 8, card: "08-03",
-    quote: "不要一直看我的眼睛。",
-    look: "他的雙眼泛著清楚的紅光。\n即使燈光閃爍，那道紅光也沒有消失。\n證件樓層與目的地一致。",
-    type: "red", coat: "#424a59",
-    safe: false, reason: "紅色發光瞳孔屬於禁止搭乘的異常。"
-  },
-  {
-    name: "周小姐", floor: 3, card: "03-01",
-    quote: "我買了宵夜，要趁熱吃。",
-    look: "她提著一袋還在冒熱氣的食物。\n眼睛正常，嘴角自然。\n她偶爾打呵欠，看起來十分疲倦。",
-    type: "", coat: "#655844",
-    safe: true, reason: "疲倦與攜帶食物都不是拒載理由。"
-  },
-  {
-    name: "吳先生", floor: 6, card: "09-02",
-    quote: "六樓，我一直都住六樓。",
-    look: "他的外觀沒有異常。\n證件上的房號是 09-02。\n你再次詢問，他依舊堅持要去六樓。",
-    type: "", coat: "#4f555a",
-    safe: false, reason: "目的地六樓與證件上的九樓不符。"
-  },
-  {
-    name: "許小姐", floor: 12, card: "12-01",
-    quote: "頂樓，謝謝你。",
-    look: "她的外套被雨水浸濕。\n眼睛正常，表情平靜。\n證件清晰可辨，房號為 12-01。",
-    type: "", coat: "#59634c",
-    safe: true, reason: "十二樓是有效樓層，淋雨並不違反規則。"
-  },
-  {
-    name: "何先生", floor: 4, card: "04-02",
-    quote: "你看起來……很好吃。不，很好相處。",
-    look: "他一直保持著過度寬大的微笑。\n嘴角明顯向兩側拉長，從未放鬆。\n眼睛沒有發光。",
-    type: "smile", coat: "#594c43",
-    safe: false, reason: "持續且異常寬大的笑容屬於拒載條件。"
-  },
-  {
-    name: "黃先生", floor: 2, card: "02-04",
-    quote: "最後一班了吧？辛苦了。",
-    look: "一名穿著舊外套的住戶。\n雙眼正常，表情自然。\n證件房號與目的地一致。",
-    type: "", coat: "#58605c",
-    safe: true, reason: "所有檢查項目均符合規則。"
-  }
-];
+/*
+  單檔遊戲，無外部素材、SVG 或 Emoji。
 
-const rules = [
-  "01  僅允許前往一樓至十二樓。",
-  "02  目的地必須符合證件房號前兩碼。",
-  "03  眼睛發出紅光者，一律拒載。",
-  "04  持續異常咧嘴微笑者，一律拒載。",
-  "05  符合以上條件的正常住戶必須放行。"
-].join("\n");
+  核心玩法：
+  1. 免費查看證件與肉眼線索。
+  2. 深入檢查花費電力，會提供可靠結果。
+  3. 正確運送或拒載可回充電力。
+  4. 放入異常損失門禁，誤拒正常人增加投訴。
+  5. 每四位乘客更新一次規則，更新時明確通知。
+  6. 每局重新產生角色、房號與出現順序。
+*/
 
 const $ = id => document.getElementById(id);
+const canvas = $("view");
+const ctx = canvas.getContext("2d");
 
-let index = 0;
-let power = 3;
-let correct = 0;
-let busy = true;
-let activeTab = "passenger";
-let nextTimer = null;
-let openTimer = null;
+const SCAN_COST = 18;
 
-function setButtons(disabled) {
-  $("accept").disabled = disabled;
-  $("reject").disabled = disabled;
+const names = [
+  "林先生", "周小姐", "陳先生", "張小姐",
+  "黃先生", "許小姐", "吳先生", "何小姐",
+  "李先生", "鄭小姐", "郭先生", "沈小姐",
+  "梁先生", "蔡小姐", "江先生", "蘇小姐"
+];
+
+const coats = [
+  "#46554a", "#56523f", "#444f60",
+  "#645344", "#3b5350", "#5b5a4c"
+];
+
+const normalLines = [
+  "今天加班到現在，終於能回家了。",
+  "家裡的燈還亮著，他們在等我。",
+  "我買了消夜，希望還沒涼。",
+  "麻煩了。這棟大樓晚上真安靜。",
+  "雨下得很大，你也早點下班。",
+  "我的鑰匙在包包裡，等一下就找到了。"
+];
+
+const unsettlingLines = [
+  "我們是不是已經見過面了？",
+  "你會記住每一個搭電梯的人嗎？",
+  "剛才那個人，真的有走出電梯嗎？",
+  "不要一直看監視器，看我就好。",
+  "你值夜班的時候，也會聽到敲門聲嗎？"
+];
+
+let state = null;
+let overlayAction = null;
+let timers = [];
+let audioContext = null;
+let soundEnabled = true;
+
+function random(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function integer(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function shuffle(list) {
+  const result = [...list];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = integer(0, i);
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+function later(callback, delay) {
+  const id = setTimeout(callback, delay);
+  timers.push(id);
+  return id;
+}
+
+function clearTimers() {
+  timers.forEach(clearTimeout);
+  timers = [];
+}
+
+function tone(frequency, duration, volume = .035, type = "sine") {
+  if (!soundEnabled) return;
+
+  try {
+    if (!audioContext) {
+      const Audio = window.AudioContext || window.webkitAudioContext;
+      if (!Audio) return;
+      audioContext = new Audio();
+    }
+
+    if (audioContext.state === "suspended") {
+      audioContext.resume().catch(() => {});
+    }
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    const now = audioContext.currentTime;
+
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency, now);
+
+    gain.gain.setValueAtTime(volume, now);
+    gain.gain.exponentialRampToValueAtTime(.001, now + duration);
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+    oscillator.start(now);
+    oscillator.stop(now + duration);
+    oscillator.onended = () => {
+      oscillator.disconnect();
+      gain.disconnect();
+    };
+  } catch (_) {
+    // 音效不可用時，遊戲仍可正常運作。
+  }
+}
+
+function generateQueue() {
+  const availableNames = shuffle(names);
+
+  const stages = [
+    shuffle(["normal", "normal", "eyes", "card"]),
+    shuffle(["normal", "normal", "reflection", "card"]),
+    shuffle(["normal", "normal", "smile", "reflection"])
+  ];
+
+  return stages.flatMap((types, stageIndex) => {
+    return types.map(type => {
+      const floor = integer(2, 12);
+      let cardFloor = floor;
+
+      if (type === "card") {
+        while (cardFloor === floor) {
+          cardFloor = integer(2, 12);
+        }
+      }
+
+      return {
+        name: availableNames.pop(),
+        floor,
+        cardFloor,
+        room: integer(1, 6),
+        type,
+        stage: stageIndex + 1,
+        coat: random(coats),
+        hair: random(["#171e18", "#34382e", "#46473a"]),
+        skin: random(["#aaa18a", "#b5a68b", "#928c78"]),
+        glasses: Math.random() > .65,
+        bag: Math.random() > .5,
+        tired: Math.random() > .5,
+        // 台詞不能當作異常判定依據。
+        quote: random(
+          Math.random() > .55 ? unsettlingLines : normalLines
+        ),
+        scanned: false
+      };
+    });
+  });
+}
+
+function passenger() {
+  return state.queue[state.index];
+}
+
+function stageName(stage) {
+  return ["第一時段", "第二時段", "最後時段"][stage - 1];
+}
+
+function ruleText(stage) {
+  let text =
+    "01  目的樓層須與證件房號前兩碼一致。\n" +
+    "02  雙眼持續發紅光者，拒載。\n";
+
+  if (stage >= 2) {
+    text += "03  無法在鏡中形成倒影者，拒載。\n";
+  }
+
+  if (stage >= 3) {
+    text += "04  嘴角異常裂開並持續咧笑者，拒載。\n";
+  }
+
+  text += "\n全部符合者應放行。穿著、疲倦與奇怪台詞不是拒載理由。";
+
+  if (stage >= 2) {
+    text += "\n鏡面起霧時無法肉眼確認倒影；深入檢查可除霧。";
+  }
+
+  return text;
+}
+
+function observationText(p) {
+  const lines = [];
+
+  lines.push(
+    p.type === "eyes"
+      ? "雙眼持續泛著紅光，燈光變暗時依然清楚。"
+      : "瞳孔顏色正常，沒有發光。"
+  );
+
+  lines.push(
+    p.type === "smile"
+      ? "嘴角不自然地裂向兩側，笑容一直沒有放鬆。"
+      : p.tired
+        ? "眼下有陰影，表情疲倦；嘴角形狀正常。"
+        : "表情平靜，嘴角形狀正常。"
+  );
+
+  if (p.stage >= 2) {
+    if (!p.scanned) {
+      lines.push("背後鏡面覆著厚霧，目前無法確認倒影。");
+    } else {
+      lines.push(
+        p.type === "reflection"
+          ? "除霧完成：乘客站在鏡前，鏡裡卻空無一人。"
+          : "除霧完成：鏡內有與本人一致的倒影。"
+      );
+    }
+  } else {
+    lines.push("鏡面清晰，可見乘客倒影。");
+  }
+
+  if (p.scanned) {
+    lines.push("\n檢查報告：" + reasonText(p));
+  } else {
+    lines.push("\n" + (p.bag ? "隨身物品：舊提袋。" : "沒有攜帶大型物品。"));
+  }
+
+  return lines.join("\n");
+}
+
+function reasonText(p) {
+  switch (p.type) {
+    case "eyes":
+      return "確認雙眼異常發光，依規則應拒載。";
+    case "card":
+      return "證件屬於 " + p.cardFloor + " 樓，目的地卻是 " +
+        p.floor + " 樓，依規則應拒載。";
+    case "reflection":
+      return "確認沒有倒影，依規則應拒載。";
+    case "smile":
+      return "確認持續異常咧嘴，依規則應拒載。";
+    default:
+      return "樓層與所有適用檢查項目皆正常，應予放行。";
+  }
+}
+
+function updateStats() {
+  $("powerText").textContent = state.power + "%";
+  $("powerFill").style.width = state.power + "%";
+  $("powerText").classList.toggle("danger", state.power < SCAN_COST);
+
+  $("securityText").textContent = state.security + " / 3";
+  $("securityText").classList.toggle("danger", state.security <= 1);
+
+  $("complaintText").textContent = state.complaints + " / 3";
+  $("complaintText").classList.toggle("danger", state.complaints >= 2);
+
+  $("shiftText").textContent = stageName(passenger().stage);
+  $("progressText").textContent =
+    "乘客 " + String(state.index + 1).padStart(2, "0") + " / 12";
+
+  const totalMinutes = 133 + state.index * 18;
+  $("clock").textContent =
+    String(Math.floor(totalMinutes / 60)).padStart(2, "0") +
+    ":" + String(totalMinutes % 60).padStart(2, "0");
+}
+
+function updateButtons() {
+  const blocked = !state || state.busy || state.ended;
+  const p = state ? passenger() : null;
+
+  $("accept").disabled = blocked;
+  $("reject").disabled = blocked;
+  $("inspect").disabled =
+    blocked || p.scanned || state.power < SCAN_COST;
+
+  $("inspectCost").textContent = p && p.scanned
+    ? "檢查完成"
+    : state && state.power < SCAN_COST
+      ? "電力不足"
+      : "消耗 18% 電力";
 }
 
 function renderPanel() {
-  const p = passengers[index];
+  if (!state) return;
+
+  const p = passenger();
 
   document.querySelectorAll(".tab").forEach(button => {
-    const selected = button.dataset.tab === activeTab;
-    button.classList.toggle("active", selected);
-    button.setAttribute("aria-pressed", String(selected));
+    const active = button.dataset.tab === state.tab;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
   });
 
-  if (activeTab === "rules") {
-    $("panelTitle").textContent = "夜班操作規則 / 請確實遵守";
-    $("panelContent").textContent = rules;
-  } else if (activeTab === "inspect") {
-    $("panelTitle").textContent = "近距離觀察";
-    $("panelContent").textContent = p.look;
-  } else {
-    $("panelTitle").textContent = p.name + " / 等待搭乘";
-    $("panelContent").textContent =
-      "目的樓層：" + String(p.floor).padStart(2, "0") + " F\n" +
-      "住戶證件：" + p.card + "\n" +
-      "「" + p.quote + "」";
+  if (state.tab === "card") {
+    $("panelTitle").textContent = p.name + " / 住戶證";
+    $("panelText").textContent =
+      "證件房號：" +
+      String(p.cardFloor).padStart(2, "0") + "-" +
+      String(p.room).padStart(2, "0") +
+      "\n目的樓層：" + String(p.floor).padStart(2, "0") + " F" +
+      "\n「" + p.quote + "」";
   }
+
+  if (state.tab === "observe") {
+    $("panelTitle").textContent =
+      p.scanned ? "深入檢查 / 完整結果" : "肉眼觀察 / 不耗電";
+    $("panelText").textContent = observationText(p);
+  }
+
+  if (state.tab === "rules") {
+    $("panelTitle").textContent =
+      stageName(p.stage) + " / 有效值勤規則";
+    $("panelText").textContent = ruleText(p.stage);
+  }
+
+  if (state.tab === "log") {
+    $("panelTitle").textContent = "本夜判斷紀錄";
+    $("panelText").textContent = state.log.length
+      ? [...state.log].reverse().join("\n\n")
+      : "尚無紀錄。\n正確放行回充 10% 電力。\n正確拒載回充 4% 電力。\n深入檢查的結果可信。";
+  }
+
+  document.querySelector(".panel").scrollTop = 0;
+}
+
+function feedback(text, kind = "normal") {
+  $("feedback").textContent = text;
+  $("feedback").style.color = {
+    normal: "#b3bea4",
+    good: "#d7d9b1",
+    bad: "#e4a07b"
+  }[kind];
+}
+
+function showOverlay(tag, title, text, button, action, note = "") {
+  $("overlayTag").textContent = tag;
+  $("overlayTitle").textContent = title;
+  $("overlayText").textContent = text;
+  $("overlayButton").textContent = button;
+  $("overlayNote").textContent = note;
+  overlayAction = action;
+  $("overlay").hidden = false;
+  $("overlayButton").focus();
+}
+
+function beginGame() {
+  clearTimers();
+
+  state = {
+    queue: generateQueue(),
+    index: 0,
+    power: 90,
+    security: 3,
+    complaints: 0,
+    correct: 0,
+    combo: 0,
+    bestCombo: 0,
+    scans: 0,
+    tab: "rules",
+    busy: true,
+    ended: false,
+    log: []
+  };
+
+  $("overlay").hidden = true;
+  $("scene").classList.remove("scanning");
+  $("scene").classList.add("closed");
+
+  showStage(1);
+}
+
+function showStage(stage) {
+  state.busy = true;
+  state.tab = "rules";
+  updateStats();
+  updateButtons();
+  renderPanel();
+
+  const texts = {
+    1:
+      "今晚共有十二位乘客，分三個時段。\n\n" +
+      "先核對房號與目的樓層，再觀察雙眼。\n" +
+      "奇怪的話不代表對方是怪物。\n\n" +
+      "深入檢查每次消耗 18% 電力。\n" +
+      "只在需要時使用，替後半夜留下餘裕。",
+    2:
+      "管理室收到新的異常通報。\n\n" +
+      "新增規則：沒有鏡中倒影者，拒載。\n\n" +
+      "鏡面開始起霧，肉眼無法判讀倒影。\n" +
+      "深入檢查可以除霧並提供完整結果。\n" +
+      "先找免費線索，再決定是否花費電力。",
+    3:
+      "走廊的腳步聲越來越密。\n\n" +
+      "新增規則：嘴角異常裂開、持續咧笑者，拒載。\n\n" +
+      "先前規則全部繼續有效。\n" +
+      "還有四位乘客。撐過去，就能交班。"
+  };
+
+  showOverlay(
+    "OFFICIAL NOTICE / 0" + stage,
+    stage === 1 ? "夜班開始" : "規則更新",
+    texts[stage],
+    "確認並開門",
+    () => {
+      $("overlay").hidden = true;
+      loadPassenger();
+    },
+    "規則更新皆以此通知為準"
+  );
 }
 
 function loadPassenger() {
-  const p = passengers[index];
+  state.busy = true;
+  state.tab = "card";
 
-  busy = true;
-  setButtons(true);
-  activeTab = "passenger";
-
-  $("person").className = "person " + p.type;
-  $("person").style.setProperty("--coat", p.coat);
-  $("progress").textContent =
-    "本夜乘客 " + String(index + 1).padStart(2, "0") + " / 08";
-  $("integrity").textContent = "電力 " + power + " / 3";
-  $("clock").textContent = "02:" + String(13 + index * 4).padStart(2, "0");
   $("floor").textContent = "01 F";
-  $("sceneLabel").textContent = "一樓大廳 / 有乘客等待";
-  $("feedback").style.color = "#aab69d";
-  $("feedback").textContent = "請核對資料、觀察乘客，並參照值勤規則。";
+  $("cameraText").textContent = "CAM 04 / LIVE";
+  $("sceneCaption").textContent = "一樓大廳 / 乘客等待進入";
 
+  updateStats();
   renderPanel();
+  updateButtons();
+  drawScene();
 
-  openTimer = setTimeout(() => {
+  feedback(
+    passenger().stage >= 2
+      ? "鏡面起霧。先核對證件與外觀，再決定是否深入檢查。"
+      : "證件與肉眼觀察都不耗電。先找出明確矛盾。"
+  );
+
+  later(() => {
     $("scene").classList.remove("closed");
-    busy = false;
-    setButtons(false);
-  }, 200);
+    tone(620, .18);
+    later(() => {
+      state.busy = false;
+      updateButtons();
+      $("accept").focus();
+    }, 550);
+  }, 150);
+}
+
+function inspectPassenger() {
+  if (!state || state.busy || state.ended) return;
+
+  const p = passenger();
+  if (p.scanned || state.power < SCAN_COST) return;
+
+  state.busy = true;
+  state.power -= SCAN_COST;
+  state.scans++;
+
+  updateStats();
+  updateButtons();
+
+  $("scene").classList.add("scanning");
+  $("cameraText").textContent = "CAM 04 / VERIFYING";
+  feedback("檢查中：核對證件、瞳孔、表情與鏡面。");
+  tone(180, .8, .025, "triangle");
+
+  later(() => {
+    p.scanned = true;
+    state.busy = false;
+    state.tab = "observe";
+
+    $("scene").classList.remove("scanning");
+    $("cameraText").textContent = "CAM 04 / VERIFIED";
+
+    drawScene();
+    renderPanel();
+    updateButtons();
+
+    feedback(
+      "已消耗 18% 電力。檢查結果已列於觀察頁，本次不會重複扣電。"
+    );
+
+    tone(740, .12);
+  }, 1100);
 }
 
 function decide(allow) {
-  if (busy) return;
+  if (!state || state.busy || state.ended) return;
 
-  busy = true;
-  setButtons(true);
+  state.busy = true;
+  updateButtons();
 
-  const p = passengers[index];
-  const success = allow === p.safe;
+  const p = passenger();
+  const safe = p.type === "normal";
+  const success = allow === safe;
 
-  if (success) correct++;
-  else power--;
+  let result;
 
-  $("integrity").textContent = "電力 " + power + " / 3";
-  $("feedback").style.color = success ? "#c6c6a0" : "#e09a7d";
-  $("feedback").textContent =
-    (success ? "判斷正確。" : "判斷錯誤，電力下降。") + p.reason;
+  if (success) {
+    state.correct++;
+    state.combo++;
+    state.bestCombo = Math.max(state.bestCombo, state.combo);
+
+    const recovery = allow ? 10 : 4;
+    state.power = Math.min(100, state.power + recovery);
+
+    result = allow
+      ? "正常住戶安全抵達。電力回充 10%。"
+      : "異常被擋在門外。電力回充 4%。";
+
+    feedback(result + " " + reasonText(p), "good");
+    tone(480, .16);
+  } else {
+    state.combo = 0;
+
+    if (allow) {
+      state.security--;
+      result = "異常進入大樓，門禁完整度下降。";
+      feedback(result + " " + reasonText(p), "bad");
+      tone(68, .7, .06, "sawtooth");
+    } else {
+      state.complaints++;
+      result = "你拒絕了正常住戶，收到一件投訴。";
+      feedback(result + " " + reasonText(p), "bad");
+      tone(130, .4, .035, "triangle");
+    }
+  }
+
+  state.log.push(
+    String(state.index + 1).padStart(2, "0") + " / " + p.name +
+    " / " + (allow ? "放行" : "拒載") +
+    "\n" + (success ? "正確。" : "誤判。") + reasonText(p)
+  );
+
+  updateStats();
+
+  if (state.tab === "log") renderPanel();
 
   $("scene").classList.add("closed");
-  $("sceneLabel").textContent = allow ? "電梯門關閉 / 執行運送" : "已拒絕乘客 / 等待下一位";
   $("floor").textContent = allow
     ? String(p.floor).padStart(2, "0") + " F"
     : "01 F";
 
-  nextTimer = setTimeout(() => {
-    if (power <= 0 || index === passengers.length - 1) {
-      finish();
+  $("sceneCaption").textContent = allow
+    ? "門已關閉 / 電梯上行"
+    : "門已關閉 / 乘客留在大廳";
+
+  later(() => {
+    if (state.security <= 0) {
+      finish("breach");
+      return;
+    }
+
+    if (state.complaints >= 3) {
+      finish("dismissed");
+      return;
+    }
+
+    if (state.index === state.queue.length - 1) {
+      finish("complete");
+      return;
+    }
+
+    const previousStage = p.stage;
+    state.index++;
+
+    if (passenger().stage !== previousStage) {
+      showStage(passenger().stage);
     } else {
-      index++;
       loadPassenger();
     }
-  }, 2800);
+  }, 3200);
 }
 
-function finish() {
-  busy = true;
-  setButtons(true);
+function finish(type) {
+  state.ended = true;
+  state.busy = true;
+  updateButtons();
 
-  const survived = power > 0;
-  $("overlayTag").textContent = survived ? "SHIFT COMPLETE" : "SIGNAL LOST";
-  $("overlayTitle").textContent = survived ? "你撐到了交班" : "電梯停住了";
-  $("overlayText").textContent = survived
-    ? "清晨，接班的人敲了敲玻璃。\n你終於可以離開這裡。\n\n正確判斷：" +
-      correct + " / 8\n剩餘電力：" + power + " / 3"
-    : "最後一盞燈熄滅了。\n黑暗裡，有人按下了十三樓。\n\n已判斷乘客：" +
-      (index + 1) + " / 8\n正確判斷：" + correct;
+  const total = state.index + 1;
+  let title;
+  let story;
 
-  $("start").textContent = "重新值勤";
-  $("overlay").hidden = false;
-  $("start").focus();
+  if (type === "breach") {
+    title = "門外已經沒有人";
+    story =
+      "第三次門禁警報響起後，監視器黑了。\n" +
+      "有人在你身後說：「這次換我值班。」";
+    $("floor").textContent = "13 F";
+  } else if (type === "dismissed") {
+    title = "你的夜班結束了";
+    story =
+      "管理處收到了三件住戶投訴。\n" +
+      "你被要求交出鑰匙，立即離開操作台。";
+  } else if (state.correct === 12) {
+    title = "全員核對完畢";
+    story =
+      "天亮了。十二次判斷，沒有一次失誤。\n" +
+      "接班簿裡多了一行字：「明晚還是你嗎？」";
+  } else {
+    title = "你撐到了天亮";
+    story =
+      "接班的人敲了敲玻璃，遞來一杯熱茶。\n" +
+      "你沒有回頭看電梯，直接走出了大樓。";
+  }
+
+  const report =
+    "\n\n正確判斷：" + state.correct + " / " + total +
+    "\n最長連續正確：" + state.bestCombo +
+    "\n深入檢查：" + state.scans + " 次" +
+    "\n剩餘電力：" + state.power + "%" +
+    "\n門禁完整度：" + state.security + " / 3" +
+    "\n住戶投訴：" + state.complaints + " / 3";
+
+  showOverlay(
+    type === "complete" ? "SHIFT COMPLETE" : "SHIFT TERMINATED",
+    title,
+    story + report,
+    "再值一晚",
+    beginGame,
+    "每局重新排列乘客、身分與房號"
+  );
 }
 
-function startGame() {
-  clearTimeout(nextTimer);
-  clearTimeout(openTimer);
-  index = 0;
-  power = 3;
-  correct = 0;
-  $("overlay").hidden = true;
-  $("scene").classList.add("closed");
-  loadPassenger();
-  document.querySelector(".tab").focus();
+/* Canvas 場景：全部由程式繪製。 */
+
+function rectangle(x, y, w, h, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, w, h);
 }
+
+function ellipse(x, y, rx, ry, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function line(x1, y1, x2, y2, color, width = 1) {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = width;
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+}
+
+function drawPerson(p, x, y, scale, reflection = false) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(scale, scale);
+
+  if (reflection) {
+    ctx.globalAlpha = .52;
+  }
+
+  // 地面陰影。
+  ellipse(0, 374, 102, 17, "#0008");
+
+  // 腿。
+  rectangle(-43, 300, 36, 78, "#1b241d");
+  rectangle(7, 300, 36, 78, "#172018");
+
+  // 外套。
+  const coatGradient = ctx.createLinearGradient(-90, 0, 90, 0);
+  coatGradient.addColorStop(0, "#202b24");
+  coatGradient.addColorStop(.52, p.coat);
+  coatGradient.addColorStop(1, "#1b271f");
+
+  ctx.fillStyle = coatGradient;
+  ctx.beginPath();
+  ctx.moveTo(-38, 111);
+  ctx.lineTo(38, 111);
+  ctx.lineTo(78, 139);
+  ctx.lineTo(96, 320);
+  ctx.lineTo(-96, 320);
+  ctx.lineTo(-78, 139);
+  ctx.closePath();
+  ctx.fill();
+
+  // 脖子與襯衫。
+  rectangle(-14, 88, 28, 39, p.skin);
+
+  ctx.fillStyle = "#9b9c84";
+  ctx.beginPath();
+  ctx.moveTo(-29, 112);
+  ctx.lineTo(0, 131);
+  ctx.lineTo(29, 112);
+  ctx.lineTo(0, 214);
+  ctx.closePath();
+  ctx.fill();
+
+  line(0, 213, 0, 319, "#a7b99b44", 1);
+  line(-57, 155, -65, 296, "#121d1788", 2);
+  line(57, 155, 65, 296, "#121d1788", 2);
+
+  // 頭髮與臉。
+  ellipse(0, 54, 45, 57, p.hair);
+  ellipse(-39, 64, 7, 13, p.skin);
+  ellipse(39, 64, 7, 13, p.skin);
+
+  const skinGradient = ctx.createLinearGradient(-36, 0, 36, 0);
+  skinGradient.addColorStop(0, "#726f5d");
+  skinGradient.addColorStop(.55, p.skin);
+  skinGradient.addColorStop(1, "#777764");
+  ellipse(0, 58, 37, 48, skinGradient);
+
+  ctx.fillStyle = p.hair;
+  ctx.beginPath();
+  ctx.moveTo(-40, 45);
+  ctx.quadraticCurveTo(-44, -13, 2, -5);
+  ctx.quadraticCurveTo(46, -4, 40, 44);
+  ctx.lineTo(21, 20);
+  ctx.lineTo(-29, 30);
+  ctx.closePath();
+  ctx.fill();
+
+  // 眉毛。
+  line(-26, 48, -10, 46, "#434737", 3);
+  line(10, 46, 26, 48, "#434737", 3);
+
+  // 眼睛。
+  const eyeColor = p.type === "eyes" ? "#ff7350" : "#202c23";
+
+  if (p.type === "eyes" && !reflection) {
+    ctx.shadowColor = "#ff3d20";
+    ctx.shadowBlur = 15;
+  }
+
+  ellipse(-17, 57, 5, 3, eyeColor);
+  ellipse(17, 57, 5, 3, eyeColor);
+  ctx.shadowBlur = 0;
+
+  if (p.glasses) {
+    ctx.strokeStyle = "#aaa98e";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(-31, 49, 26, 17);
+    ctx.strokeRect(5, 49, 26, 17);
+    line(-5, 55, 5, 55, "#aaa98e", 1.5);
+  }
+
+  line(1, 62, -2, 75, "#625f4e", 1.5);
+
+  if (p.type === "smile") {
+    ctx.strokeStyle = "#412c23";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(-29, 77);
+    ctx.quadraticCurveTo(0, 105, 29, 77);
+    ctx.stroke();
+    line(-29, 77, -32, 70, "#412c23", 2);
+    line(29, 77, 32, 70, "#412c23", 2);
+  } else {
+    line(-10, 86, 10, 86, "#605748", 2);
+  }
+
+  // 證件。
+  ctx.save();
+  ctx.translate(47, 173);
+  ctx.rotate(-.08);
+  rectangle(-12, 0, 25, 35, "#b9b999");
+  rectangle(-12, 0, 25, 7, "#67755a");
+  rectangle(-7, 12, 7, 9, "#7f896d");
+  line(3, 14, 9, 14, "#687657", 1);
+  line(3, 19, 9, 19, "#687657", 1);
+  line(-7, 27, 9, 27, "#687657", 1);
+  ctx.restore();
+
+  // 提袋。
+  if (p.bag) {
+    ctx.strokeStyle = "#605e48";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(85, 292, 15, Math.PI, 0);
+    ctx.stroke();
+    rectangle(61, 292, 48, 61, "#514f3b");
+    line(66, 300, 101, 300, "#777259", 2);
+  }
+
+  ctx.restore();
+}
+
+function drawScene() {
+  const p = state ? passenger() : null;
+  ctx.clearRect(0, 0, 720, 512);
+
+  const wallGradient = ctx.createLinearGradient(0, 0, 720, 0);
+  wallGradient.addColorStop(0, "#101b13");
+  wallGradient.addColorStop(.48, "#45503c");
+  wallGradient.addColorStop(1, "#17251a");
+  rectangle(0, 0, 720, 512, wallGradient);
+
+  // 電梯框與壁板。
+  rectangle(0, 0, 55, 512, "#0a140d");
+  rectangle(665, 0, 55, 512, "#0a140d");
+  rectangle(55, 0, 610, 25, "#0e180f");
+
+  for (let x = 75; x < 665; x += 96) {
+    line(x, 28, x, 459, "#131f1699", 2);
+    line(x + 2, 28, x + 2, 459, "#69735733", 1);
+  }
+
+  // 頂燈。
+  ctx.save();
+  ctx.shadowColor = "#d1d8a0";
+  ctx.shadowBlur = 30;
+  rectangle(180, 15, 360, 8, "#c4c6a4");
+  ctx.restore();
+
+  // 背後鏡子。
+  rectangle(415, 62, 186, 289, "#101b14");
+  rectangle(421, 68, 174, 277, "#26372c");
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(423, 70, 170, 273);
+  ctx.clip();
+
+  const foggy = p && p.stage >= 2 && !p.scanned;
+
+  if (p && !foggy && p.type !== "reflection") {
+    drawPerson(p, 506, 97, .64, true);
+  }
+
+  if (foggy) {
+    const fog = ctx.createLinearGradient(423, 70, 593, 343);
+    fog.addColorStop(0, "#8b9b849c");
+    fog.addColorStop(.5, "#667c67ee");
+    fog.addColorStop(1, "#9aa68da8");
+    rectangle(423, 70, 170, 273, fog);
+
+    for (let i = 0; i < 20; i++) {
+      const x = 432 + ((i * 41) % 150);
+      const y = 79 + ((i * 67) % 200);
+      line(x, y, x - 2, y + 36, "#c7d1b433", 1);
+    }
+  } else {
+    line(432, 77, 580, 324, "#bccbac18", 9);
+    line(466, 77, 591, 287, "#bccbac12", 3);
+  }
+  ctx.restore();
+
+  // 鏡面標記。
+  ctx.fillStyle = "#b7c29e";
+  ctx.font = "11px monospace";
+  ctx.fillText("REFLECTION / 02", 426, 365);
+
+  // 扶手。
+  rectangle(57, 366, 607, 8, "#728061");
+  rectangle(57, 374, 607, 6, "#172516");
+
+  // 地面。
+  const floorGradient = ctx.createLinearGradient(0, 450, 0, 512);
+  floorGradient.addColorStop(0, "#34412d");
+  floorGradient.addColorStop(1, "#0c160c");
+
+  ctx.fillStyle = floorGradient;
+  ctx.beginPath();
+  ctx.moveTo(57, 450);
+  ctx.lineTo(663, 450);
+  ctx.lineTo(720, 512);
+  ctx.lineTo(0, 512);
+  ctx.closePath();
+  ctx.fill();
+
+  // 乘客。
+  if (p) {
+    drawPerson(p, 307, 85, 1.04);
+  }
+
+  // 陰角。
+  const shade = ctx.createRadialGradient(350, 240, 100, 360, 250, 450);
+  shade.addColorStop(0, "transparent");
+  shade.addColorStop(1, "#000b");
+  rectangle(0, 0, 720, 512, shade);
+}
+
+/* 事件。 */
 
 document.querySelectorAll(".tab").forEach(button => {
   button.addEventListener("click", () => {
-    activeTab = button.dataset.tab;
+    if (!state) return;
+    state.tab = button.dataset.tab;
     renderPanel();
   });
 });
 
 $("accept").addEventListener("click", () => decide(true));
 $("reject").addEventListener("click", () => decide(false));
-$("start").addEventListener("click", startGame);
+$("inspect").addEventListener("click", inspectPassenger);
 
-renderPanel();
+$("overlayButton").addEventListener("click", () => {
+  tone(430, .12);
+  if (overlayAction) overlayAction();
+});
+
+// M 鍵切換音效。
+document.addEventListener("keydown", event => {
+  if (event.key.toLowerCase() === "m" && !event.repeat) {
+    soundEnabled = !soundEnabled;
+    if (state && !state.ended) {
+      feedback(soundEnabled ? "音效已開啟。" : "音效已關閉。");
+    }
+  }
+});
+
+drawScene();
+
+showOverlay(
+  "NIGHT SHIFT / 001",
+  "末班電梯",
+  "凌晨兩點十三分，你接手了夜班。\n\n" +
+  "有些乘客，只要核對證件就能看出破綻。\n" +
+  "有些看起來完全正常，卻沒有倒影。\n\n" +
+  "你能深入檢查，但電力有限。\n" +
+  "放進三個異常，或累積三件投訴，值勤就會結束。\n\n" +
+  "完成十二次判斷，撐到交班。",
+  "開始值勤",
+  beginGame,
+  "含低音量合成音效 / 電腦可按 M 靜音"
+);
 </script>
 </body>
 </html>
