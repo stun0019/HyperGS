@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>末班電梯</title>
+<style>
+* { box-sizing: border-box; }
+
+:root {
+  color-scheme: dark;
+  font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  background: #080a0a;
+  color: #d8d9cf;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+}
+
+button { font: inherit; cursor: pointer; }
+button:disabled { cursor: default; opacity: .35; }
+button:focus-visible { outline: 3px solid #e2c789; outline-offset: 3px; }
+
+#game {
+  width: min(100vw, 56.25dvh, 720px);
+  aspect-ratio: 9 / 16;
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+  background: #151917;
+  box-shadow: 0 0 100px #000;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  height: 12%;
+  flex-shrink: 0;
+  padding: 5cqw 6cqw 3cqw;
+  background: #111512;
+  border-bottom: 1px solid #41463a;
+}
+
+.topline {
+  display: flex;
+  justify-content: space-between;
+  font-size: 2.3cqw;
+  letter-spacing: .35cqw;
+  color: #8e9788;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2cqw;
+}
+
+.brand { font-size: 4cqw; letter-spacing: 1cqw; }
+
+#floor {
+  font-family: monospace;
+  font-size: 6cqw;
+  color: #d2ad68;
+  text-shadow: 0 0 15px #bc86334d;
+}
+
+.scene {
+  height: 47%;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  background: #090c0a;
+}
+
+.ceiling {
+  position: absolute;
+  top: 0;
+  left: 12%;
+  width: 76%;
+  height: 5%;
+  background: #bbbda7;
+  box-shadow: 0 6px 35px #d6d9ae45;
+  animation: flicker 7s infinite;
+}
+
+.wall {
+  position: absolute;
+  inset: 8% 9% 0;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 16%, #0003 16.2% 16.5%),
+    linear-gradient(90deg, #20271f, #495042 48%, #293127);
+  border: 1.8cqw solid #141a15;
+  box-shadow: inset 0 0 45px #000;
+}
+
+.wall::after {
+  content: "";
+  position: absolute;
+  inset: 65% 0 auto;
+  height: 1.4cqw;
+  background: linear-gradient(#727969, #252e24);
+  box-shadow: 0 4px 9px #000;
+}
+
+.scene-floor {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 14%;
+  background: linear-gradient(#30362b, #11170f);
+  clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%);
+}
+
+.camera {
+  position: absolute;
+  top: 10%;
+  left: 14%;
+  font: 2cqw monospace;
+  color: #a7b297;
+  letter-spacing: .25cqw;
+  z-index: 5;
+}
+
+.camera::before {
+  content: "";
+  display: inline-block;
+  width: 1.2cqw;
+  height: 1.2cqw;
+  background: #b55545;
+  margin-right: 1.4cqw;
+}
+
+.person {
+  position: absolute;
+  width: 43%;
+  height: 79%;
+  bottom: 3%;
+  left: 28.5%;
+  filter: drop-shadow(8px 10px 10px #0008);
+  transition: opacity .25s;
+}
+
+.hair {
+  position: absolute;
+  width: 43%;
+  height: 27%;
+  left: 28.5%;
+  top: 2%;
+  background: #171b18;
+  border-radius: 48% 48% 25% 25%;
+  z-index: 3;
+}
+
+.face {
+  position: absolute;
+  width: 35%;
+  height: 24%;
+  top: 6%;
+  left: 32.5%;
+  background: linear-gradient(90deg, #858373, #bbb29b 55%, #888471);
+  border-radius: 42% 42% 44% 44%;
+  z-index: 4;
+  box-shadow: inset 0 3cqw 0 #171b18, inset -1cqw 0 2cqw #0005;
+}
+
+.eyes {
+  position: absolute;
+  top: 46%;
+  left: 16%;
+  width: 68%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.eyes i {
+  width: 23%;
+  height: .7cqw;
+  background: #252b25;
+  box-shadow: 0 -.8cqw 0 #514f43;
+}
+
+.mouth {
+  position: absolute;
+  bottom: 21%;
+  left: 37%;
+  width: 27%;
+  height: .45cqw;
+  background: #5a5548;
+}
+
+.neck {
+  position: absolute;
+  width: 15%;
+  height: 12%;
+  top: 25%;
+  left: 42.5%;
+  background: #8b8775;
+  z-index: 2;
+}
+
+.coat {
+  position: absolute;
+  width: 100%;
+  height: 66%;
+  top: 29%;
+  background: linear-gradient(90deg, #252e2b, var(--coat, #46534b) 50%, #202a27);
+  clip-path: polygon(27% 0, 73% 0, 91% 12%, 100% 100%, 0 100%, 9% 12%);
+  border-radius: 20% 20% 0 0;
+  z-index: 2;
+}
+
+.coat::before {
+  content: "";
+  position: absolute;
+  left: 32%;
+  width: 36%;
+  height: 46%;
+  background: #899081;
+  clip-path: polygon(0 0, 50% 15%, 100% 0, 50% 100%);
+}
+
+.coat::after {
+  content: "";
+  position: absolute;
+  top: 23%;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: #a5b6a03b;
+}
+
+.badge {
+  position: absolute;
+  top: 51%;
+  left: 65%;
+  width: 12%;
+  height: 8%;
+  background: #b8b89d;
+  border-top: 1cqw solid #686f5c;
+  transform: rotate(-6deg);
+  z-index: 3;
+}
+
+.person.red .eyes i {
+  background: #d0523e;
+  box-shadow: 0 0 9px #e43723;
+}
+
+.person.smile .mouth {
+  width: 54%;
+  left: 23%;
+  height: 2cqw;
+  border-bottom: .6cqw solid #483b31;
+  background: transparent;
+  border-radius: 0 0 50% 50%;
+}
+
+.door {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  z-index: 10;
+  background:
+    repeating-linear-gradient(90deg, #ffffff02 0 1px, transparent 1px 5px),
+    linear-gradient(90deg, #30372f, #616758 70%, #353d32);
+  border: 1px solid #141b13;
+  transition: transform .55s ease-in-out;
+}
+.door.left { left: 0; transform: translateX(-100%); }
+.door.right { right: 0; transform: translateX(100%); }
+.closed .door { transform: translateX(0); }
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 12;
+  background: radial-gradient(ellipse at 50% 40%, transparent 25%, #0008 100%);
+}
+
+.scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 13;
+  opacity: .18;
+  background: repeating-linear-gradient(transparent 0 3px, #000 3px 4px);
+}
+
+.scene-label {
+  position: absolute;
+  bottom: 4%;
+  left: 6%;
+  z-index: 14;
+  color: #c5cbb9;
+  font-size: 2.1cqw;
+  letter-spacing: .25cqw;
+}
+
+.console {
+  flex: 1;
+  min-height: 0;
+  padding: 4cqw 6cqw;
+  background: linear-gradient(#20271f, #121810);
+  border-top: 1px solid #626953;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5cqw;
+}
+
+.progress-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 2.4cqw;
+  color: #9da88f;
+}
+
+#integrity { color: #d4b579; letter-spacing: .3cqw; }
+
+.tabs { display: flex; gap: 4cqw; }
+
+.tab {
+  padding: 0 0 1.2cqw;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: #849079;
+  background: transparent;
+  font-size: 2.7cqw;
+}
+.tab.active { color: #dacba6; border-color: #c1a470; }
+
+.panel {
+  flex: 1;
+  min-height: 0;
+  padding: 3cqw;
+  background: #0b120c;
+  border: 1px solid #3b4834;
+  box-shadow: inset 0 0 20px #0004;
+  overflow: auto;
+}
+
+.panel-title {
+  color: #d0bd90;
+  font-size: 3cqw;
+  margin-bottom: 1.6cqw;
+  letter-spacing: .2cqw;
+}
+
+.panel-content {
+  margin: 0;
+  color: #b8c0ac;
+  font-size: 2.7cqw;
+  line-height: 1.8;
+  white-space: pre-line;
+}
+
+#feedback {
+  min-height: 7.2cqw;
+  color: #aab69d;
+  font-size: 2.55cqw;
+  line-height: 1.5;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3cqw;
+}
+
+.action {
+  min-height: 10cqw;
+  border: 1px solid #6e7257;
+  background: #3b4431;
+  color: #e3dfc5;
+  font-size: 3.2cqw;
+  letter-spacing: 1cqw;
+}
+.action.reject { background: #332c25; border-color: #6e5140; color: #cfad91; }
+.action:not(:disabled):active { transform: translateY(2px); }
+
+footer {
+  text-align: center;
+  color: #65715d;
+  font-size: 1.9cqw;
+  letter-spacing: .3cqw;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: #081009ec;
+  padding: 10cqw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.overlay[hidden] { display: none; }
+.eyebrow { color: #a79770; font: 2.3cqw monospace; letter-spacing: .6cqw; }
+
+h1 {
+  font-size: 10cqw;
+  line-height: 1.4;
+  letter-spacing: 1.4cqw;
+  font-weight: 400;
+  margin: 5cqw 0;
+}
+
+.overlay p {
+  font-size: 3.1cqw;
+  line-height: 2;
+  color: #aab69e;
+  white-space: pre-line;
+  margin: 0 0 7cqw;
+}
+
+.overlay .action { width: 100%; }
+
+@keyframes flicker {
+  0%, 92%, 96%, 100% { opacity: .8; }
+  93%, 95% { opacity: .25; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<main id="game" aria-label="末班電梯遊戲">
+  <div class="screen">
+    <header>
+      <div class="topline">
+        <span>永安大樓 / 夜間值勤</span>
+        <span id="clock">02:13</span>
+      </div>
+      <div class="status">
+        <span class="brand">末班電梯</span>
+        <span id="floor">01 F</span>
+      </div>
+    </header>
+
+    <section class="scene closed" id="scene" aria-label="電梯監視畫面">
+      <div class="ceiling"></div>
+      <div class="wall"></div>
+      <div class="scene-floor"></div>
+      <div class="camera">CAM 04 / LIVE</div>
+
+      <div class="person" id="person" aria-hidden="true">
+        <div class="hair"></div>
+        <div class="neck"></div>
+        <div class="face">
+          <div class="eyes"><i></i><i></i></div>
+          <div class="mouth"></div>
+        </div>
+        <div class="coat"></div>
+        <div class="badge"></div>
+      </div>
+
+      <div class="door left"></div>
+      <div class="door right"></div>
+      <div class="vignette"></div>
+      <div class="scanlines"></div>
+      <div class="scene-label" id="sceneLabel">等待夜班管理員登入</div>
+    </section>
+
+    <section class="console">
+      <div class="progress-row">
+        <span id="progress">本夜乘客 01 / 08</span>
+        <span id="integrity">電力 3 / 3</span>
+      </div>
+
+      <nav class="tabs" aria-label="檢查資料">
+        <button class="tab active" data-tab="passenger">乘客資料</button>
+        <button class="tab" data-tab="inspect">觀察乘客</button>
+        <button class="tab" data-tab="rules">值勤規則</button>
+      </nav>
+
+      <div class="panel">
+        <div class="panel-title" id="panelTitle"></div>
+        <p class="panel-content" id="panelContent"></p>
+      </div>
+
+      <div id="feedback" role="status" aria-live="polite">
+        請核對資料，再決定是否放行。
+      </div>
+
+      <div class="actions">
+        <button class="action reject" id="reject" disabled>拒絕搭乘</button>
+        <button class="action" id="accept" disabled>允許進入</button>
+      </div>
+      <footer>值勤期間，請勿離開操作台。</footer>
+    </section>
+  </div>
+
+  <section class="overlay" id="overlay">
+    <div class="eyebrow" id="overlayTag">NIGHT SHIFT / 001</div>
+    <h1 id="overlayTitle">末班<br>電梯</h1>
+    <p id="overlayText">凌晨兩點十三分。
+你接手了一棟沒有住滿的大樓。
+
+檢查乘客資料與外觀，依照規則放行。
+每次誤判會損失一格電力。
+完成八次判斷，撐到交班。</p>
+    <button class="action" id="start">開始值勤</button>
+  </section>
+</main>
+
+<script>
+"use strict";
+
+const passengers = [
+  {
+    name: "林先生", floor: 5, card: "05-02",
+    quote: "今天又加班了……麻煩五樓。",
+    look: "一名疲倦的上班族。\n瞳孔呈深褐色，嘴角沒有異常。\n他低頭握著公事包，沒有說話。",
+    type: "", coat: "#4b584f",
+    safe: true, reason: "樓層、證件與外觀皆符合規則。"
+  },
+  {
+    name: "陳小姐", floor: 13, card: "13-01",
+    quote: "十三樓。你知道在哪裡的。",
+    look: "她的衣服一塵不染。\n眼睛與嘴角沒有異常。\n證件上確實印著十三樓。",
+    type: "", coat: "#605448",
+    safe: false, reason: "本棟只有十二層，十三樓並不存在。"
+  },
+  {
+    name: "張先生", floor: 8, card: "08-03",
+    quote: "不要一直看我的眼睛。",
+    look: "他的雙眼泛著清楚的紅光。\n即使燈光閃爍，那道紅光也沒有消失。\n證件樓層與目的地一致。",
+    type: "red", coat: "#424a59",
+    safe: false, reason: "紅色發光瞳孔屬於禁止搭乘的異常。"
+  },
+  {
+    name: "周小姐", floor: 3, card: "03-01",
+    quote: "我買了宵夜，要趁熱吃。",
+    look: "她提著一袋還在冒熱氣的食物。\n眼睛正常，嘴角自然。\n她偶爾打呵欠，看起來十分疲倦。",
+    type: "", coat: "#655844",
+    safe: true, reason: "疲倦與攜帶食物都不是拒載理由。"
+  },
+  {
+    name: "吳先生", floor: 6, card: "09-02",
+    quote: "六樓，我一直都住六樓。",
+    look: "他的外觀沒有異常。\n證件上的房號是 09-02。\n你再次詢問，他依舊堅持要去六樓。",
+    type: "", coat: "#4f555a",
+    safe: false, reason: "目的地六樓與證件上的九樓不符。"
+  },
+  {
+    name: "許小姐", floor: 12, card: "12-01",
+    quote: "頂樓，謝謝你。",
+    look: "她的外套被雨水浸濕。\n眼睛正常，表情平靜。\n證件清晰可辨，房號為 12-01。",
+    type: "", coat: "#59634c",
+    safe: true, reason: "十二樓是有效樓層，淋雨並不違反規則。"
+  },
+  {
+    name: "何先生", floor: 4, card: "04-02",
+    quote: "你看起來……很好吃。不，很好相處。",
+    look: "他一直保持著過度寬大的微笑。\n嘴角明顯向兩側拉長，從未放鬆。\n眼睛沒有發光。",
+    type: "smile", coat: "#594c43",
+    safe: false, reason: "持續且異常寬大的笑容屬於拒載條件。"
+  },
+  {
+    name: "黃先生", floor: 2, card: "02-04",
+    quote: "最後一班了吧？辛苦了。",
+    look: "一名穿著舊外套的住戶。\n雙眼正常，表情自然。\n證件房號與目的地一致。",
+    type: "", coat: "#58605c",
+    safe: true, reason: "所有檢查項目均符合規則。"
+  }
+];
+
+const rules = [
+  "01  僅允許前往一樓至十二樓。",
+  "02  目的地必須符合證件房號前兩碼。",
+  "03  眼睛發出紅光者，一律拒載。",
+  "04  持續異常咧嘴微笑者，一律拒載。",
+  "05  符合以上條件的正常住戶必須放行。"
+].join("\n");
+
+const $ = id => document.getElementById(id);
+
+let index = 0;
+let power = 3;
+let correct = 0;
+let busy = true;
+let activeTab = "passenger";
+let nextTimer = null;
+let openTimer = null;
+
+function setButtons(disabled) {
+  $("accept").disabled = disabled;
+  $("reject").disabled = disabled;
+}
+
+function renderPanel() {
+  const p = passengers[index];
+
+  document.querySelectorAll(".tab").forEach(button => {
+    const selected = button.dataset.tab === activeTab;
+    button.classList.toggle("active", selected);
+    button.setAttribute("aria-pressed", String(selected));
+  });
+
+  if (activeTab === "rules") {
+    $("panelTitle").textContent = "夜班操作規則 / 請確實遵守";
+    $("panelContent").textContent = rules;
+  } else if (activeTab === "inspect") {
+    $("panelTitle").textContent = "近距離觀察";
+    $("panelContent").textContent = p.look;
+  } else {
+    $("panelTitle").textContent = p.name + " / 等待搭乘";
+    $("panelContent").textContent =
+      "目的樓層：" + String(p.floor).padStart(2, "0") + " F\n" +
+      "住戶證件：" + p.card + "\n" +
+      "「" + p.quote + "」";
+  }
+}
+
+function loadPassenger() {
+  const p = passengers[index];
+
+  busy = true;
+  setButtons(true);
+  activeTab = "passenger";
+
+  $("person").className = "person " + p.type;
+  $("person").style.setProperty("--coat", p.coat);
+  $("progress").textContent =
+    "本夜乘客 " + String(index + 1).padStart(2, "0") + " / 08";
+  $("integrity").textContent = "電力 " + power + " / 3";
+  $("clock").textContent = "02:" + String(13 + index * 4).padStart(2, "0");
+  $("floor").textContent = "01 F";
+  $("sceneLabel").textContent = "一樓大廳 / 有乘客等待";
+  $("feedback").style.color = "#aab69d";
+  $("feedback").textContent = "請核對資料、觀察乘客，並參照值勤規則。";
+
+  renderPanel();
+
+  openTimer = setTimeout(() => {
+    $("scene").classList.remove("closed");
+    busy = false;
+    setButtons(false);
+  }, 200);
+}
+
+function decide(allow) {
+  if (busy) return;
+
+  busy = true;
+  setButtons(true);
+
+  const p = passengers[index];
+  const success = allow === p.safe;
+
+  if (success) correct++;
+  else power--;
+
+  $("integrity").textContent = "電力 " + power + " / 3";
+  $("feedback").style.color = success ? "#c6c6a0" : "#e09a7d";
+  $("feedback").textContent =
+    (success ? "判斷正確。" : "判斷錯誤，電力下降。") + p.reason;
+
+  $("scene").classList.add("closed");
+  $("sceneLabel").textContent = allow ? "電梯門關閉 / 執行運送" : "已拒絕乘客 / 等待下一位";
+  $("floor").textContent = allow
+    ? String(p.floor).padStart(2, "0") + " F"
+    : "01 F";
+
+  nextTimer = setTimeout(() => {
+    if (power <= 0 || index === passengers.length - 1) {
+      finish();
+    } else {
+      index++;
+      loadPassenger();
+    }
+  }, 2800);
+}
+
+function finish() {
+  busy = true;
+  setButtons(true);
+
+  const survived = power > 0;
+  $("overlayTag").textContent = survived ? "SHIFT COMPLETE" : "SIGNAL LOST";
+  $("overlayTitle").textContent = survived ? "你撐到了交班" : "電梯停住了";
+  $("overlayText").textContent = survived
+    ? "清晨，接班的人敲了敲玻璃。\n你終於可以離開這裡。\n\n正確判斷：" +
+      correct + " / 8\n剩餘電力：" + power + " / 3"
+    : "最後一盞燈熄滅了。\n黑暗裡，有人按下了十三樓。\n\n已判斷乘客：" +
+      (index + 1) + " / 8\n正確判斷：" + correct;
+
+  $("start").textContent = "重新值勤";
+  $("overlay").hidden = false;
+  $("start").focus();
+}
+
+function startGame() {
+  clearTimeout(nextTimer);
+  clearTimeout(openTimer);
+  index = 0;
+  power = 3;
+  correct = 0;
+  $("overlay").hidden = true;
+  $("scene").classList.add("closed");
+  loadPassenger();
+  document.querySelector(".tab").focus();
+}
+
+document.querySelectorAll(".tab").forEach(button => {
+  button.addEventListener("click", () => {
+    activeTab = button.dataset.tab;
+    renderPanel();
+  });
+});
+
+$("accept").addEventListener("click", () => decide(true));
+$("reject").addEventListener("click", () => decide(false));
+$("start").addEventListener("click", startGame);
+
+renderPanel();
+</script>
+</body>
+</html>
