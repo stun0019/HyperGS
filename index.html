@@ -2,420 +2,441 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>末班電梯：夜班紀錄</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#080d18">
+<title>午夜淘汰賽</title>
 <style>
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 :root {
   color-scheme: dark;
-  font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif;
-  background: #070a08;
-  color: #d9dccd;
+  font-family: "Microsoft JhengHei", Arial, sans-serif;
+  background: #050811;
+  color: #f2f6ff;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 body {
-  margin: 0;
-  min-height: 100dvh;
   display: grid;
   place-items: center;
-  background: radial-gradient(ellipse at center, #1c251f, #070a08 70%);
+  background: #050811;
 }
 
 button {
   font: inherit;
-  touch-action: manipulation;
   cursor: pointer;
-}
-
-button:disabled {
-  opacity: .32;
-  cursor: default;
+  touch-action: none;
 }
 
 button:focus-visible {
-  outline: 2px solid #eed09b;
-  outline-offset: 3px;
+  outline: 3px solid #ffe49b;
+  outline-offset: 4px;
 }
 
 #game {
   position: relative;
-  width: min(100vw, 56.25dvh, 720px);
-  aspect-ratio: 9 / 16;
+  width: min(100vw, 177.7778dvh, 1280px);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
   container-type: inline-size;
-  overflow: hidden;
-  background: #111910;
-  box-shadow: 0 0 90px #000a;
-}
-
-.game-layout {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-header {
-  flex: 0 0 11%;
-  padding: 3.8cqw 5cqw 2cqw;
-  background: #111810;
-  border-bottom: 1px solid #424c3a;
-}
-
-.header-top {
-  display: flex;
-  justify-content: space-between;
-  color: #89967c;
-  font-size: 2.2cqw;
-  letter-spacing: .28cqw;
-}
-
-.header-main {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 1.6cqw;
-}
-
-.title {
-  font-size: 4.1cqw;
-  letter-spacing: .9cqw;
-}
-
-#floor {
-  color: #d9b777;
-  font: 6cqw monospace;
-  text-shadow: 0 0 18px #b9803944;
-}
-
-.scene {
-  position: relative;
-  flex: 0 0 40%;
-  overflow: hidden;
-  background: #080e09;
+  background: #080e1d;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 canvas {
-  display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+  display: block;
 }
 
-.camera-label,
-.scene-caption {
-  position: absolute;
-  left: 5cqw;
-  z-index: 3;
-  font-size: 2.1cqw;
-  letter-spacing: .2cqw;
-  color: #c0ccb0;
-  pointer-events: none;
-}
-
-.camera-label {
-  top: 3cqw;
-  display: flex;
-  align-items: center;
-  gap: 1.5cqw;
-}
-
-.record-light {
-  display: inline-block;
-  width: 1cqw;
-  height: 1cqw;
-  background: #c47956;
-}
-
-.scene-caption {
-  bottom: 3cqw;
-  background: #080e09bb;
-  padding: 1cqw 1.8cqw;
-}
-
-.grain {
+.hud {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 4;
-  background: repeating-linear-gradient(
-    transparent 0 3px,
-    #0002 3px 4px
-  );
-  box-shadow: inset 0 0 55px #0009;
 }
 
-.door {
+.topbar {
   position: absolute;
-  z-index: 5;
-  top: 0;
-  bottom: 0;
-  width: 50%;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      #ffffff03 0 1px,
-      transparent 1px 5px
-    ),
-    linear-gradient(90deg, #2e382b, #616951 65%, #343d2e);
-  border: 1px solid #111a0e;
-  transition: transform .55s ease;
-}
-
-.door-left {
-  left: 0;
-  transform: translateX(-100%);
-}
-
-.door-right {
-  right: 0;
-  transform: translateX(100%);
-}
-
-.scene.closed .door {
-  transform: translateX(0);
-}
-
-.scan-beam {
-  position: absolute;
-  z-index: 4;
-  left: 10%;
-  right: 10%;
-  top: -5%;
-  height: 2px;
-  opacity: 0;
-  background: #d0e4b1;
-  box-shadow: 0 0 25px 8px #a6d48244;
-  pointer-events: none;
-}
-
-.scene.scanning .scan-beam {
-  animation: scan 1s linear;
-}
-
-@keyframes scan {
-  0% { top: 10%; opacity: 1; }
-  90% { opacity: 1; }
-  100% { top: 95%; opacity: 0; }
-}
-
-.console {
-  flex: 1;
-  min-height: 0;
-  padding: 3cqw 5cqw 2cqw;
-  background: linear-gradient(#222d1f, #10180f);
-  border-top: 1px solid #5a664b;
+  top: 3.2%;
+  left: 3%;
+  right: 3%;
   display: flex;
-  flex-direction: column;
-  gap: 2.2cqw;
-}
-
-.resources {
-  display: grid;
-  grid-template-columns: 1.35fr 1fr 1fr;
-  gap: 2cqw;
-}
-
-.resource {
-  border-right: 1px solid #435039;
-  padding-right: 1cqw;
-}
-
-.resource:last-child {
-  border: 0;
-}
-
-.resource-label {
-  color: #92a282;
-  font-size: 2cqw;
-  margin-bottom: .8cqw;
-}
-
-.resource-value {
-  font: 3.6cqw monospace;
-  color: #d6dabb;
-}
-
-.resource-value.danger {
-  color: #e39979;
-}
-
-.power-track {
-  width: 90%;
-  height: .5cqw;
-  margin-top: 1cqw;
-  background: #0b1209;
-}
-
-#powerFill {
-  height: 100%;
-  background: #b6c18b;
-  transition: width .3s;
-}
-
-.shift-row {
-  display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  color: #aab49b;
-  font-size: 2.2cqw;
 }
 
-.tabs {
-  display: flex;
-  gap: 3.4cqw;
-  border-bottom: 1px solid #405036;
+.rank-block {
+  border-left: .3cqw solid #79f2d4;
+  padding-left: 1.2cqw;
 }
 
-.tab {
-  border: 0;
-  border-bottom: 2px solid transparent;
-  padding: 0 0 1.5cqw;
-  background: transparent;
-  font-size: 2.7cqw;
-  color: #89997a;
-}
-
-.tab.active {
-  color: #e1cca1;
-  border-bottom-color: #c9a86c;
-}
-
-.panel {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  background: #0c150c;
-  border: 1px solid #3d5034;
-  padding: 2.7cqw 3cqw;
-  scrollbar-width: thin;
-}
-
-#panelTitle {
-  font-size: 3cqw;
-  color: #d9c49a;
-  margin-bottom: 1.4cqw;
+.label {
+  color: #96abc2;
+  font-size: .9cqw;
   letter-spacing: .2cqw;
 }
 
-#panelText {
-  margin: 0;
-  white-space: pre-line;
-  font-size: 2.6cqw;
-  line-height: 1.75;
-  color: #b8c5aa;
+.rank-value {
+  font-size: 3.8cqw;
+  line-height: 1.1;
+  font-weight: 900;
+  font-style: italic;
 }
 
-#feedback {
-  flex: 0 0 7.8cqw;
-  overflow-y: auto;
-  color: #b3bea4;
-  font-size: 2.5cqw;
-  line-height: 1.5;
+.rank-value small {
+  color: #7b91ac;
+  font-size: 1.5cqw;
 }
 
-.actions {
-  display: grid;
-  grid-template-columns: 1fr 1.2fr 1fr;
-  gap: 2cqw;
-}
-
-.action {
-  min-height: 10.5cqw;
-  border: 1px solid #667b50;
-  background: #36452b;
-  color: #e0e4c5;
-  font-size: 3cqw;
-}
-
-.action small {
-  display: block;
-  margin-top: .5cqw;
-  color: #a9b897;
-  font-size: 1.9cqw;
-  letter-spacing: .05cqw;
-}
-
-.action.reject {
-  background: #392e22;
-  border-color: #765740;
-  color: #d6b398;
-}
-
-.action.inspect {
-  background: #25342b;
-  border-color: #556b53;
-}
-
-.action:not(:disabled):active {
-  transform: translateY(2px);
-}
-
-footer {
+.elimination {
+  min-width: 17cqw;
   text-align: center;
-  color: #6d7f5e;
-  font-size: 1.85cqw;
-  letter-spacing: .18cqw;
+  padding: .9cqw 2cqw;
+  background: #0c1421d9;
+  border: 1px solid #718bab35;
+  border-top: 2px solid #e3b768;
+}
+
+.elimination .label {
+  color: #ddc08c;
+}
+
+#timer {
+  font: bold 2.8cqw monospace;
+  line-height: 1.25;
+}
+
+.elimination.danger {
+  border-top-color: #ff6f75;
+  background: #3c1427db;
+}
+
+.elimination.danger #timer {
+  color: #ff9194;
+}
+
+.top-actions {
+  display: flex;
+  gap: .7cqw;
+  pointer-events: auto;
+}
+
+.small-button {
+  min-width: 4.5cqw;
+  min-height: 3.5cqw;
+  padding: .7cqw 1cqw;
+  border: 1px solid #819ab53b;
+  background: #0b1626cf;
+  color: #d4e0ed;
+  font-size: 1cqw;
+}
+
+#leaderboard {
+  position: absolute;
+  top: 25%;
+  left: 3%;
+  width: 13.5cqw;
+  display: flex;
+  flex-direction: column;
+  gap: .35cqw;
+}
+
+.leader {
+  display: grid;
+  grid-template-columns: 1.8cqw 1fr auto;
+  gap: .5cqw;
+  align-items: center;
+  padding: .55cqw .7cqw;
+  background: #0a1322a8;
+  border-left: 2px solid #465a72;
+  color: #9bb0c7;
+  font-size: .95cqw;
+}
+
+.leader.me {
+  background: #12352ed9;
+  border-color: #79f2d4;
+  color: #dbfff3;
+}
+
+.leader.last {
+  border-color: #ff777e;
+}
+
+.leader.out {
+  opacity: .35;
+}
+
+.leader .gap {
+  font: .8cqw monospace;
+}
+
+#toast {
+  position: absolute;
+  top: 26%;
+  left: 24%;
+  right: 24%;
+  text-align: center;
+  color: #edfff9;
+  font-size: 1.6cqw;
+  font-weight: bold;
+  letter-spacing: .15cqw;
+  text-shadow: 0 2px 12px #000;
+  opacity: 0;
+  transition: opacity .15s;
+}
+
+#toast.show {
+  opacity: 1;
+}
+
+#warning {
+  position: absolute;
+  top: 39%;
+  left: 24%;
+  right: 24%;
+  text-align: center;
+  font-size: 1.1cqw;
+  color: #ffadb0;
+  letter-spacing: .16cqw;
+  text-shadow: 0 2px 8px #000;
+}
+
+.bottom-left {
+  position: absolute;
+  left: 3%;
+  bottom: 5%;
+}
+
+.speed {
+  display: flex;
+  align-items: baseline;
+  gap: .7cqw;
+}
+
+#speed {
+  font: italic bold 4.5cqw monospace;
+  color: #f2f8ff;
+  line-height: 1;
+}
+
+.speed-unit {
+  font-size: 1cqw;
+  color: #88a1bc;
+}
+
+.control-note {
+  margin-top: 1cqw;
+  font-size: .95cqw;
+  color: #90a9c3;
+}
+
+.bottom-center {
+  position: absolute;
+  bottom: 5%;
+  left: 35%;
+  width: 30%;
+}
+
+.nitro-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: .95cqw;
+  letter-spacing: .12cqw;
+  color: #b9dce6;
+  margin-bottom: .6cqw;
+}
+
+.nitro-track {
+  height: .7cqw;
+  background: #122639;
+  border: 1px solid #4a798455;
+  transform: skewX(-15deg);
+}
+
+#nitroFill {
+  width: 65%;
+  height: 100%;
+  background: linear-gradient(90deg, #51c7e9, #a4ffdd);
+  box-shadow: 0 0 16px #62e5db44;
+}
+
+#combo {
+  height: 1.5cqw;
+  margin-top: .8cqw;
+  color: #e3c887;
+  text-align: center;
+  font-size: .95cqw;
+}
+
+#nitroButton {
+  position: absolute;
+  right: 3%;
+  bottom: 5%;
+  width: 13.3cqw;
+  height: 6.3cqw;
+  pointer-events: auto;
+  color: #ddfff8;
+  border: 1px solid #76ead4;
+  background: linear-gradient(135deg, #254853ec, #142d40e8);
+  transform: skewX(-8deg);
+  box-shadow: inset 0 0 20px #55dbc21c;
+}
+
+#nitroButton span {
+  display: block;
+  transform: skewX(8deg);
+  font-size: 1.7cqw;
+  font-weight: bold;
+  letter-spacing: .3cqw;
+}
+
+#nitroButton small {
+  display: block;
+  transform: skewX(8deg);
+  font-size: .8cqw;
+  color: #9bc9c7;
+  margin-top: .4cqw;
+}
+
+#nitroButton.pressed {
+  color: #fff;
+  background: #368f93e8;
+  box-shadow: 0 0 35px #66f5d944;
+}
+
+#nitroButton.empty {
+  opacity: .4;
+}
+
+#countdown {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  color: #d8fff0;
+  font: italic bold 10cqw monospace;
+  text-shadow: 0 0 45px #77eacd66;
 }
 
 .overlay {
   position: absolute;
-  z-index: 20;
   inset: 0;
-  padding: 8cqw;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  background:
-    radial-gradient(ellipse at 70% 20%, #3e503223, transparent 70%),
-    #0a120af5;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  gap: 6cqw;
+  padding: 5cqw 8cqw;
+  background: linear-gradient(100deg, #070e1cf5, #0b182ae8);
 }
 
 .overlay[hidden] {
   display: none;
 }
 
-.overlay-tag {
-  font: 2.3cqw monospace;
-  letter-spacing: .5cqw;
-  color: #b09a70;
+.eyebrow {
+  color: #75d9c5;
+  font: .95cqw monospace;
+  letter-spacing: .35cqw;
 }
 
-.overlay h1 {
-  font-size: 9cqw;
-  line-height: 1.4;
-  letter-spacing: 1cqw;
-  font-weight: 400;
-  margin: 4cqw 0;
+h1 {
+  margin: 1.3cqw 0;
+  font-size: 5.8cqw;
+  line-height: 1.15;
+  font-weight: 900;
+  letter-spacing: .2cqw;
   white-space: pre-line;
 }
 
-.overlay p {
-  margin: 0 0 5cqw;
-  white-space: pre-line;
-  font-size: 2.9cqw;
+#overlayDescription {
+  margin: 1.6cqw 0 0;
+  color: #9fb2c9;
+  font-size: 1.15cqw;
   line-height: 1.9;
-  color: #b4c0a6;
+  white-space: pre-line;
 }
 
-.overlay .action {
-  width: 100%;
-  min-height: 11cqw;
+.info-box {
+  padding: 2cqw;
+  border: 1px solid #7294af33;
+  background: #101f3099;
 }
 
-.overlay-note {
+.info-title {
+  color: #e0c591;
+  font-size: 1.05cqw;
+  letter-spacing: .15cqw;
+  margin-bottom: 1.2cqw;
+}
+
+#overlayInfo {
+  white-space: pre-line;
+  font-size: 1.13cqw;
+  line-height: 2.1;
+  color: #c0ccdb;
+}
+
+.main-button {
   width: 100%;
+  margin-top: 1.7cqw;
+  padding: 1.2cqw;
+  border: 1px solid #8cebcf;
+  background: #8cebcf;
+  color: #102c2b;
+  font-size: 1.35cqw;
+  font-weight: bold;
+  letter-spacing: .2cqw;
+}
+
+.secondary-button {
+  width: 100%;
+  margin-top: .8cqw;
+  padding: .8cqw;
+  border: 1px solid #60798d66;
+  background: transparent;
+  color: #9bb2c5;
+  font-size: .95cqw;
+}
+
+#rotateHint {
+  position: fixed;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  left: 15px;
+  right: 15px;
+  color: #8b9db6;
   text-align: center;
-  color: #768969;
-  font-size: 2.1cqw;
-  margin-top: 3cqw;
+  font-size: 13px;
+  display: none;
+  pointer-events: none;
+}
+
+@media (orientation: portrait) {
+  #rotateHint {
+    display: block;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  * {
     transition: none !important;
-    animation: none !important;
   }
 }
 </style>
@@ -423,1025 +444,1299 @@ footer {
 
 <body>
 <main id="game">
-  <div class="game-layout">
-    <header>
-      <div class="header-top">
-        <span>永安大樓 / 夜間管理室</span>
-        <span id="clock">02:13</span>
-      </div>
-      <div class="header-main">
-        <span class="title">末班電梯</span>
-        <span id="floor">01 F</span>
-      </div>
-    </header>
+  <canvas id="canvas" width="1280" height="720"
+    aria-label="午夜淘汰賽，橫向賽車遊戲"></canvas>
 
-    <section class="scene closed" id="scene" aria-label="電梯監視畫面">
-      <canvas id="view" width="720" height="512"
-        aria-label="乘客、證件與鏡面監視畫面。文字線索可於觀察頁查看。">
-      </canvas>
-
-      <div class="camera-label">
-        <span class="record-light"></span>
-        <span id="cameraText">CAM 04 / STANDBY</span>
-      </div>
-
-      <div class="scene-caption" id="sceneCaption">
-        等待管理員登入
-      </div>
-
-      <div class="scan-beam"></div>
-      <div class="grain"></div>
-      <div class="door door-left"></div>
-      <div class="door door-right"></div>
-    </section>
-
-    <section class="console">
-      <div class="resources">
-        <div class="resource">
-          <div class="resource-label">檢查電力</div>
-          <div class="resource-value" id="powerText">90%</div>
-          <div class="power-track"><div id="powerFill"></div></div>
-        </div>
-        <div class="resource">
-          <div class="resource-label">門禁完整度</div>
-          <div class="resource-value" id="securityText">3 / 3</div>
-        </div>
-        <div class="resource">
-          <div class="resource-label">住戶投訴</div>
-          <div class="resource-value" id="complaintText">0 / 3</div>
+  <div class="hud">
+    <div class="topbar">
+      <div class="rank-block">
+        <div class="label">目前名次</div>
+        <div class="rank-value">
+          <span id="rank">8</span><small id="total"> / 8</small>
         </div>
       </div>
 
-      <div class="shift-row">
-        <span id="shiftText">第一時段</span>
-        <span id="progressText">乘客 01 / 12</span>
+      <div class="elimination" id="eliminationBox">
+        <div class="label">淘汰最後一名</div>
+        <div id="timer">12.0</div>
       </div>
 
-      <nav class="tabs" aria-label="乘客檢查資料">
-        <button class="tab active" data-tab="card">證件</button>
-        <button class="tab" data-tab="observe">觀察</button>
-        <button class="tab" data-tab="rules">值勤規則</button>
-        <button class="tab" data-tab="log">紀錄</button>
-      </nav>
-
-      <div class="panel">
-        <div id="panelTitle"></div>
-        <p id="panelText"></p>
+      <div class="top-actions">
+        <button class="small-button" id="soundButton" aria-pressed="false">音效 關</button>
+        <button class="small-button" id="pauseButton">暫停</button>
       </div>
+    </div>
 
-      <div id="feedback" role="status" aria-live="polite">
-        等待值勤開始。
+    <div id="leaderboard"></div>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <div id="warning"></div>
+
+    <div class="bottom-left">
+      <div class="speed">
+        <span id="speed">000</span>
+        <span class="speed-unit">KM/H</span>
       </div>
+      <div class="control-note">拖曳畫面轉向 / 自動油門</div>
+    </div>
 
-      <div class="actions">
-        <button class="action reject" id="reject" disabled>
-          拒載
-          <small>阻擋異常</small>
-        </button>
-        <button class="action inspect" id="inspect" disabled>
-          深入檢查
-          <small id="inspectCost">消耗 18% 電力</small>
-        </button>
-        <button class="action" id="accept" disabled>
-          放行
-          <small>運送住戶</small>
-        </button>
+    <div class="bottom-center">
+      <div class="nitro-label">
+        <span>NITRO</span>
+        <span id="nitroText">65%</span>
       </div>
+      <div class="nitro-track"><div id="nitroFill"></div></div>
+      <div id="combo">貼身超車補充氮氣</div>
+    </div>
 
-      <footer>正常運送回充 10% / 正確拒載回充 4%</footer>
-    </section>
+    <button id="nitroButton" aria-label="按住使用氮氣">
+      <span>氮氣</span>
+      <small>按住釋放 / SPACE</small>
+    </button>
   </div>
 
+  <div id="countdown"></div>
+
   <section class="overlay" id="overlay">
-    <div class="overlay-tag" id="overlayTag">NIGHT SHIFT / 001</div>
-    <h1 id="overlayTitle">末班電梯</h1>
-    <p id="overlayText"></p>
-    <button class="action" id="overlayButton">開始值勤</button>
-    <div class="overlay-note" id="overlayNote">
-      720 × 1280 / 直式互動遊戲
+    <div>
+      <div class="eyebrow" id="overlayTag">MIDNIGHT / ELIMINATION</div>
+      <h1 id="overlayTitle">午夜
+淘汰賽</h1>
+      <p id="overlayDescription"></p>
+    </div>
+
+    <div class="info-box">
+      <div class="info-title" id="infoTitle">賽事規則</div>
+      <div id="overlayInfo"></div>
+      <button class="main-button" id="mainButton">開始比賽</button>
+      <button class="secondary-button" id="secondaryButton">進入全螢幕</button>
     </div>
   </section>
 </main>
+
+<div id="rotateHint">請將手機橫放，取得完整賽車畫面。</div>
 
 <script>
 "use strict";
 
 /*
-  單檔遊戲，無外部素材、SVG 或 Emoji。
+  1280 × 720 橫式手機賽車
+  單檔 HTML / CSS / Canvas / JavaScript
+  不使用外部圖片、SVG、Emoji 或第三方套件。
 
-  核心玩法：
-  1. 免費查看證件與肉眼線索。
-  2. 深入檢查花費電力，會提供可靠結果。
-  3. 正確運送或拒載可回充電力。
-  4. 放入異常損失門禁，誤拒正常人增加投訴。
-  5. 每四位乘客更新一次規則，更新時明確通知。
-  6. 每局重新產生角色、房號與出現順序。
+  手機：
+    在賽道區域左右拖曳轉向。
+    另一根手指按住右下角氮氣。
+
+  電腦：
+    A、D 或方向鍵轉向。
+    Space 使用氮氣。
+    P 暫停。
+
+  八名車手，每十二秒淘汰最後一名。
+  共七輪，存活到最後獲勝。
 */
 
 const $ = id => document.getElementById(id);
-const canvas = $("view");
+const canvas = $("canvas");
 const ctx = canvas.getContext("2d");
 
-const SCAN_COST = 18;
+const W = 1280;
+const H = 720;
+const HORIZON = 170;
+const ROAD_BOTTOM = 646;
+const ROAD_WIDTH = 475;
+const VIEW_DISTANCE = 1050;
+const ELIMINATION_INTERVAL = 12;
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+const lerp = (a, b, t) => a + (b - a) * t;
 
-const names = [
-  "林先生", "周小姐", "陳先生", "張小姐",
-  "黃先生", "許小姐", "吳先生", "何小姐",
-  "李先生", "鄭小姐", "郭先生", "沈小姐",
-  "梁先生", "蔡小姐", "江先生", "蘇小姐"
+const reducedMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)"
+).matches;
+
+let mode = "menu";
+let race = null;
+let previousTime = 0;
+let hudTime = 0;
+let menuTime = 0;
+let mainAction = null;
+
+const input = {
+  left: false,
+  right: false,
+  boostKey: false,
+  boostPointer: null,
+  steerPointer: null,
+  originScreenX: 0,
+  originCarX: 0,
+  targetX: 0
+};
+
+let audio = null;
+let engine = null;
+let engineGain = null;
+let soundEnabled = false;
+
+const carColors = [
+  "#ff767f", "#ffc96b", "#8e9dff",
+  "#e5ecf6", "#ce84df", "#6eb4fb", "#8ece88"
 ];
 
-const coats = [
-  "#46554a", "#56523f", "#444f60",
-  "#645344", "#3b5350", "#5b5a4c"
+const driverNames = [
+  "赤焰", "黃蜂", "幽影", "白夜", "紫電", "藍霧", "野狼"
 ];
 
-const normalLines = [
-  "今天加班到現在，終於能回家了。",
-  "家裡的燈還亮著，他們在等我。",
-  "我買了消夜，希望還沒涼。",
-  "麻煩了。這棟大樓晚上真安靜。",
-  "雨下得很大，你也早點下班。",
-  "我的鑰匙在包包裡，等一下就找到了。"
-];
+const buildings = Array.from({ length: 42 }, (_, i) => ({
+  x: i * 39 - 140,
+  width: 24 + ((i * 23) % 38),
+  height: 40 + ((i * 47) % 155),
+  tint: i % 3,
+  seed: i
+}));
 
-const unsettlingLines = [
-  "我們是不是已經見過面了？",
-  "你會記住每一個搭電梯的人嗎？",
-  "剛才那個人，真的有走出電梯嗎？",
-  "不要一直看監視器，看我就好。",
-  "你值夜班的時候，也會聽到敲門聲嗎？"
-];
-
-let state = null;
-let overlayAction = null;
-let timers = [];
-let audioContext = null;
-let soundEnabled = true;
-
-function random(list) {
-  return list[Math.floor(Math.random() * list.length)];
+function rand(min, max) {
+  return min + Math.random() * (max - min);
 }
 
-function integer(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+function activeDrivers() {
+  return race.drivers
+    .filter(driver => driver.alive)
+    .sort((a, b) => b.s - a.s || a.id - b.id);
 }
 
-function shuffle(list) {
-  const result = [...list];
-  for (let i = result.length - 1; i > 0; i--) {
-    const j = integer(0, i);
-    [result[i], result[j]] = [result[j], result[i]];
-  }
-  return result;
+function resetInput() {
+  input.left = false;
+  input.right = false;
+  input.boostKey = false;
+  input.boostPointer = null;
+  input.steerPointer = null;
+  $("nitroButton").classList.remove("pressed");
 }
 
-function later(callback, delay) {
-  const id = setTimeout(callback, delay);
-  timers.push(id);
-  return id;
-}
-
-function clearTimers() {
-  timers.forEach(clearTimeout);
-  timers = [];
-}
-
-function tone(frequency, duration, volume = .035, type = "sine") {
+function prepareAudio() {
   if (!soundEnabled) return;
 
   try {
-    if (!audioContext) {
-      const Audio = window.AudioContext || window.webkitAudioContext;
-      if (!Audio) return;
-      audioContext = new Audio();
+    if (!audio) {
+      const AudioClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioClass) return;
+
+      audio = new AudioClass();
+      engine = audio.createOscillator();
+      engineGain = audio.createGain();
+
+      engine.type = "triangle";
+      engineGain.gain.value = 0;
+
+      engine.connect(engineGain);
+      engineGain.connect(audio.destination);
+      engine.start();
     }
 
-    if (audioContext.state === "suspended") {
-      audioContext.resume().catch(() => {});
+    if (audio.state === "suspended") {
+      audio.resume().catch(() => {});
     }
+  } catch (_) {
+    soundEnabled = false;
+    $("soundButton").textContent = "音效 關";
+    $("soundButton").setAttribute("aria-pressed", "false");
+  }
+}
 
-    const oscillator = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-    const now = audioContext.currentTime;
+function beep(frequency, duration, gain = .025, type = "sine") {
+  if (!soundEnabled || !audio) return;
+
+  try {
+    const oscillator = audio.createOscillator();
+    const envelope = audio.createGain();
+    const now = audio.currentTime;
 
     oscillator.type = type;
-    oscillator.frequency.setValueAtTime(frequency, now);
+    oscillator.frequency.value = frequency;
 
-    gain.gain.setValueAtTime(volume, now);
-    gain.gain.exponentialRampToValueAtTime(.001, now + duration);
+    envelope.gain.setValueAtTime(gain, now);
+    envelope.gain.exponentialRampToValueAtTime(.001, now + duration);
 
-    oscillator.connect(gain);
-    gain.connect(audioContext.destination);
+    oscillator.connect(envelope);
+    envelope.connect(audio.destination);
     oscillator.start(now);
     oscillator.stop(now + duration);
+
     oscillator.onended = () => {
       oscillator.disconnect();
-      gain.disconnect();
+      envelope.disconnect();
     };
-  } catch (_) {
-    // 音效不可用時，遊戲仍可正常運作。
-  }
+  } catch (_) {}
 }
 
-function generateQueue() {
-  const availableNames = shuffle(names);
+function updateAudio() {
+  if (!audio || !engine || !engineGain) return;
 
-  const stages = [
-    shuffle(["normal", "normal", "eyes", "card"]),
-    shuffle(["normal", "normal", "reflection", "card"]),
-    shuffle(["normal", "normal", "smile", "reflection"])
-  ];
+  const playing = soundEnabled && mode === "racing";
+  const speed = race ? race.player.speed : 0;
 
-  return stages.flatMap((types, stageIndex) => {
-    return types.map(type => {
-      const floor = integer(2, 12);
-      let cardFloor = floor;
-
-      if (type === "card") {
-        while (cardFloor === floor) {
-          cardFloor = integer(2, 12);
-        }
-      }
-
-      return {
-        name: availableNames.pop(),
-        floor,
-        cardFloor,
-        room: integer(1, 6),
-        type,
-        stage: stageIndex + 1,
-        coat: random(coats),
-        hair: random(["#171e18", "#34382e", "#46473a"]),
-        skin: random(["#aaa18a", "#b5a68b", "#928c78"]),
-        glasses: Math.random() > .65,
-        bag: Math.random() > .5,
-        tired: Math.random() > .5,
-        // 台詞不能當作異常判定依據。
-        quote: random(
-          Math.random() > .55 ? unsettlingLines : normalLines
-        ),
-        scanned: false
-      };
-    });
-  });
-}
-
-function passenger() {
-  return state.queue[state.index];
-}
-
-function stageName(stage) {
-  return ["第一時段", "第二時段", "最後時段"][stage - 1];
-}
-
-function ruleText(stage) {
-  let text =
-    "01  目的樓層須與證件房號前兩碼一致。\n" +
-    "02  雙眼持續發紅光者，拒載。\n";
-
-  if (stage >= 2) {
-    text += "03  無法在鏡中形成倒影者，拒載。\n";
-  }
-
-  if (stage >= 3) {
-    text += "04  嘴角異常裂開並持續咧笑者，拒載。\n";
-  }
-
-  text += "\n全部符合者應放行。穿著、疲倦與奇怪台詞不是拒載理由。";
-
-  if (stage >= 2) {
-    text += "\n鏡面起霧時無法肉眼確認倒影；深入檢查可除霧。";
-  }
-
-  return text;
-}
-
-function observationText(p) {
-  const lines = [];
-
-  lines.push(
-    p.type === "eyes"
-      ? "雙眼持續泛著紅光，燈光變暗時依然清楚。"
-      : "瞳孔顏色正常，沒有發光。"
+  engineGain.gain.setTargetAtTime(
+    playing ? .016 : 0,
+    audio.currentTime,
+    .1
   );
 
-  lines.push(
-    p.type === "smile"
-      ? "嘴角不自然地裂向兩側，笑容一直沒有放鬆。"
-      : p.tired
-        ? "眼下有陰影，表情疲倦；嘴角形狀正常。"
-        : "表情平靜，嘴角形狀正常。"
+  engine.frequency.setTargetAtTime(
+    45 + speed * .48,
+    audio.currentTime,
+    .08
   );
-
-  if (p.stage >= 2) {
-    if (!p.scanned) {
-      lines.push("背後鏡面覆著厚霧，目前無法確認倒影。");
-    } else {
-      lines.push(
-        p.type === "reflection"
-          ? "除霧完成：乘客站在鏡前，鏡裡卻空無一人。"
-          : "除霧完成：鏡內有與本人一致的倒影。"
-      );
-    }
-  } else {
-    lines.push("鏡面清晰，可見乘客倒影。");
-  }
-
-  if (p.scanned) {
-    lines.push("\n檢查報告：" + reasonText(p));
-  } else {
-    lines.push("\n" + (p.bag ? "隨身物品：舊提袋。" : "沒有攜帶大型物品。"));
-  }
-
-  return lines.join("\n");
 }
 
-function reasonText(p) {
-  switch (p.type) {
-    case "eyes":
-      return "確認雙眼異常發光，依規則應拒載。";
-    case "card":
-      return "證件屬於 " + p.cardFloor + " 樓，目的地卻是 " +
-        p.floor + " 樓，依規則應拒載。";
-    case "reflection":
-      return "確認沒有倒影，依規則應拒載。";
-    case "smile":
-      return "確認持續異常咧嘴，依規則應拒載。";
-    default:
-      return "樓層與所有適用檢查項目皆正常，應予放行。";
-  }
-}
-
-function updateStats() {
-  $("powerText").textContent = state.power + "%";
-  $("powerFill").style.width = state.power + "%";
-  $("powerText").classList.toggle("danger", state.power < SCAN_COST);
-
-  $("securityText").textContent = state.security + " / 3";
-  $("securityText").classList.toggle("danger", state.security <= 1);
-
-  $("complaintText").textContent = state.complaints + " / 3";
-  $("complaintText").classList.toggle("danger", state.complaints >= 2);
-
-  $("shiftText").textContent = stageName(passenger().stage);
-  $("progressText").textContent =
-    "乘客 " + String(state.index + 1).padStart(2, "0") + " / 12";
-
-  const totalMinutes = 133 + state.index * 18;
-  $("clock").textContent =
-    String(Math.floor(totalMinutes / 60)).padStart(2, "0") +
-    ":" + String(totalMinutes % 60).padStart(2, "0");
-}
-
-function updateButtons() {
-  const blocked = !state || state.busy || state.ended;
-  const p = state ? passenger() : null;
-
-  $("accept").disabled = blocked;
-  $("reject").disabled = blocked;
-  $("inspect").disabled =
-    blocked || p.scanned || state.power < SCAN_COST;
-
-  $("inspectCost").textContent = p && p.scanned
-    ? "檢查完成"
-    : state && state.power < SCAN_COST
-      ? "電力不足"
-      : "消耗 18% 電力";
-}
-
-function renderPanel() {
-  if (!state) return;
-
-  const p = passenger();
-
-  document.querySelectorAll(".tab").forEach(button => {
-    const active = button.dataset.tab === state.tab;
-    button.classList.toggle("active", active);
-    button.setAttribute("aria-pressed", String(active));
-  });
-
-  if (state.tab === "card") {
-    $("panelTitle").textContent = p.name + " / 住戶證";
-    $("panelText").textContent =
-      "證件房號：" +
-      String(p.cardFloor).padStart(2, "0") + "-" +
-      String(p.room).padStart(2, "0") +
-      "\n目的樓層：" + String(p.floor).padStart(2, "0") + " F" +
-      "\n「" + p.quote + "」";
-  }
-
-  if (state.tab === "observe") {
-    $("panelTitle").textContent =
-      p.scanned ? "深入檢查 / 完整結果" : "肉眼觀察 / 不耗電";
-    $("panelText").textContent = observationText(p);
-  }
-
-  if (state.tab === "rules") {
-    $("panelTitle").textContent =
-      stageName(p.stage) + " / 有效值勤規則";
-    $("panelText").textContent = ruleText(p.stage);
-  }
-
-  if (state.tab === "log") {
-    $("panelTitle").textContent = "本夜判斷紀錄";
-    $("panelText").textContent = state.log.length
-      ? [...state.log].reverse().join("\n\n")
-      : "尚無紀錄。\n正確放行回充 10% 電力。\n正確拒載回充 4% 電力。\n深入檢查的結果可信。";
-  }
-
-  document.querySelector(".panel").scrollTop = 0;
-}
-
-function feedback(text, kind = "normal") {
-  $("feedback").textContent = text;
-  $("feedback").style.color = {
-    normal: "#b3bea4",
-    good: "#d7d9b1",
-    bad: "#e4a07b"
-  }[kind];
-}
-
-function showOverlay(tag, title, text, button, action, note = "") {
+function showOverlay(tag, title, description, info, button, action) {
   $("overlayTag").textContent = tag;
   $("overlayTitle").textContent = title;
-  $("overlayText").textContent = text;
-  $("overlayButton").textContent = button;
-  $("overlayNote").textContent = note;
-  overlayAction = action;
+  $("overlayDescription").textContent = description;
+  $("overlayInfo").textContent = info;
+  $("mainButton").textContent = button;
+  mainAction = action;
   $("overlay").hidden = false;
-  $("overlayButton").focus();
 }
 
-function beginGame() {
-  clearTimers();
+function startRace() {
+  resetInput();
+  prepareAudio();
 
-  state = {
-    queue: generateQueue(),
-    index: 0,
-    power: 90,
-    security: 3,
-    complaints: 0,
-    correct: 0,
+  const player = {
+    id: 0,
+    name: "你",
+    x: 0,
+    s: 0,
+    speed: 0,
+    color: "#8affd8",
+    alive: true,
+    steer: 0,
+    hitCooldown: 0
+  };
+
+  const drivers = [player];
+
+  for (let i = 0; i < 7; i++) {
+    drivers.push({
+      id: i + 1,
+      name: driverNames[i],
+      x: [-.66, 0, .66][i % 3],
+      s: 27 + Math.floor(i / 3) * 32,
+      speed: 0,
+      cruise: 211 + i * 2.8 + rand(-4, 4),
+      color: carColors[i],
+      alive: true,
+      lane: [-.66, 0, .66][i % 3],
+      laneTimer: rand(2, 5),
+      phase: rand(0, Math.PI * 2),
+      hitCooldown: 0,
+      passed: false,
+      closePass: false,
+      collided: false
+    });
+  }
+
+  race = {
+    player,
+    drivers,
+    elapsed: 0,
+    countdown: 3.2,
+    lastCountdown: 4,
+    nextElimination: ELIMINATION_INTERVAL,
+    round: 0,
+    nitro: 65,
+    boosting: false,
+    boostLock: false,
+    overtakes: 0,
+    nearMisses: 0,
+    collisions: 0,
+    topSpeed: 0,
     combo: 0,
-    bestCombo: 0,
-    scans: 0,
-    tab: "rules",
-    busy: true,
-    ended: false,
-    log: []
+    comboTimer: 0,
+    toast: "",
+    toastTimer: 0,
+    shake: 0,
+    flash: 0,
+    rank: 8,
+    finishRank: 8
   };
 
+  mode = "countdown";
   $("overlay").hidden = true;
-  $("scene").classList.remove("scanning");
-  $("scene").classList.add("closed");
-
-  showStage(1);
+  $("countdown").textContent = "3";
+  $("toast").classList.remove("show");
+  $("warning").textContent = "";
+  updateHUD();
 }
 
-function showStage(stage) {
-  state.busy = true;
-  state.tab = "rules";
-  updateStats();
-  updateButtons();
-  renderPanel();
+function notify(text, seconds = 2) {
+  if (!race) return;
+  race.toast = text;
+  race.toastTimer = seconds;
+  $("toast").textContent = text;
+  $("toast").classList.add("show");
+}
 
-  const texts = {
-    1:
-      "今晚共有十二位乘客，分三個時段。\n\n" +
-      "先核對房號與目的樓層，再觀察雙眼。\n" +
-      "奇怪的話不代表對方是怪物。\n\n" +
-      "深入檢查每次消耗 18% 電力。\n" +
-      "只在需要時使用，替後半夜留下餘裕。",
-    2:
-      "管理室收到新的異常通報。\n\n" +
-      "新增規則：沒有鏡中倒影者，拒載。\n\n" +
-      "鏡面開始起霧，肉眼無法判讀倒影。\n" +
-      "深入檢查可以除霧並提供完整結果。\n" +
-      "先找免費線索，再決定是否花費電力。",
-    3:
-      "走廊的腳步聲越來越密。\n\n" +
-      "新增規則：嘴角異常裂開、持續咧笑者，拒載。\n\n" +
-      "先前規則全部繼續有效。\n" +
-      "還有四位乘客。撐過去，就能交班。"
-  };
+function pauseRace() {
+  if (mode !== "racing" && mode !== "countdown") return;
+
+  race.resumeMode = mode;
+  mode = "paused";
+  resetInput();
+
+  $("countdown").textContent = "";
+
+  $("infoTitle").textContent = "操作方式";
 
   showOverlay(
-    "OFFICIAL NOTICE / 0" + stage,
-    stage === 1 ? "夜班開始" : "規則更新",
-    texts[stage],
-    "確認並開門",
+    "RACE PAUSED",
+    "比賽暫停",
+    "比賽時間已停止。\n準備好後，繼續爭取下一個名次。",
+    "左右拖曳畫面：轉向\n按住氮氣按鈕：加速\n電腦：A / D、方向鍵、Space",
+    "繼續比賽",
     () => {
+      mode = race.resumeMode;
       $("overlay").hidden = true;
-      loadPassenger();
-    },
-    "規則更新皆以此通知為準"
-  );
-}
-
-function loadPassenger() {
-  state.busy = true;
-  state.tab = "card";
-
-  $("floor").textContent = "01 F";
-  $("cameraText").textContent = "CAM 04 / LIVE";
-  $("sceneCaption").textContent = "一樓大廳 / 乘客等待進入";
-
-  updateStats();
-  renderPanel();
-  updateButtons();
-  drawScene();
-
-  feedback(
-    passenger().stage >= 2
-      ? "鏡面起霧。先核對證件與外觀，再決定是否深入檢查。"
-      : "證件與肉眼觀察都不耗電。先找出明確矛盾。"
+      prepareAudio();
+    }
   );
 
-  later(() => {
-    $("scene").classList.remove("closed");
-    tone(620, .18);
-    later(() => {
-      state.busy = false;
-      updateButtons();
-      $("accept").focus();
-    }, 550);
-  }, 150);
+  updateAudio();
 }
 
-function inspectPassenger() {
-  if (!state || state.busy || state.ended) return;
+function endRace(won, place) {
+  mode = "finished";
+  race.finishRank = place;
+  resetInput();
+  $("countdown").textContent = "";
+  $("warning").textContent = "";
 
-  const p = passenger();
-  if (p.scanned || state.power < SCAN_COST) return;
+  let best = 8;
 
-  state.busy = true;
-  state.power -= SCAN_COST;
-  state.scans++;
+  try {
+    const stored = Number(localStorage.getItem("midnight-best-rank"));
+    if (stored >= 1 && stored <= 8) best = stored;
 
-  updateStats();
-  updateButtons();
+    best = Math.min(best, place);
+    localStorage.setItem("midnight-best-rank", String(best));
+  } catch (_) {
+    best = place;
+  }
 
-  $("scene").classList.add("scanning");
-  $("cameraText").textContent = "CAM 04 / VERIFYING";
-  feedback("檢查中：核對證件、瞳孔、表情與鏡面。");
-  tone(180, .8, .025, "triangle");
+  $("infoTitle").textContent = "本場成績";
 
-  later(() => {
-    p.scanned = true;
-    state.busy = false;
-    state.tab = "observe";
+  showOverlay(
+    won ? "LAST DRIVER STANDING" : "ELIMINATED",
+    won ? "午夜冠軍" : "遭到淘汰",
+    won
+      ? "最後一個檢查點，只剩下你。\n這條路，今晚屬於你。"
+      : "檢查點關閉時，你落在最後一名。\n提前存好氮氣，下一輪再超回來。",
+    "最終名次：第 " + place + " 名\n" +
+    "完成超車：" + race.overtakes + " 次\n" +
+    "貼身超車：" + race.nearMisses + " 次\n" +
+    "最高速度：" + Math.round(race.topSpeed) + " km/h\n" +
+    "最佳名次：第 " + best + " 名",
+    "再跑一場",
+    startRace
+  );
 
-    $("scene").classList.remove("scanning");
-    $("cameraText").textContent = "CAM 04 / VERIFIED";
+  updateHUD();
+  updateAudio();
+  beep(won ? 780 : 120, .5, .04, "triangle");
+}
 
-    drawScene();
-    renderPanel();
-    updateButtons();
+function eliminateLast() {
+  const order = activeDrivers();
+  const eliminated = order[order.length - 1];
 
-    feedback(
-      "已消耗 18% 電力。檢查結果已列於觀察頁，本次不會重複扣電。"
+  eliminated.alive = false;
+  race.round++;
+
+  if (eliminated.id === 0) {
+    endRace(false, order.length);
+    return;
+  }
+
+  notify(
+    eliminated.name + " 已淘汰 / 剩餘 " + (order.length - 1) + " 台",
+    2.5
+  );
+
+  beep(230, .2, .025, "triangle");
+
+  const remaining = activeDrivers();
+
+  if (remaining.length === 1) {
+    endRace(true, 1);
+    return;
+  }
+
+  race.nextElimination += ELIMINATION_INTERVAL;
+}
+
+function curveAt(s) {
+  return Math.sin(s / 760) * .68 +
+    Math.sin(s / 1690 + .5) * .33;
+}
+
+function worldCenter(s) {
+  return Math.sin(s / 760) * 190 +
+    Math.sin(s / 1690 + .5) * 270;
+}
+
+function update(dt) {
+  if (mode === "menu") {
+    menuTime += dt;
+    return;
+  }
+
+  if (!race) return;
+
+  if (mode === "countdown") {
+    race.countdown -= dt;
+    const number = Math.ceil(race.countdown);
+
+    if (number !== race.lastCountdown && number > 0) {
+      race.lastCountdown = number;
+      $("countdown").textContent = String(number);
+      beep(430, .1);
+    }
+
+    if (race.countdown <= 0) {
+      mode = "racing";
+      $("countdown").textContent = "";
+      notify("起跑 / 每 12 秒淘汰最後一名", 2.5);
+      beep(850, .3);
+    }
+
+    return;
+  }
+
+  if (mode !== "racing") return;
+
+  const player = race.player;
+  race.elapsed += dt;
+
+  race.toastTimer = Math.max(0, race.toastTimer - dt);
+  race.shake = Math.max(0, race.shake - dt * 15);
+  race.flash = Math.max(0, race.flash - dt * 2);
+  race.comboTimer = Math.max(0, race.comboTimer - dt);
+
+  if (race.comboTimer === 0) race.combo = 0;
+  if (race.toastTimer === 0) $("toast").classList.remove("show");
+
+  player.hitCooldown = Math.max(0, player.hitCooldown - dt);
+
+  let steering = Number(input.right) - Number(input.left);
+
+  if (input.steerPointer !== null) {
+    steering = clamp((input.targetX - player.x) * 5, -1, 1);
+  }
+
+  player.steer = lerp(player.steer, steering, Math.min(1, dt * 12));
+
+  const boostHeld = input.boostKey || input.boostPointer !== null;
+
+  if (!boostHeld) race.boostLock = false;
+
+  race.boosting =
+    boostHeld &&
+    race.nitro > 0 &&
+    !race.boostLock &&
+    Math.abs(player.x) < 1.08;
+
+  if (race.boosting) {
+    race.nitro = Math.max(0, race.nitro - 22 * dt);
+
+    if (race.nitro <= 0) {
+      race.boostLock = true;
+    }
+  } else {
+    race.nitro = Math.min(100, race.nitro + 3.7 * dt);
+  }
+
+  const offroad = Math.abs(player.x) > 1;
+  const targetSpeed = offroad ? 125 : race.boosting ? 326 : 244;
+  const acceleration = targetSpeed > player.speed ? 86 : 135;
+
+  player.speed += clamp(
+    targetSpeed - player.speed,
+    -acceleration * dt,
+    acceleration * dt
+  );
+
+  const steeringPower = .45 + player.speed / 255;
+
+  player.x += player.steer * steeringPower * dt;
+  player.x -= curveAt(player.s) * (player.speed / 244) * .20 * dt;
+  player.x = clamp(player.x, -1.35, 1.35);
+  player.s += player.speed * .60 * dt;
+
+  race.topSpeed = Math.max(race.topSpeed, player.speed);
+
+  for (const driver of race.drivers) {
+    if (driver.id === 0 || !driver.alive) continue;
+
+    driver.hitCooldown = Math.max(0, driver.hitCooldown - dt);
+    driver.laneTimer -= dt;
+
+    if (driver.laneTimer <= 0) {
+      driver.laneTimer = rand(2.6, 5.5);
+      driver.lane = [-.69, -.34, .0, .34, .69][Math.floor(rand(0, 5))];
+    }
+
+    let aiTarget = driver.cruise +
+      Math.sin(race.elapsed * .7 + driver.phase) * 8;
+
+    // 電腦車會避讓前車並嘗試換線，不直接傳送位置。
+    for (const other of race.drivers) {
+      if (other === driver || !other.alive) continue;
+
+      const ahead = other.s - driver.s;
+      const lateral = Math.abs(other.x - driver.x);
+
+      if (ahead > 0 && ahead < 32 && lateral < .22) {
+        const direction = driver.x < other.x ? -1 : 1;
+        driver.lane = clamp(driver.x + direction * .42, -.78, .78);
+        aiTarget -= 18;
+      }
+    }
+
+    driver.x += clamp(driver.lane - driver.x, -.48 * dt, .48 * dt);
+    driver.x += Math.sin(race.elapsed + driver.phase) * .008 * dt;
+    driver.x = clamp(driver.x, -.87, .87);
+
+    driver.speed += clamp(
+      aiTarget - driver.speed,
+      -95 * dt,
+      69 * dt
     );
 
-    tone(740, .12);
-  }, 1100);
-}
+    const before = driver.s - player.s;
+    driver.s += driver.speed * .60 * dt;
+    const after = driver.s - player.s;
+    const lateral = Math.abs(driver.x - player.x);
 
-function decide(allow) {
-  if (!state || state.busy || state.ended) return;
+    // 近距離並排時記錄是否符合貼身超車條件。
+    if (Math.abs(after) < 17 && lateral > .16 && lateral < .34) {
+      driver.closePass = true;
+    }
 
-  state.busy = true;
-  updateButtons();
+    // 碰撞只減速，短暫冷卻避免同一接觸連續扣速。
+    if (
+      Math.abs(after) < 15 &&
+      lateral < .155 &&
+      player.hitCooldown <= 0 &&
+      driver.hitCooldown <= 0
+    ) {
+      player.speed = Math.max(85, player.speed * .67);
+      driver.speed *= .86;
 
-  const p = passenger();
-  const safe = p.type === "normal";
-  const success = allow === safe;
+      const push = player.x >= driver.x ? 1 : -1;
+      player.x = clamp(player.x + push * .10, -1.35, 1.35);
 
-  let result;
+      player.hitCooldown = 1.1;
+      driver.hitCooldown = 1.1;
+      driver.collided = true;
+      driver.closePass = false;
 
-  if (success) {
-    state.correct++;
-    state.combo++;
-    state.bestCombo = Math.max(state.bestCombo, state.combo);
+      race.collisions++;
+      race.combo = 0;
+      race.comboTimer = 0;
+      race.shake = 6;
+      race.flash = .28;
 
-    const recovery = allow ? 10 : 4;
-    state.power = Math.min(100, state.power + recovery);
+      notify("發生碰撞 / 速度下降", 1.1);
+      beep(78, .16, .035, "sawtooth");
+    }
 
-    result = allow
-      ? "正常住戶安全抵達。電力回充 10%。"
-      : "異常被擋在門外。電力回充 4%。";
+    if (after > 25 && before > 0) {
+      driver.passed = false;
+      driver.collided = false;
+      driver.closePass = false;
+    }
 
-    feedback(result + " " + reasonText(p), "good");
-    tone(480, .16);
-  } else {
-    state.combo = 0;
+    // 真正超過一段距離後才算完成超車。
+    if (after < -18 && !driver.passed) {
+      driver.passed = true;
+      race.overtakes++;
 
-    if (allow) {
-      state.security--;
-      result = "異常進入大樓，門禁完整度下降。";
-      feedback(result + " " + reasonText(p), "bad");
-      tone(68, .7, .06, "sawtooth");
-    } else {
-      state.complaints++;
-      result = "你拒絕了正常住戶，收到一件投訴。";
-      feedback(result + " " + reasonText(p), "bad");
-      tone(130, .4, .035, "triangle");
+      if (driver.closePass && !driver.collided) {
+        race.nearMisses++;
+        race.combo++;
+        race.comboTimer = 5;
+        race.nitro = Math.min(100, race.nitro + 16);
+        notify("貼身超車 / 氮氣 +16%", 1.7);
+        beep(700, .11);
+      } else {
+        race.nitro = Math.min(100, race.nitro + 5);
+        notify("超車成功 / 氮氣 +5%", 1.2);
+      }
     }
   }
 
-  state.log.push(
-    String(state.index + 1).padStart(2, "0") + " / " + p.name +
-    " / " + (allow ? "放行" : "拒載") +
-    "\n" + (success ? "正確。" : "誤判。") + reasonText(p)
-  );
+  const order = activeDrivers();
+  race.rank = order.findIndex(driver => driver.id === 0) + 1;
 
-  updateStats();
-
-  if (state.tab === "log") renderPanel();
-
-  $("scene").classList.add("closed");
-  $("floor").textContent = allow
-    ? String(p.floor).padStart(2, "0") + " F"
-    : "01 F";
-
-  $("sceneCaption").textContent = allow
-    ? "門已關閉 / 電梯上行"
-    : "門已關閉 / 乘客留在大廳";
-
-  later(() => {
-    if (state.security <= 0) {
-      finish("breach");
-      return;
-    }
-
-    if (state.complaints >= 3) {
-      finish("dismissed");
-      return;
-    }
-
-    if (state.index === state.queue.length - 1) {
-      finish("complete");
-      return;
-    }
-
-    const previousStage = p.stage;
-    state.index++;
-
-    if (passenger().stage !== previousStage) {
-      showStage(passenger().stage);
-    } else {
-      loadPassenger();
-    }
-  }, 3200);
-}
-
-function finish(type) {
-  state.ended = true;
-  state.busy = true;
-  updateButtons();
-
-  const total = state.index + 1;
-  let title;
-  let story;
-
-  if (type === "breach") {
-    title = "門外已經沒有人";
-    story =
-      "第三次門禁警報響起後，監視器黑了。\n" +
-      "有人在你身後說：「這次換我值班。」";
-    $("floor").textContent = "13 F";
-  } else if (type === "dismissed") {
-    title = "你的夜班結束了";
-    story =
-      "管理處收到了三件住戶投訴。\n" +
-      "你被要求交出鑰匙，立即離開操作台。";
-  } else if (state.correct === 12) {
-    title = "全員核對完畢";
-    story =
-      "天亮了。十二次判斷，沒有一次失誤。\n" +
-      "接班簿裡多了一行字：「明晚還是你嗎？」";
-  } else {
-    title = "你撐到了天亮";
-    story =
-      "接班的人敲了敲玻璃，遞來一杯熱茶。\n" +
-      "你沒有回頭看電梯，直接走出了大樓。";
+  if (race.elapsed >= race.nextElimination) {
+    eliminateLast();
   }
-
-  const report =
-    "\n\n正確判斷：" + state.correct + " / " + total +
-    "\n最長連續正確：" + state.bestCombo +
-    "\n深入檢查：" + state.scans + " 次" +
-    "\n剩餘電力：" + state.power + "%" +
-    "\n門禁完整度：" + state.security + " / 3" +
-    "\n住戶投訴：" + state.complaints + " / 3";
-
-  showOverlay(
-    type === "complete" ? "SHIFT COMPLETE" : "SHIFT TERMINATED",
-    title,
-    story + report,
-    "再值一晚",
-    beginGame,
-    "每局重新排列乘客、身分與房號"
-  );
 }
 
-/* Canvas 場景：全部由程式繪製。 */
+function project(z, x = 0, cameraS = 0) {
+  const perspective = 1 / (1 + z / 210);
+  const roadShift =
+    (worldCenter(cameraS + z) - worldCenter(cameraS)) * perspective;
 
-function rectangle(x, y, w, h, color) {
-  ctx.fillStyle = color;
-  ctx.fillRect(x, y, w, h);
+  return {
+    x: W / 2 + roadShift + x * ROAD_WIDTH * perspective,
+    y: HORIZON + (ROAD_BOTTOM - HORIZON) * perspective,
+    scale: perspective,
+    half: ROAD_WIDTH * perspective
+  };
 }
 
-function ellipse(x, y, rx, ry, color) {
+function polygon(points, color) {
   ctx.fillStyle = color;
   ctx.beginPath();
-  ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+  points.forEach((point, i) => {
+    if (i === 0) ctx.moveTo(point[0], point[1]);
+    else ctx.lineTo(point[0], point[1]);
+  });
+  ctx.closePath();
   ctx.fill();
 }
 
-function line(x1, y1, x2, y2, color, width = 1) {
-  ctx.strokeStyle = color;
-  ctx.lineWidth = width;
-  ctx.beginPath();
-  ctx.moveTo(x1, y1);
-  ctx.lineTo(x2, y2);
-  ctx.stroke();
+function roadStrip(a, b, left, right, color) {
+  polygon([
+    [a.x + a.half * left, a.y],
+    [a.x + a.half * right, a.y],
+    [b.x + b.half * right, b.y],
+    [b.x + b.half * left, b.y]
+  ], color);
 }
 
-function drawPerson(p, x, y, scale, reflection = false) {
+function drawBackground(cameraS) {
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, "#080d20");
+  sky.addColorStop(.34, "#28314c");
+  sky.addColorStop(.55, "#162a37");
+  sky.addColorStop(1, "#090f19");
+
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.fillStyle = "#aac8cc";
+  ctx.beginPath();
+  ctx.arc(947, 86, 22, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#152238";
+  ctx.beginPath();
+  ctx.arc(955, 80, 22, 0, Math.PI * 2);
+  ctx.fill();
+
+  const shift = Math.sin(cameraS / 2100) * 25;
+
+  for (const building of buildings) {
+    const x = building.x + shift;
+    const base = HORIZON + 38;
+
+    ctx.fillStyle = ["#111c30", "#142138", "#19263c"][building.tint];
+    ctx.fillRect(x, base - building.height, building.width, building.height);
+
+    for (let row = 0; row < 13; row++) {
+      for (let column = 0; column < 4; column++) {
+        const hash = (building.seed * 37 + row * 17 + column * 29) % 11;
+        if (hash > 4) continue;
+
+        const wx = x + 6 + column * 9;
+        const wy = base - building.height + 10 + row * 12;
+
+        if (wx < x + building.width - 4 && wy < base - 4) {
+          ctx.fillStyle = hash < 2 ? "#ba95604d" : "#6b9bc13d";
+          ctx.fillRect(wx, wy, 3, 5);
+        }
+      }
+    }
+  }
+
+  ctx.fillStyle = "#0c1923";
+  ctx.fillRect(0, HORIZON + 35, W, H);
+}
+
+function drawRoad(cameraS) {
+  const steps = 95;
+
+  for (let i = steps; i > 0; i--) {
+    const farZ = (i / steps) * VIEW_DISTANCE;
+    const nearZ = ((i - 1) / steps) * VIEW_DISTANCE - 35;
+
+    const a = project(farZ, 0, cameraS);
+    const b = project(nearZ, 0, cameraS);
+
+    const alternate = Math.floor((cameraS + farZ) / 45) % 2;
+
+    roadStrip(a, b, -1.40, 1.40, alternate ? "#142831" : "#12232c");
+    roadStrip(a, b, -1.10, 1.10, alternate ? "#41686d" : "#cad0bb");
+    roadStrip(a, b, -1.02, 1.02, alternate ? "#202b39" : "#222e3c");
+
+    roadStrip(a, b, -.985, -.975, "#92d5c288");
+    roadStrip(a, b, .975, .985, "#92d5c288");
+
+    if (Math.floor((cameraS + farZ) / 32) % 2 === 0) {
+      roadStrip(a, b, -.338, -.325, "#adbbc360");
+      roadStrip(a, b, .325, .338, "#adbbc360");
+    }
+
+    roadStrip(a, b, -1.30, -1.28, "#314a5e");
+    roadStrip(a, b, 1.28, 1.30, "#314a5e");
+  }
+
+  // 規律路燈，依世界距離移動。
+  const start = Math.floor(cameraS / 115) * 115;
+
+  for (let i = 10; i >= 0; i--) {
+    const z = start + i * 115 - cameraS;
+    if (z < 10 || z > VIEW_DISTANCE) continue;
+
+    for (const side of [-1, 1]) {
+      const p = project(z, side * 1.32, cameraS);
+      const poleHeight = 145 * p.scale;
+
+      ctx.strokeStyle = "#668793";
+      ctx.lineWidth = Math.max(1, 4 * p.scale);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x, p.y - poleHeight);
+      ctx.lineTo(p.x - side * 26 * p.scale, p.y - poleHeight);
+      ctx.stroke();
+
+      ctx.fillStyle = "#b9f3df";
+      ctx.fillRect(
+        p.x - side * 26 * p.scale - 5 * p.scale,
+        p.y - poleHeight,
+        11 * p.scale,
+        3 * p.scale
+      );
+    }
+  }
+}
+
+function drawCar(driver, x, y, scale, isPlayer, boosting) {
+  const width = 73 * scale;
+  const height = 116 * scale;
+
   ctx.save();
   ctx.translate(x, y);
-  ctx.scale(scale, scale);
 
-  if (reflection) {
-    ctx.globalAlpha = .52;
+  if (isPlayer) {
+    ctx.rotate(driver.steer * .07);
   }
 
-  // 地面陰影。
-  ellipse(0, 374, 102, 17, "#0008");
-
-  // 腿。
-  rectangle(-43, 300, 36, 78, "#1b241d");
-  rectangle(7, 300, 36, 78, "#172018");
-
-  // 外套。
-  const coatGradient = ctx.createLinearGradient(-90, 0, 90, 0);
-  coatGradient.addColorStop(0, "#202b24");
-  coatGradient.addColorStop(.52, p.coat);
-  coatGradient.addColorStop(1, "#1b271f");
-
-  ctx.fillStyle = coatGradient;
+  ctx.fillStyle = "#0007";
   ctx.beginPath();
-  ctx.moveTo(-38, 111);
-  ctx.lineTo(38, 111);
-  ctx.lineTo(78, 139);
-  ctx.lineTo(96, 320);
-  ctx.lineTo(-96, 320);
-  ctx.lineTo(-78, 139);
-  ctx.closePath();
+  ctx.ellipse(0, 9 * scale, width * .77, height * .22, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  // 脖子與襯衫。
-  rectangle(-14, 88, 28, 39, p.skin);
+  if (boosting) {
+    const flame = reducedMotion ? 45 : 38 + Math.random() * 30;
 
-  ctx.fillStyle = "#9b9c84";
-  ctx.beginPath();
-  ctx.moveTo(-29, 112);
-  ctx.lineTo(0, 131);
-  ctx.lineTo(29, 112);
-  ctx.lineTo(0, 214);
-  ctx.closePath();
-  ctx.fill();
+    for (const side of [-1, 1]) {
+      polygon([
+        [side * width * .23 - 7 * scale, 1],
+        [side * width * .23 + 7 * scale, 1],
+        [side * width * .23, flame * scale]
+      ], "#71e4ff");
 
-  line(0, 213, 0, 319, "#a7b99b44", 1);
-  line(-57, 155, -65, 296, "#121d1788", 2);
-  line(57, 155, 65, 296, "#121d1788", 2);
-
-  // 頭髮與臉。
-  ellipse(0, 54, 45, 57, p.hair);
-  ellipse(-39, 64, 7, 13, p.skin);
-  ellipse(39, 64, 7, 13, p.skin);
-
-  const skinGradient = ctx.createLinearGradient(-36, 0, 36, 0);
-  skinGradient.addColorStop(0, "#726f5d");
-  skinGradient.addColorStop(.55, p.skin);
-  skinGradient.addColorStop(1, "#777764");
-  ellipse(0, 58, 37, 48, skinGradient);
-
-  ctx.fillStyle = p.hair;
-  ctx.beginPath();
-  ctx.moveTo(-40, 45);
-  ctx.quadraticCurveTo(-44, -13, 2, -5);
-  ctx.quadraticCurveTo(46, -4, 40, 44);
-  ctx.lineTo(21, 20);
-  ctx.lineTo(-29, 30);
-  ctx.closePath();
-  ctx.fill();
-
-  // 眉毛。
-  line(-26, 48, -10, 46, "#434737", 3);
-  line(10, 46, 26, 48, "#434737", 3);
-
-  // 眼睛。
-  const eyeColor = p.type === "eyes" ? "#ff7350" : "#202c23";
-
-  if (p.type === "eyes" && !reflection) {
-    ctx.shadowColor = "#ff3d20";
-    ctx.shadowBlur = 15;
+      polygon([
+        [side * width * .23 - 3 * scale, 1],
+        [side * width * .23 + 3 * scale, 1],
+        [side * width * .23, flame * .68 * scale]
+      ], "#e2ffff");
+    }
   }
 
-  ellipse(-17, 57, 5, 3, eyeColor);
-  ellipse(17, 57, 5, 3, eyeColor);
-  ctx.shadowBlur = 0;
+  // 輪胎。
+  ctx.fillStyle = "#060b13";
+  ctx.fillRect(-width * .57, -height * .79, width * .18, height * .26);
+  ctx.fillRect(width * .39, -height * .79, width * .18, height * .26);
+  ctx.fillRect(-width * .57, -height * .29, width * .18, height * .23);
+  ctx.fillRect(width * .39, -height * .29, width * .18, height * .23);
 
-  if (p.glasses) {
-    ctx.strokeStyle = "#aaa98e";
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(-31, 49, 26, 17);
-    ctx.strokeRect(5, 49, 26, 17);
-    line(-5, 55, 5, 55, "#aaa98e", 1.5);
-  }
+  // 車體。
+  polygon([
+    [-width * .35, -height],
+    [width * .35, -height],
+    [width * .48, -height * .73],
+    [width * .50, -height * .05],
+    [width * .38, 0],
+    [-width * .38, 0],
+    [-width * .50, -height * .05],
+    [-width * .48, -height * .73]
+  ], driver.color);
 
-  line(1, 62, -2, 75, "#625f4e", 1.5);
+  // 引擎蓋與車身陰影。
+  polygon([
+    [-width * .31, -height * .94],
+    [width * .31, -height * .94],
+    [width * .35, -height * .74],
+    [-width * .35, -height * .74]
+  ], "#ffffff20");
 
-  if (p.type === "smile") {
-    ctx.strokeStyle = "#412c23";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(-29, 77);
-    ctx.quadraticCurveTo(0, 105, 29, 77);
-    ctx.stroke();
-    line(-29, 77, -32, 70, "#412c23", 2);
-    line(29, 77, 32, 70, "#412c23", 2);
-  } else {
-    line(-10, 86, 10, 86, "#605748", 2);
-  }
+  polygon([
+    [width * .35, -height],
+    [width * .48, -height * .73],
+    [width * .50, -height * .05],
+    [width * .34, -height * .09]
+  ], "#0003");
 
-  // 證件。
-  ctx.save();
-  ctx.translate(47, 173);
-  ctx.rotate(-.08);
-  rectangle(-12, 0, 25, 35, "#b9b999");
-  rectangle(-12, 0, 25, 7, "#67755a");
-  rectangle(-7, 12, 7, 9, "#7f896d");
-  line(3, 14, 9, 14, "#687657", 1);
-  line(3, 19, 9, 19, "#687657", 1);
-  line(-7, 27, 9, 27, "#687657", 1);
-  ctx.restore();
+  // 前後玻璃。
+  polygon([
+    [-width * .34, -height * .70],
+    [width * .34, -height * .70],
+    [width * .28, -height * .48],
+    [-width * .28, -height * .48]
+  ], "#122536");
 
-  // 提袋。
-  if (p.bag) {
-    ctx.strokeStyle = "#605e48";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.arc(85, 292, 15, Math.PI, 0);
-    ctx.stroke();
-    rectangle(61, 292, 48, 61, "#514f3b");
-    line(66, 300, 101, 300, "#777259", 2);
+  polygon([
+    [-width * .27, -height * .31],
+    [width * .27, -height * .31],
+    [width * .34, -height * .16],
+    [-width * .34, -height * .16]
+  ], "#142837");
+
+  ctx.fillStyle = "#ffffff33";
+  ctx.fillRect(-width * .27, -height * .68, width * .51, 3 * scale);
+
+  // 車頂。
+  ctx.fillStyle = "#ffffff16";
+  ctx.fillRect(-width * .27, -height * .46, width * .54, height * .12);
+
+  // 前燈。
+  ctx.fillStyle = "#e2fff8";
+  ctx.fillRect(-width * .34, -height * .95, width * .19, 5 * scale);
+  ctx.fillRect(width * .15, -height * .95, width * .19, 5 * scale);
+
+  // 尾燈與尾翼。
+  ctx.fillStyle = "#ff536c";
+  ctx.fillRect(-width * .40, -height * .07, width * .25, 5 * scale);
+  ctx.fillRect(width * .15, -height * .07, width * .25, 5 * scale);
+
+  ctx.fillStyle = "#162337";
+  ctx.fillRect(-width * .49, -height * .13, width * .98, 5 * scale);
+
+  if (isPlayer) {
+    ctx.fillStyle = "#e6fff0";
+    ctx.fillRect(-3 * scale, -height * .95, 6 * scale, height * .22);
   }
 
   ctx.restore();
 }
 
-function drawScene() {
-  const p = state ? passenger() : null;
-  ctx.clearRect(0, 0, 720, 512);
+function drawOpponentLabel(driver, p) {
+  if (p.scale < .23) return;
 
-  const wallGradient = ctx.createLinearGradient(0, 0, 720, 0);
-  wallGradient.addColorStop(0, "#101b13");
-  wallGradient.addColorStop(.48, "#45503c");
-  wallGradient.addColorStop(1, "#17251a");
-  rectangle(0, 0, 720, 512, wallGradient);
-
-  // 電梯框與壁板。
-  rectangle(0, 0, 55, 512, "#0a140d");
-  rectangle(665, 0, 55, 512, "#0a140d");
-  rectangle(55, 0, 610, 25, "#0e180f");
-
-  for (let x = 75; x < 665; x += 96) {
-    line(x, 28, x, 459, "#131f1699", 2);
-    line(x + 2, 28, x + 2, 459, "#69735733", 1);
-  }
-
-  // 頂燈。
   ctx.save();
-  ctx.shadowColor = "#d1d8a0";
-  ctx.shadowBlur = 30;
-  rectangle(180, 15, 360, 8, "#c4c6a4");
+  ctx.font = "bold " + Math.max(10, 15 * p.scale) + "px Arial";
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#e5eefa";
+  ctx.fillText(driver.name, p.x, p.y - 130 * p.scale);
   ctx.restore();
+}
 
-  // 背後鏡子。
-  rectangle(415, 62, 186, 289, "#101b14");
-  rectangle(421, 68, 174, 277, "#26372c");
+function drawCheckpoint(cameraS) {
+  if (!race || mode === "menu") return;
+
+  const remaining = race.nextElimination - race.elapsed;
+  if (remaining > 3.5 || remaining < 0) return;
+
+  const z = remaining * Math.max(100, race.player.speed * .6);
+  const p = project(z, 0, cameraS);
+
+  const gateY = p.y - 200 * p.scale;
+
+  ctx.strokeStyle = "#e7b46c";
+  ctx.lineWidth = Math.max(2, 9 * p.scale);
+  ctx.beginPath();
+  ctx.moveTo(p.x - p.half * 1.12, p.y);
+  ctx.lineTo(p.x - p.half * 1.12, gateY);
+  ctx.lineTo(p.x + p.half * 1.12, gateY);
+  ctx.lineTo(p.x + p.half * 1.12, p.y);
+  ctx.stroke();
+
+  ctx.fillStyle = "#301f26";
+  ctx.fillRect(p.x - p.half * 1.12, gateY - 28 * p.scale, p.half * 2.24, 32 * p.scale);
+
+  ctx.fillStyle = "#ffe0a1";
+  ctx.font = "bold " + Math.max(10, 19 * p.scale) + "px monospace";
+  ctx.textAlign = "center";
+  ctx.fillText("ELIMINATION", p.x, gateY - 6 * p.scale);
+  ctx.textAlign = "left";
+}
+
+function render() {
+  const cameraS = race ? race.player.s : menuTime * 70;
 
   ctx.save();
-  ctx.beginPath();
-  ctx.rect(423, 70, 170, 273);
-  ctx.clip();
 
-  const foggy = p && p.stage >= 2 && !p.scanned;
-
-  if (p && !foggy && p.type !== "reflection") {
-    drawPerson(p, 506, 97, .64, true);
+  if (race && race.shake > 0 && !reducedMotion) {
+    ctx.translate(
+      (Math.random() - .5) * race.shake,
+      (Math.random() - .5) * race.shake
+    );
   }
 
-  if (foggy) {
-    const fog = ctx.createLinearGradient(423, 70, 593, 343);
-    fog.addColorStop(0, "#8b9b849c");
-    fog.addColorStop(.5, "#667c67ee");
-    fog.addColorStop(1, "#9aa68da8");
-    rectangle(423, 70, 170, 273, fog);
+  drawBackground(cameraS);
+  drawRoad(cameraS);
+  drawCheckpoint(cameraS);
 
-    for (let i = 0; i < 20; i++) {
-      const x = 432 + ((i * 41) % 150);
-      const y = 79 + ((i * 67) % 200);
-      line(x, y, x - 2, y + 36, "#c7d1b433", 1);
+  if (race) {
+    const visible = race.drivers
+      .filter(driver => {
+        if (driver.id === 0 || !driver.alive) return false;
+        const z = driver.s - cameraS;
+        return z > -45 && z < VIEW_DISTANCE;
+      })
+      .sort((a, b) => b.s - a.s);
+
+    const ahead = visible.filter(driver => driver.s >= cameraS);
+    const behind = visible.filter(driver => driver.s < cameraS);
+
+    for (const driver of ahead) {
+      const p = project(driver.s - cameraS, driver.x, cameraS);
+      drawCar(driver, p.x, p.y, p.scale, false, false);
+      drawOpponentLabel(driver, p);
+    }
+
+    const playerProjection = project(0, race.player.x, cameraS);
+
+    drawCar(
+      race.player,
+      playerProjection.x,
+      playerProjection.y,
+      1,
+      true,
+      race.boosting && mode === "racing"
+    );
+
+    for (const driver of behind) {
+      const p = project(driver.s - cameraS, driver.x, cameraS);
+      drawCar(driver, p.x, p.y, p.scale, false, false);
+    }
+
+    if (race.boosting && mode === "racing" && !reducedMotion) {
+      ctx.strokeStyle = "#b5f4ff44";
+      ctx.lineWidth = 2;
+
+      for (let i = 0; i < 16; i++) {
+        const side = i % 2 === 0 ? -1 : 1;
+        const spread = 320 + (i % 6) * 48;
+        const phase = (race.elapsed * 2.5 + i * .137) % 1;
+        const y = 220 + phase * 460;
+        const x = 640 + side * spread * (.4 + phase * .8);
+
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + side * 18, y + 42);
+        ctx.stroke();
+      }
+    }
+
+    if (race.flash > 0) {
+      ctx.fillStyle = "rgba(255, 72, 90, " + race.flash * .4 + ")";
+      ctx.fillRect(0, 0, W, H);
     }
   } else {
-    line(432, 77, 580, 324, "#bccbac18", 9);
-    line(466, 77, 591, 287, "#bccbac12", 3);
+    drawCar(
+      { color: "#8affd8", steer: 0 },
+      W / 2,
+      ROAD_BOTTOM,
+      1,
+      true,
+      false
+    );
   }
+
+  const vignette = ctx.createRadialGradient(640, 350, 180, 640, 360, 750);
+  vignette.addColorStop(0, "transparent");
+  vignette.addColorStop(1, "#02071599");
+  ctx.fillStyle = vignette;
+  ctx.fillRect(0, 0, W, H);
+
   ctx.restore();
-
-  // 鏡面標記。
-  ctx.fillStyle = "#b7c29e";
-  ctx.font = "11px monospace";
-  ctx.fillText("REFLECTION / 02", 426, 365);
-
-  // 扶手。
-  rectangle(57, 366, 607, 8, "#728061");
-  rectangle(57, 374, 607, 6, "#172516");
-
-  // 地面。
-  const floorGradient = ctx.createLinearGradient(0, 450, 0, 512);
-  floorGradient.addColorStop(0, "#34412d");
-  floorGradient.addColorStop(1, "#0c160c");
-
-  ctx.fillStyle = floorGradient;
-  ctx.beginPath();
-  ctx.moveTo(57, 450);
-  ctx.lineTo(663, 450);
-  ctx.lineTo(720, 512);
-  ctx.lineTo(0, 512);
-  ctx.closePath();
-  ctx.fill();
-
-  // 乘客。
-  if (p) {
-    drawPerson(p, 307, 85, 1.04);
-  }
-
-  // 陰角。
-  const shade = ctx.createRadialGradient(350, 240, 100, 360, 250, 450);
-  shade.addColorStop(0, "transparent");
-  shade.addColorStop(1, "#000b");
-  rectangle(0, 0, 720, 512, shade);
 }
 
-/* 事件。 */
+function updateHUD() {
+  if (!race) return;
 
-document.querySelectorAll(".tab").forEach(button => {
-  button.addEventListener("click", () => {
-    if (!state) return;
-    state.tab = button.dataset.tab;
-    renderPanel();
+  const order = activeDrivers();
+  const rank = race.player.alive
+    ? order.findIndex(driver => driver.id === 0) + 1
+    : race.finishRank;
+
+  const remaining = Math.max(0, race.nextElimination - race.elapsed);
+  const last = race.player.alive && rank === order.length && order.length > 1;
+
+  $("rank").textContent = rank;
+  $("total").textContent = " / " + (
+    race.player.alive ? order.length : race.finishRank
+  );
+
+  $("timer").textContent = mode === "finished" ? "--" : remaining.toFixed(1);
+  $("eliminationBox").classList.toggle(
+    "danger",
+    mode === "racing" && (last || remaining < 3)
+  );
+
+  $("speed").textContent = String(Math.round(race.player.speed)).padStart(3, "0");
+  $("nitroText").textContent = Math.round(race.nitro) + "%";
+  $("nitroFill").style.width = race.nitro + "%";
+
+  $("nitroButton").classList.toggle("pressed", race.boosting && mode === "racing");
+  $("nitroButton").classList.toggle("empty", race.nitro < 1);
+
+  $("combo").textContent = race.combo > 0
+    ? "貼身連續超車 × " + race.combo
+    : "一般超車 +5% / 貼身超車 +16%";
+
+  if (mode === "racing") {
+    if (Math.abs(race.player.x) > 1) {
+      $("warning").textContent = "偏離賽道 / 回到柏油路面";
+    } else if (last) {
+      $("warning").textContent = "你在淘汰位置 / 立即超車";
+    } else if (remaining < 3) {
+      $("warning").textContent = "檢查點即將關閉";
+    } else {
+      $("warning").textContent = "";
+    }
+  }
+
+  const all = [
+    ...order,
+    ...race.drivers.filter(driver => !driver.alive)
+  ];
+
+  $("leaderboard").replaceChildren();
+
+  all.forEach((driver, i) => {
+    const row = document.createElement("div");
+    row.className = "leader" +
+      (driver.id === 0 ? " me" : "") +
+      (!driver.alive ? " out" : "") +
+      (driver.alive && i === order.length - 1 ? " last" : "");
+
+    const position = document.createElement("span");
+    position.textContent = driver.alive ? String(i + 1).padStart(2, "0") : "--";
+
+    const name = document.createElement("span");
+    name.textContent = driver.name;
+
+    const gap = document.createElement("span");
+    gap.className = "gap";
+
+    const difference = Math.round(driver.s - race.player.s);
+
+    gap.textContent = !driver.alive
+      ? "OUT"
+      : driver.id === 0
+        ? "YOU"
+        : (difference >= 0 ? "+" : "") + difference;
+
+    row.append(position, name, gap);
+    $("leaderboard").append(row);
   });
+}
+
+function frame(timestamp) {
+  const dt = Math.min(.04, (timestamp - previousTime) / 1000 || 0);
+  previousTime = timestamp;
+
+  update(dt);
+  render();
+  updateAudio();
+
+  hudTime += dt;
+
+  if (hudTime >= .1) {
+    hudTime = 0;
+    updateHUD();
+  }
+
+  requestAnimationFrame(frame);
+}
+
+/* 手機多點觸控：方向與氮氣分開管理。 */
+
+canvas.addEventListener("pointerdown", event => {
+  if (mode !== "racing" && mode !== "countdown") return;
+  if (input.steerPointer !== null) return;
+
+  event.preventDefault();
+
+  input.steerPointer = event.pointerId;
+  input.originScreenX = event.clientX;
+  input.originCarX = race.player.x;
+  input.targetX = race.player.x;
+
+  canvas.setPointerCapture(event.pointerId);
 });
 
-$("accept").addEventListener("click", () => decide(true));
-$("reject").addEventListener("click", () => decide(false));
-$("inspect").addEventListener("click", inspectPassenger);
+canvas.addEventListener("pointermove", event => {
+  if (event.pointerId !== input.steerPointer || !race) return;
 
-$("overlayButton").addEventListener("click", () => {
-  tone(430, .12);
-  if (overlayAction) overlayAction();
+  event.preventDefault();
+
+  const bounds = canvas.getBoundingClientRect();
+  const delta = (event.clientX - input.originScreenX) / bounds.width;
+
+  input.targetX = clamp(
+    input.originCarX + delta * 3.4,
+    -1.27,
+    1.27
+  );
 });
 
-// M 鍵切換音效。
+function releaseSteering(event) {
+  if (event.pointerId === input.steerPointer) {
+    input.steerPointer = null;
+  }
+}
+
+canvas.addEventListener("pointerup", releaseSteering);
+canvas.addEventListener("pointercancel", releaseSteering);
+canvas.addEventListener("lostpointercapture", releaseSteering);
+
+$("nitroButton").addEventListener("pointerdown", event => {
+  if (mode !== "racing") return;
+  if (input.boostPointer !== null) return;
+
+  event.preventDefault();
+  input.boostPointer = event.pointerId;
+  $("nitroButton").setPointerCapture(event.pointerId);
+});
+
+function releaseBoost(event) {
+  if (event.pointerId === input.boostPointer) {
+    input.boostPointer = null;
+  }
+}
+
+$("nitroButton").addEventListener("pointerup", releaseBoost);
+$("nitroButton").addEventListener("pointercancel", releaseBoost);
+$("nitroButton").addEventListener("lostpointercapture", releaseBoost);
+
+/* 鍵盤操作。 */
+
 document.addEventListener("keydown", event => {
-  if (event.key.toLowerCase() === "m" && !event.repeat) {
-    soundEnabled = !soundEnabled;
-    if (state && !state.ended) {
-      feedback(soundEnabled ? "音效已開啟。" : "音效已關閉。");
+  const key = event.key.toLowerCase();
+
+  if (
+    ["arrowleft", "arrowright", "a", "d", " "].includes(key) &&
+    (mode === "racing" || mode === "countdown")
+  ) {
+    event.preventDefault();
+  }
+
+  if (mode === "racing" || mode === "countdown") {
+    if (key === "a" || key === "arrowleft") input.left = true;
+    if (key === "d" || key === "arrowright") input.right = true;
+    if (key === " ") input.boostKey = true;
+  }
+
+  if (key === "p" && !event.repeat) {
+    if (mode === "paused") {
+      if (mainAction) mainAction();
+    } else {
+      pauseRace();
     }
   }
 });
 
-drawScene();
+document.addEventListener("keyup", event => {
+  const key = event.key.toLowerCase();
+
+  if (key === "a" || key === "arrowleft") input.left = false;
+  if (key === "d" || key === "arrowright") input.right = false;
+  if (key === " ") input.boostKey = false;
+});
+
+window.addEventListener("blur", () => {
+  resetInput();
+  pauseRace();
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    resetInput();
+    pauseRace();
+  }
+});
+
+window.addEventListener("resize", () => {
+  resetInput();
+});
+
+$("pauseButton").addEventListener("click", pauseRace);
+
+$("soundButton").addEventListener("click", () => {
+  soundEnabled = !soundEnabled;
+  $("soundButton").textContent = soundEnabled ? "音效 開" : "音效 關";
+  $("soundButton").setAttribute("aria-pressed", String(soundEnabled));
+
+  prepareAudio();
+  updateAudio();
+
+  if (soundEnabled) beep(620, .12);
+});
+
+$("mainButton").addEventListener("click", () => {
+  if (mainAction) mainAction();
+});
+
+$("secondaryButton").addEventListener("click", async () => {
+  try {
+    if (document.fullscreenElement) {
+      await document.exitFullscreen();
+    } else if ($("game").requestFullscreen) {
+      await $("game").requestFullscreen();
+
+      try {
+        if (screen.orientation && screen.orientation.lock) {
+          await screen.orientation.lock("landscape");
+        }
+      } catch (_) {}
+    } else {
+      $("secondaryButton").textContent = "此瀏覽器請直接橫放手機";
+    }
+  } catch (_) {
+    $("secondaryButton").textContent = "請橫放手機遊玩";
+  }
+});
+
+document.addEventListener("fullscreenchange", () => {
+  $("secondaryButton").textContent =
+    document.fullscreenElement ? "退出全螢幕" : "進入全螢幕";
+});
+
+document.addEventListener("contextmenu", event => {
+  if ($("game").contains(event.target)) event.preventDefault();
+});
 
 showOverlay(
-  "NIGHT SHIFT / 001",
-  "末班電梯",
-  "凌晨兩點十三分，你接手了夜班。\n\n" +
-  "有些乘客，只要核對證件就能看出破綻。\n" +
-  "有些看起來完全正常，卻沒有倒影。\n\n" +
-  "你能深入檢查，但電力有限。\n" +
-  "放進三個異常，或累積三件投訴，值勤就會結束。\n\n" +
-  "完成十二次判斷，撐到交班。",
-  "開始值勤",
-  beginGame,
-  "含低音量合成音效 / 電腦可按 M 靜音"
+  "MIDNIGHT / ELIMINATION",
+  "午夜\n淘汰賽",
+  "八台車，七次淘汰。\n每十二秒，最後一名離場。\n你要做的，就是留到最後。",
+  "拖曳畫面左右轉向，自動加速。\n" +
+  "按住右下角氮氣，衝出車陣。\n" +
+  "貼身超車可補充大量氮氣。\n" +
+  "撞車或衝出路面會明顯減速。\n" +
+  "電腦可用方向鍵與 Space。",
+  "開始比賽",
+  startRace
 );
+
+requestAnimationFrame(frame);
 </script>
 </body>
 </html>
