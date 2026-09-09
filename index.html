@@ -195,7 +195,7 @@ const keys=new Set();
 const UP=new THREE.Vector3(0,1,0);
 const tempV=new THREE.Vector3();
 const coverBounds=[];
-const mobPool={zombie:[],soldier:[]};
+const mobPool={zombie:[],soldier:[],boss:[]};
 const beamPool={player:[],enemy:[]},impactPool=[];
 let hudElapsed=0;
 function disposeMesh(root){
@@ -206,7 +206,7 @@ function disposeMesh(root){
 }
 function recycleMob(b){
   b.mesh.removeFromParent();
-  b.mesh.rotation.set(0,0,0);b.mesh.scale.setScalar(1);
+  b.mesh.rotation.set(0,0,0);b.mesh.scale.setScalar(b.mesh.userData.baseScale||1);
   b.mesh.userData.body.material.emissive.setHex(0);
   if(mobPool[b.type].length<20)mobPool[b.type].push(b.mesh);else disposeMesh(b.mesh);
 }
@@ -240,11 +240,11 @@ function visibleTarget(from,to){
 function steer(entity,dir,dt,speed){
   const pos=entity.mesh.position,step=speed*dt;
   const probe=pos.clone().addScaledVector(dir,Math.max(1.7,step));
-  if(collides(probe)){
+  if(collides(probe,entity.radius||.55)){
     entity.turnSide=entity.turnSide||1;
     for(const angle of [Math.PI/3,Math.PI/2,Math.PI*.8,Math.PI]){
       const detour=dir.clone().applyAxisAngle(UP,angle*entity.turnSide);
-      if(!collides(pos.clone().addScaledVector(detour,1.7))){moveEntity(entity,detour.multiplyScalar(step));return;}
+      if(!collides(pos.clone().addScaledVector(detour,1.7),entity.radius||.55)){moveEntity(entity,detour.multiplyScalar(step));return;}
     }
     entity.turnSide*=-1;return;
   }moveEntity(entity,dir.clone().multiplyScalar(step));
@@ -300,6 +300,18 @@ function makeSoldier(color=0x334c3b,enemy=false){
   return root;
 }
 
+function makeBoss(){
+  const root=makeZombie(true);
+  root.scale.setScalar(2);root.userData.baseScale=2;
+  root.userData.body.material.color.setHex(0x692d30);
+  for(const side of [-1,1]){
+    const armor=box(.65,.45,.9,0x322d36);armor.position.set(side*.75,2.04,0);root.add(armor);
+    const spike=new THREE.Mesh(new THREE.ConeGeometry(.17,.65,5),mat(0xd9b278));
+    spike.position.set(side*.75,2.55,0);root.add(spike);
+  }
+  return root;
+}
+
 function makeZombie(brute=false){
   const root=new THREE.Group();
   const legs=new THREE.Group();
@@ -338,7 +350,7 @@ function createWorld(){
   renderer.toneMapping=THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure=1.05;
 
-  scene.add(new THREE.HemisphereLight(0xcde6e4,0x485642,2.1));
+  const skyLight=new THREE.HemisphereLight(0xcde6e4,0x485642,2.1);scene.add(skyLight);
   const sun=new THREE.DirectionalLight(0xffefd2,3.2);
   sun.position.set(-20,35,18);sun.castShadow=!reduced;
   sun.shadow.mapSize.set(1024,1024);
@@ -365,6 +377,7 @@ function createWorld(){
 
   const grid=new THREE.GridHelper(WORLD*2,28,0x7c8879,0x60705c);
   grid.position.y=.025;grid.material.opacity=.18;grid.material.transparent=true;scene.add(grid);
+  scene.userData.terrainTheme={ground,roadMat,grid,skyLight,sun,crowns:[]};
 
   addBuildings();
   addTrees();
@@ -374,6 +387,20 @@ function createWorld(){
   raycaster=new THREE.Raycaster();
   aimPoint=new THREE.Vector3(0,0,-10);
   clock3=new THREE.Clock();
+}
+
+function applyStageTheme(stage){
+  const theme=scene.userData.terrainTheme;if(!theme)return;
+  const desert=stage===2;
+  theme.ground.material.color.setHex(desert?0xc5a15d:0x526b45);
+  theme.roadMat.color.setHex(desert?0x88714d:0x404643);
+  theme.grid.visible=!desert;
+  scene.background.setHex(desert?0xd5bd91:0x9cb8b2);
+  scene.fog.color.copy(scene.background);
+  theme.skyLight.color.setHex(desert?0xffe4b6:0xcde6e4);
+  theme.skyLight.groundColor.setHex(desert?0x977647:0x485642);
+  theme.sun.color.setHex(desert?0xffdda4:0xffefd2);
+  for(const crown of theme.crowns)crown.material.color.setHex(desert?0x877044:0x2f5535);
 }
 
 function addBuildings(){
@@ -418,6 +445,7 @@ function addTrees(){
     const root=new THREE.Group();
     const trunk=cylinder(.28,2.2,0x5b4935,7);trunk.position.y=1.1;root.add(trunk);
     const crown=new THREE.Mesh(new THREE.ConeGeometry(rand(1.3,2),rand(3,5),7),mat(0x2f5535));
+    scene.userData.terrainTheme.crowns.push(crown);
     crown.position.y=3.3;crown.castShadow=true;root.add(crown);
     root.position.set(x,0,z);scene.add(root);
   }
@@ -433,11 +461,12 @@ function clearActors(){
 
 function startGame(){
   clearActors();
+  applyStageTheme(1);
   resetInput();
   G={
     time:0,stage:1,totalStages:2,stageTime:240,transition:0,enemySerial:0,alive:0,kills:0,
     bet:selectedBet,credits:200000,winTotal:0,lastOdds:0,auto:false,respawnTimer:0,
-    fireCd:0,feedbackCd:0,spawnShield:4,dead:false,
+    fireCd:0,feedbackCd:0,spawnShield:4,dead:false,bossTimer:30,
     bots:[],tracers:[],impacts:[],flights:[],messageTime:0,shake:0,autoTarget:null,searchCd:0,displayCredits:200000,displayWins:0
   };
 
@@ -465,20 +494,25 @@ function randomSpawn(min=16,max=52){
   return new THREE.Vector3(Math.cos(a)*r,0,Math.sin(a)*r);
 }
 
-function spawnBot(i){
-  const type=i%2===0?"zombie":"soldier";
-  const mesh=mobPool[type].pop()||(type==="zombie"?makeZombie(false):makeSoldier(0x536479,true));
+function spawnBot(i,boss=false){
+  // Count captured bodies until their exit animation finishes as well.
+  if(boss&&G.bots.filter(b=>b.type==="boss").length>=3)return false;
+  const type=boss?"boss":i%2===0?"zombie":"soldier";
+  const mesh=mobPool[type].pop()||(boss?makeBoss():type==="zombie"?makeZombie(false):makeSoldier(0x536479,true));
+  const radius=boss?1.7:1;
   let pos=randomSpawn(12,46),attempt=0;
-  while((collides(pos,1)||pos.distanceToSquared(G.player.mesh.position)<36)&&attempt++<120)pos=randomSpawn(10,52);
-  if(collides(pos,1)){mobPool[type].push(mesh);return;}
+  while((collides(pos,radius)||pos.distanceToSquared(G.player.mesh.position)<36)&&attempt++<120)pos=randomSpawn(10,52);
+  if(collides(pos,radius)||pos.distanceToSquared(G.player.mesh.position)<36){mobPool[type].push(mesh);return false;}
   mesh.position.copy(pos);scene.add(mesh);
   const serial=++G.enemySerial,boost=1+(G.stage-1)*.22;
-  G.bots.push({mesh,type,faction:type,hp:(type==="zombie"?52:78)*boost,dead:false,
+  G.bots.push({mesh,type,faction:boss?"zombie":type,hp:(boss?480:type==="zombie"?52:78)*boost,dead:false,radius:boss?1.5:.55,
     fireCd:rand(.5,2),think:rand(.1,.4),dir:new THREE.Vector3(0,0,-1),
-    speed:(type==="zombie"?rand(2.2,3.2):rand(2.7,3.4))*boost,
-    name:(type==="zombie"?"殭屍":"士兵")+"-"+String(serial).padStart(2,"0"),
+    speed:(boss?1.7:type==="zombie"?rand(2.2,3.2):rand(2.7,3.4))*boost,
+    name:(boss?"BOSS · 裝甲暴君":type==="zombie"?"殭屍":"士兵")+"-"+String(serial).padStart(2,"0"),
     target:null,walk:rand(0,10),wander:randomSpawn(8,45),engage:0,rest:rand(1,3),turnSide:i%2?1:-1,hitTime:0});
   G.alive++;
+  if(boss){message("BOSS 出現 · 裝甲暴君",2.5);feed("大型 BOSS 已進入戰區");}
+  return true;
 }
 
 
@@ -491,9 +525,9 @@ function collides(pos,r=.55){
 function moveEntity(entity,delta){
   const old=entity.mesh.position.clone();
   entity.mesh.position.x+=delta.x;
-  if(collides(entity.mesh.position)){entity.mesh.position.x=old.x;}
+  if(collides(entity.mesh.position,entity.radius||.55)){entity.mesh.position.x=old.x;}
   entity.mesh.position.z+=delta.z;
-  if(collides(entity.mesh.position)){entity.mesh.position.z=old.z;}
+  if(collides(entity.mesh.position,entity.radius||.55)){entity.mesh.position.z=old.z;}
 }
 
 function aimFromScreen(clientX,clientY){
@@ -586,7 +620,7 @@ function updateCaptures(dt){
     b.captureAge+=dt;
     const t=b.captureAge;
     b.mesh.rotation.z=-clamp((t-.08)/.4,0,1)*1.4;
-    b.mesh.scale.setScalar(1-clamp((t-.7)/.3,0,1)*.95);
+    b.mesh.scale.setScalar((b.mesh.userData.baseScale||1)*(1-clamp((t-.7)/.3,0,1)*.95));
     if(t>=.28&&!b.lootShown){b.lootShown=true;showLootBurst(b.mesh.position.clone().add(new THREE.Vector3(0,2,0)),b.loot,b.win);}
   }
   for(let i=G.bots.length-1;i>=0;i--)if(G.bots[i].dead&&G.bots[i].captureAge>=1){recycleMob(G.bots[i]);G.bots.splice(i,1);}
@@ -624,7 +658,7 @@ function shoot(shooter,dir,isPlayer=false){
     const t=clamp(rel.dot(dir),0,35);
     const point=origin.clone().addScaledVector(dir,t);
     const d=point.distanceTo(center);
-    if(d<(isPlayer?.65:.85)&&t<best){hit=target;best=t;end.copy(point);}
+    if(d<(target.type==="boss"?1.5:isPlayer?.65:.85)&&t<best){hit=target;best=t;end.copy(point);}
   }
 
   makeBeam(origin,end,isPlayer);
@@ -698,9 +732,10 @@ function finish(win,from=""){
 }
 
 function beginStage(stage){
+  applyStageTheme(stage);
   for(const b of G.bots)recycleMob(b);
   clearTransient();G.autoTarget=null;G.searchCd=0;G.alive=0;
-  G.bots=[];G.stage=stage;G.stageTime=240;G.transition=0;G.respawnTimer=0;
+  G.bots=[];G.stage=stage;G.stageTime=240;G.transition=0;G.respawnTimer=0;G.bossTimer=30;
   G.player.mesh.position.set(0,0,28);G.spawnShield=3;
   updateFollowers(0,true);
   const count=stage===1?8:12;
@@ -717,7 +752,7 @@ function stageUpdate(dt){
   }
   G.stageTime=Math.max(0,G.stageTime-dt);
   const cap=G.stage===1?8:12;
-  if(G.alive<cap){
+  if(G.bots.filter(b=>!b.dead&&b.type!=="boss").length<cap){
     G.respawnTimer-=dt;
     if(G.respawnTimer<=0){spawnBot(G.enemySerial);G.respawnTimer=rand(1.2,2.4);}
   }
@@ -728,6 +763,11 @@ function stageUpdate(dt){
       $("stageCurtain").classList.add("show");
     }else finish(true);
     return true;
+  }
+  G.bossTimer-=dt;
+  if(G.bossTimer<=0){
+    if(G.bots.filter(b=>b.type==="boss").length<3)G.bossTimer=spawnBot(G.enemySerial,true)?25:2;
+    else G.bossTimer=2;
   }
   return false;
 }
@@ -765,7 +805,7 @@ function updateLock(){
   const pad=4;
   el.style.display="block";el.style.left=(left-pad)+"px";el.style.top=(top-pad)+"px";
   el.style.width=(right-left+pad*2)+"px";el.style.height=(bottom-top+pad*2)+"px";
-  $("lockName").textContent=(G.auto?"LOCK / ":"")+ (b.type==="zombie"?"殭屍":"士兵");
+  $("lockName").textContent=(G.auto?"LOCK / ":"")+ (b.type==="boss"?"BOSS · 裝甲暴君":b.type==="zombie"?"殭屍":"士兵");
 }
 function updatePlayer(dt){
   const p=G.player;
@@ -848,12 +888,12 @@ function updateBots(dt){
     }
     if(b.target&&b.target.dead)b.target=null;
     let distance=b.target?b.mesh.position.distanceTo(b.target.mesh.position):100;
-    const moving=!b.target||distance>(b.type==="zombie"?1.6:7);
+    const moving=!b.target||distance>(b.type==="boss"?3:b.type==="zombie"?1.6:7);
     if(moving)steer(b,b.dir,dt,b.speed);
     const aim=b.target?b.target.mesh.position.clone().sub(b.mesh.position).normalize():b.dir;
     const yaw=Math.atan2(-aim.x,-aim.z),diff=Math.atan2(Math.sin(yaw-b.mesh.rotation.y),Math.cos(yaw-b.mesh.rotation.y));
     b.mesh.rotation.y+=diff*Math.min(1,dt*7);animateMob(b,dt,moving);
-    if(b.target&&b.fireCd<=0&&distance<(b.type==="zombie"?2.2:22)&&visibleTarget(b.mesh.position,b.target.mesh.position)){
+    if(b.target&&b.fireCd<=0&&distance<(b.type==="boss"?3.6:b.type==="zombie"?2.2:22)&&visibleTarget(b.mesh.position,b.target.mesh.position)){
       const end=b.target.mesh.position.clone().add(new THREE.Vector3(0,1.3,0));
       if(b.type==="soldier")makeBeam(b.mesh.position.clone().add(new THREE.Vector3(0,1.55,0)),end,false);
       impactEffect(end,true);b.target.hitTime=.1;
@@ -933,8 +973,9 @@ function drawMap(){
   const s=180/(WORLD*2),mx=x=>(x+WORLD)*s,mz=z=>(z+WORLD)*s;
   for(const b of G.bots){
     if(b.dead)continue;
-    mapCtx.fillStyle=b.type==="zombie"?"#a8c874":"#ff6759";
-    mapCtx.fillRect(mx(b.mesh.position.x)-1.5,mz(b.mesh.position.z)-1.5,3,3);
+    mapCtx.fillStyle=b.type==="boss"?"#ffbb55":b.type==="zombie"?"#a8c874":"#ff6759";
+    const size=b.type==="boss"?7:3;
+    mapCtx.fillRect(mx(b.mesh.position.x)-size/2,mz(b.mesh.position.z)-size/2,size,size);
   }
   mapCtx.fillStyle="#dcef72";mapCtx.beginPath();
   mapCtx.arc(mx(G.player.mesh.position.x),mz(G.player.mesh.position.z),4,0,TAU);mapCtx.fill();
