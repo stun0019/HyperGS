@@ -95,6 +95,8 @@ h1{font:900 italic 6.4cqw/.84 Arial;margin:1.1cqw 0;letter-spacing:-.35cqw}h1 sp
 .joy{left:5%;bottom:9%;width:12cqw;height:12cqw;min-width:0;min-height:0;opacity:.65;border:2px solid #d0d8d655;background:#11191666;box-shadow:inset 0 0 0 1cqw #ffffff08,0 .4cqw 1.5cqw #0003}.joy:active{opacity:.95}
 .actions{right:5%;bottom:9%}#fire{width:12cqw;height:12cqw;min-width:0;min-height:0;background:#11191666;border:2px solid #d0d8d655;color:#e4ece8;font-size:1.35cqw;box-shadow:inset 0 0 0 1cqw #ffffff08,0 .4cqw 1.5cqw #0003}#fire:active{transform:scale(.94);background:#55634888}#fire.auto{opacity:.55}
 #lockTarget{position:absolute;display:none;pointer-events:none;box-sizing:border-box;transform:none;border:1px solid #d7f36a88;background:linear-gradient(#d7f36a11,transparent);box-shadow:inset 0 0 1.4cqw #d7f36a22;border-radius:.4cqw}
+#supplyHud{position:absolute;left:2.5%;top:34%;display:grid;gap:.35cqw;padding:.65cqw .8cqw;background:#101c23cc;border-left:2px solid #dfb766;font-size:.95cqw;color:#eadab2;pointer-events:none;max-width:23cqw}#supplyHud small{color:#a6c8cf;font-size:.85cqw}
+#weaponChoice{position:absolute;inset:0;z-index:20;display:grid;place-items:center;background:#071018c9}#weaponChoice[hidden]{display:none}#weaponChoice>div{width:48cqw;background:#152631;border:1px solid #dfb766;padding:2.5cqw;border-radius:1cqw;text-align:center}#weaponChoice h2{font-size:2.2cqw;color:#ffe0a0}#weaponChoice p{font-size:1.2cqw;line-height:1.7}#weaponChoice button{width:29%;margin:1%;min-height:44px;padding:1cqw;background:#304b58;color:#fff;border:1px solid #99b0af;border-radius:.5cqw;font-size:1.4cqw}
 #lockTarget span{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);white-space:nowrap;font:700 1cqw monospace;color:#d7f36a;padding:.4cqw;background:#0c171edb}
 .lootBurst{animation:none;will-change:transform,opacity}.loot-ammo{color:#72cfff}.loot-armor{color:#ffd160}
 .loot-ammo .lootIcon:before{border-color:#72cfff;background:repeating-linear-gradient(90deg,transparent 0 17%,#72cfff 18% 27%)}.loot-armor .lootIcon:before{background:#ffd160}
@@ -117,7 +119,7 @@ h1{font:900 italic 6.4cqw/.84 Arial;margin:1.1cqw 0;letter-spacing:-.35cqw}h1 sp
     <div class="stats"><div><strong id="alive">0</strong> 敵人</div><div id="kills">擊倒 0</div></div>
   </div>
   <canvas id="map" width="180" height="180"></canvas>
-  <div id="feed"></div>
+  <div id="supplyHud"><strong id="supplyProgress">空投情報 0 / 100</strong><span id="supplyHint">捕獲敵人以取得情報</span><small id="weaponStatus">主火力：玩家 / 步槍</small></div><div id="feed"></div>
   <div id="message"></div>
   <div id="crosshair"></div>
   <div id="hitmark"></div>
@@ -135,6 +137,7 @@ h1{font:900 italic 6.4cqw/.84 Arial;margin:1.1cqw 0;letter-spacing:-.35cqw}h1 sp
     <button class="round" id="fire">射擊</button>
   </div>
 </div>
+<section id="weaponChoice" hidden><div><small>補給箱已回收</small><h2 id="weaponTitle">選擇裝備角色</h2><p>特殊武器持續至本關結束。選中的角色負責正式射擊，每次仍只扣一份 BET。</p><button id="equipPlayer">玩家</button><button id="equipLeft">左隨從</button><button id="equipRight">右隨從</button></div></section>
 <section class="overlay" id="menu">
   <div>
     <div class="eyebrow">TACTICAL CAPTURE / 02 SECTORS</div>
@@ -147,7 +150,7 @@ h1{font:900 italic 6.4cqw/.84 Arial;margin:1.1cqw 0;letter-spacing:-.35cqw}h1 sp
     <p>WASD／方向鍵：移動
 滑鼠：瞄準　按住左鍵：射擊
 手機：左搖桿移動，右側按鍵操作</p>
-    <p>敵人只會彼此交戰，不會攻擊玩家。捕獲後自動獲得醫療包 ×5～10、彈藥箱 ×10～25或護甲 ×25～35。</p>
+    <p>每次命中都有機會捕獲，敵人不會攻擊玩家。情報累積 100 點後，依雷達前往空投，靠近即可領取武器。有效命中理論回報 98.5%，空射仍扣 BET。</p>
     <button class="start" id="start">開始空投 / DEPLOY</button>
     <div class="load" id="load">載入 Three.js 中…</div>
   </div>
@@ -192,6 +195,20 @@ let aimPoint=null,mouseDown=false,mobileFiring=false;
 let pointer=null,joyPointer=null,aimPointer=null,joyStart=null;
 let joyVec={x:0,y:0},touchAim={x:0,z:-1};
 const keys=new Set();
+const RTP=.985;
+const LOOT_TABLE=[
+ {type:"med",label:"醫療包",min:5,max:10,weight:.42},
+ {type:"ammo",label:"彈藥箱",min:10,max:25,weight:.36},
+ {type:"armor",label:"護甲",min:25,max:35,weight:.22}
+];
+const LOOT_MEAN=LOOT_TABLE.reduce((sum,t)=>sum+t.weight*(t.min+t.max)/2,0);
+const CAPTURE_CHANCE=RTP/LOOT_MEAN;
+const WEAPONS={rifle:"步槍",laser:"雷射槍",shotgun:"散彈槍",rocket:"火箭筒"};
+function rollLoot(){
+ let roll=Math.random();
+ const t=LOOT_TABLE.find(t=>(roll-=t.weight)<0)||LOOT_TABLE.at(-1);
+ return {type:t.type,label:t.label,odds:Math.floor(rand(t.min,t.max+1))};
+}
 const UP=new THREE.Vector3(0,1,0);
 const tempV=new THREE.Vector3();
 const coverBounds=[];
@@ -454,7 +471,7 @@ function addTrees(){
 function clearActors(){
   if(!G)return;
   for(const b of G.bots)recycleMob(b);
-  clearTransient();disposeMesh(G.player.mesh);
+  clearTransient();clearSupply();disposeMesh(G.player.mesh);
   for(const follower of G.followers||[])disposeMesh(follower.mesh);
   $("feed").replaceChildren();$("lockTarget").style.display="none";
 }
@@ -466,13 +483,13 @@ function startGame(){
   G={
     time:0,stage:1,totalStages:2,stageTime:240,transition:0,enemySerial:0,alive:0,kills:0,
     bet:selectedBet,credits:200000,winTotal:0,lastOdds:0,auto:false,respawnTimer:0,
-    fireCd:0,feedbackCd:0,spawnShield:4,dead:false,bossTimer:30,
+    fireCd:0,feedbackCd:0,spawnShield:4,dead:false,bossTimer:30,intel:0,supply:null,choosing:false,weapon:"rifle",gunner:0,wagered:0,eligibleWagered:0,
     bots:[],tracers:[],impacts:[],flights:[],messageTime:0,shake:0,autoTarget:null,searchCd:0,displayCredits:200000,displayWins:0
   };
 
   const mesh=makeSoldier(0x385a40,false);
   mesh.position.set(0,0,28);scene.add(mesh);
-  G.player={mesh,vel:new THREE.Vector3(),yaw:Math.PI,hp:100};
+  G.player={mesh,vel:new THREE.Vector3(),yaw:Math.PI};
   G.followers=[-1,1].map(side=>{
     const mesh=makeSoldier(0x3c6970,false);scene.add(mesh);
     return {mesh,side,type:"soldier",speed:8,walk:0,hitTime:0,turnSide:side};
@@ -487,6 +504,58 @@ function startGame(){
   $("stageCurtain").classList.remove("show");
   message("STAGE 1 START",1.8);
   updateHud();
+}
+
+function clearSupply(){
+  if(G.supply){disposeMesh(G.supply.mesh);G.supply=null;G.intel+=100;}
+  G.choosing=false;$("weaponChoice").hidden=true;
+}
+function spawnSupply(){
+  if(G.supply||G.intel<100)return false;
+  const start=G.player.mesh.position;
+  let pos=null;
+  for(let attempt=0;attempt<160;attempt++){
+    const angle=rand(0,TAU),distance=rand(20,38);
+    const candidate=start.clone().add(new THREE.Vector3(Math.cos(angle)*distance,0,Math.sin(angle)*distance));
+    let clear=true;
+    for(let t=0;t<=1;t+=.025)if(collides(start.clone().lerp(candidate,t),1.1)){clear=false;break;}
+    if(clear&&!collides(candidate,2)){pos=candidate;break;}
+  }
+  if(!pos)return false;
+  const root=new THREE.Group();
+  const crate=box(1.8,1.5,1.8,0x645140);crate.position.y=.75;root.add(crate);
+  for(const x of [-.62,.62]){const band=box(.14,1.56,1.86,0xdaba68);band.position.set(x,.78,0);root.add(band);}
+  const canopy=new THREE.Mesh(new THREE.SphereGeometry(2.5,12,6,0,TAU,0,Math.PI/2),mat(0xd7c49b));
+  canopy.position.y=4;root.add(canopy);
+  const beacon=new THREE.Mesh(new THREE.CylinderGeometry(.5,.9,12,10),new THREE.MeshBasicMaterial({color:0xffb952,transparent:true,opacity:.15,depthWrite:false}));
+  beacon.position.y=6;root.add(beacon);
+  root.position.copy(pos);root.position.y=18;scene.add(root);
+  G.supply={mesh:root,pos,canopy,beacon,age:0,weapon:["laser","shotgun","rocket"][Math.floor(Math.random()*3)]};
+  G.intel-=100;message("空投警訊 · 依雷達前往回收",3);feed("空投補給已投放 · 靠近領取");
+  return true;
+}
+function updateSupply(dt){
+  if(!G.supply){G.supplyRetry=(G.supplyRetry||0)-dt;if(G.supplyRetry<=0){spawnSupply();G.supplyRetry=2;}return;}
+  const s=G.supply;s.age+=dt;s.mesh.position.y=Math.max(0,18-s.age*6);
+  s.canopy.visible=s.age<3;s.beacon.material.opacity=.12+Math.sin(s.age*4)*.05;
+  if(s.age>=3&&G.manualApproach&&G.player.mesh.position.distanceTo(s.pos)<4){
+    G.choosing=true;resetInput();
+    $("weaponTitle").textContent=WEAPONS[s.weapon]+" · 交給誰裝備？";$("weaponChoice").hidden=false;
+  }
+}
+function updateWeaponModels(){
+  [G.player,...G.followers].forEach((member,index)=>{
+    const weapon=index===G.gunner?G.weapon:"rifle",gun=member.mesh.userData.gun;
+    gun.scale.set(weapon==="rocket"?3:weapon==="shotgun"?1.8:1,weapon==="rocket"?3:1,weapon==="laser"?1.3:weapon==="rocket"?1.2:1);
+    gun.material.color.setHex(weapon==="laser"?0x438b9e:weapon==="rocket"?0x687049:weapon==="shotgun"?0x94704d:0x1c2421);
+  });
+}
+function equipSupply(index){
+  if(!G||!G.choosing||!G.supply)return;
+  G.weapon=G.supply.weapon;G.gunner=index;
+  disposeMesh(G.supply.mesh);G.supply=null;G.choosing=false;G.manualApproach=false;
+  $("weaponChoice").hidden=true;resetInput();updateWeaponModels();
+  message(["玩家","左隨從","右隨從"][index]+" 裝備 "+WEAPONS[G.weapon],2);
 }
 
 function randomSpawn(min=16,max=52){
@@ -505,7 +574,7 @@ function spawnBot(i,boss=false){
   if(collides(pos,radius)||pos.distanceToSquared(G.player.mesh.position)<36){mobPool[type].push(mesh);return false;}
   mesh.position.copy(pos);scene.add(mesh);
   const serial=++G.enemySerial,boost=1+(G.stage-1)*.22;
-  G.bots.push({mesh,type,faction:boss?"zombie":type,hp:(boss?480:type==="zombie"?52:78)*boost,dead:false,radius:boss?1.5:.55,
+  G.bots.push({mesh,type,faction:boss?"zombie":type,dead:false,radius:boss?1.5:.55,
     fireCd:rand(.5,2),think:rand(.1,.4),dir:new THREE.Vector3(0,0,-1),
     speed:(boss?1.7:type==="zombie"?rand(2.2,3.2):rand(2.7,3.4))*boost,
     name:(boss?"BOSS · 裝甲暴君":type==="zombie"?"殭屍":"士兵")+"-"+String(serial).padStart(2,"0"),
@@ -543,7 +612,7 @@ function aimFromScreen(clientX,clientY){
   $("crosshair").style.top=((clientY-rect.top)/rect.height*100)+"%";
 }
 
-function makeBeam(origin,end,isPlayer){
+function makeBeam(origin,end,isPlayer,weapon="rifle"){
   const kind=isPlayer?"player":"enemy",delta=end.clone().sub(origin),length=delta.length();
   if(length<.01)return;
   let group=beamPool[kind].pop();
@@ -555,9 +624,14 @@ function makeBeam(origin,end,isPlayer){
     if(isPlayer){const core=new THREE.Mesh(new THREE.CylinderGeometry(.014,.014,1,5),
       new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,depthWrite:false}));core.position.y=.5;group.add(core);}
   }
-  for(const m of group.children)m.material.opacity=isPlayer?1:.45;
+  for(let i=0;i<group.children.length;i++){
+    const m=group.children[i];m.material.opacity=isPlayer?1:.45;
+    m.material.color.setHex(i?0xffffff:weapon==="laser"?0x62eaff:weapon==="rocket"?0xff9f48:isPlayer?0xfff36a:0xf08162);
+  }
   group.scale.set(1,length,1);group.position.copy(origin);group.quaternion.setFromUnitVectors(UP,delta.normalize());
-  scene.add(group);G.tracers.push({mesh:group,kind,life:isPlayer?.13:.09,max:isPlayer?.13:.09});
+  const duration=weapon==="laser"?.14:Math.max(.06,length/(weapon==="rocket"?35:150));
+  if(weapon!=="laser")group.scale.set(weapon==="rocket"?3:1,Math.min(length,weapon==="rocket"?.7:1.2),weapon==="rocket"?3:1);
+  scene.add(group);G.tracers.push({mesh:group,kind,life:duration,max:duration,origin:origin.clone(),end:end.clone(),direction:delta.clone(),length,weapon});
 }
 
 function impactEffect(position,isPlayerHit=false){
@@ -595,17 +669,6 @@ function worldToScreen(position){
   };
 }
 
-function damageNumber(position,amount){
-  const point=worldToScreen(position);
-  const node=document.createElement("div");
-  node.className="damageNumber";
-  node.textContent="-"+Math.round(amount);
-  node.style.left=point.x+"px";
-  node.style.top=point.y+"px";
-  $("floaters").append(node);
-  setTimeout(()=>node.remove(),700);
-}
-
 function showLootBurst(position,loot,amount){
   const node=document.createElement("div");node.className="lootBurst loot-"+loot.type;
   const icon=document.createElement("div");icon.className="lootIcon";
@@ -638,71 +701,64 @@ function updateCaptures(dt){
 }
 
 function shoot(shooter,dir,isPlayer=false){
-  if(isPlayer){
-    if(state!=="playing"||G.transition>0||G.fireCd>0)return;
-    if(G.credits<G.bet){G.auto=false;message("點數不足",1.4);return;}
-    G.credits-=G.bet;
-    G.fireCd+=1/7;
-  }
-
-  const origin=shooter.mesh.position.clone().add(new THREE.Vector3(0,1.55,0));
-  const end=origin.clone().addScaledVector(dir,35);
+  if(!isPlayer)return;
+  if(state!=="playing"||G.transition>0||G.choosing||G.fireCd>0)return;
+  if(G.credits<G.bet){G.auto=false;message("點數不足",1.4);return;}
+  const bet=G.bet;G.credits-=bet;G.wagered+=bet;G.fireCd+=1/7;
+  const gunner=[G.player,...G.followers][G.gunner]||shooter;
+  const origin=gunner.mesh.position.clone().add(new THREE.Vector3(0,1.55,0));
+  const intended=G.auto?G.autoTarget:G.hoverTarget;
+  if(intended&&!intended.dead)dir=intended.mesh.position.clone().sub(origin).setY(0).normalize();
   let hit=null,best=sightDistance(origin,dir,35);
-  end.copy(origin).addScaledVector(dir,best);
-
-  const targets=G.bots;
-  for(const target of targets){
+  const end=origin.clone().addScaledVector(dir,best);
+  for(const target of G.bots){
     if(target.dead)continue;
-    const center=target.mesh.position.clone().add(new THREE.Vector3(0,1.35,0));
-    const rel=center.clone().sub(origin);
-    const t=clamp(rel.dot(dir),0,35);
-    const point=origin.clone().addScaledVector(dir,t);
-    const d=point.distanceTo(center);
-    if(d<(target.type==="boss"?1.5:isPlayer?.65:.85)&&t<best){hit=target;best=t;end.copy(point);}
+    const center=target.mesh.position.clone().add(new THREE.Vector3(0,1.55,0));
+    const along=center.clone().sub(origin).dot(dir);
+    if(along<0||along>best)continue;
+    const point=origin.clone().addScaledVector(dir,along);
+    const radius=target.type==="boss"?1.5:.7;
+    if(point.distanceTo(center)<radius){hit=target;best=along;end.copy(point);}
   }
-
-  makeBeam(origin,end,isPlayer);
-  if(isPlayer&&G.bet>10){
-    for(const follower of G.followers||[]){
-      const muzzle=follower.mesh.userData.gun;
-      follower.mesh.updateWorldMatrix(true,true);
-      const from=muzzle.localToWorld(new THREE.Vector3(0,0,-.65));
-      const direction=end.clone().sub(from).normalize();
-      const distance=sightDistance(from,direction,from.distanceTo(end));
-      makeBeam(from,from.clone().addScaledVector(direction,distance),true);
+  weaponEffect(origin,end,G.weapon);
+  if(G.bet>10){
+    for(const member of [G.player,...G.followers]){
+      if(member===gunner)continue;
+      const from=member.mesh.position.clone().add(new THREE.Vector3(0,1.55,0));
+      const d=end.clone().sub(from).normalize();
+      makeBeam(from,from.clone().addScaledVector(d,sightDistance(from,d,from.distanceTo(end))),true);
     }
   }
-
   if(hit){
-    if(isPlayer){
-      const damage=rand(18,26);
-      hit.hp-=damage;hit.hitTime=.18;
-      hit.mesh.userData.body.material.emissive.setHex(0xffffff);
-      impactEffect(end,false);
-      damageNumber(centerOf(hit),damage);
-      showHit(end,hit.hp<=0);
-      if(hit.hp<=0)killBot(hit,"你");
-    }
+    G.eligibleWagered+=bet;
+    hit.hitTime=.18;hit.mesh.userData.body.material.emissive.setHex(0xffffff);
+    const captured=Math.random()<CAPTURE_CHANCE;
+    impactEffect(end,false);showHit(end,captured);
+    if(captured)killBot(hit,"你",bet,rollLoot());
   }
+}
+function weaponEffect(origin,end,weapon){
+  if(weapon==="shotgun"){
+    const d=end.clone().sub(origin),length=d.length();
+    for(let i=-2;i<=2;i++){
+      const ray=d.clone().normalize().applyAxisAngle(UP,i*.035);
+      makeBeam(origin,origin.clone().addScaledVector(ray,sightDistance(origin,ray,length)),true);
+    }
+  }else makeBeam(origin,end,true,weapon);
 }
 
 function centerOf(target){
   return target.mesh.position.clone().add(new THREE.Vector3(0,2.2,0));
 }
 
-function killBot(bot,killer){
+function killBot(bot,killer,bet=G.bet,awardedLoot=null){
   if(bot.dead)return;
   bot.dead=true;bot.captureAge=0;bot.lootShown=false;G.alive--;
   if(G.autoTarget===bot)G.autoTarget=null;
   if(killer==="你"){
-    G.kills++;
-    const roll=Math.random();
-    const loot=roll<.42
-      ?{type:"med",label:"醫療包",odds:Math.floor(rand(5,11))}
-      :roll<.78
-        ?{type:"ammo",label:"彈藥箱",odds:Math.floor(rand(10,26))}
-        :{type:"armor",label:"護甲",odds:Math.floor(rand(25,36))};
-    const win=G.bet*loot.odds;
+    G.kills++;G.intel+=bot.type==="boss"?30:bot.type==="soldier"?10:6;
+    const loot=awardedLoot||rollLoot();
+    const win=bet*loot.odds;
     G.credits+=win;G.winTotal+=win;G.lastOdds=loot.odds;
     bot.loot=loot;bot.win=win;G.shake=.07;
     feed(loot.label+" ×"+loot.odds+"  +"+win);
@@ -713,7 +769,7 @@ function killBot(bot,killer){
 
 function finish(win,from=""){
   if(state!=="playing")return;
-  state="result";G.auto=false;resetInput();
+  state="result";G.auto=false;resetInput();clearSupply();
   G.displayCredits=G.credits;G.displayWins=G.winTotal;
   $("lockTarget").style.display="none";
   $("stageCurtain").classList.remove("show");
@@ -735,6 +791,7 @@ function beginStage(stage){
   applyStageTheme(stage);
   for(const b of G.bots)recycleMob(b);
   clearTransient();G.autoTarget=null;G.searchCd=0;G.alive=0;
+  clearSupply();G.weapon="rifle";G.gunner=0;updateWeaponModels();
   G.bots=[];G.stage=stage;G.stageTime=240;G.transition=0;G.respawnTimer=0;G.bossTimer=30;
   G.player.mesh.position.set(0,0,28);G.spawnShield=3;
   updateFollowers(0,true);
@@ -807,12 +864,27 @@ function updateLock(){
   el.style.width=(right-left+pad*2)+"px";el.style.height=(bottom-top+pad*2)+"px";
   $("lockName").textContent=(G.auto?"LOCK / ":"")+ (b.type==="boss"?"BOSS · 裝甲暴君":b.type==="zombie"?"殭屍":"士兵");
 }
+function pickHoveredMob(){
+  if(!pointer)return null;
+  camera.updateMatrixWorld(true);aimFromScreen(pointer.x,pointer.y);
+  const origin=raycaster.ray.origin,direction=raycaster.ray.direction;
+  const limit=sightDistance(origin,direction,150);
+  let picked=null,best=limit;
+  for(const b of G.bots){
+    if(b.dead)continue;
+    b.mesh.updateWorldMatrix(true,true);
+    const bounds=new THREE.Box3().setFromObject(b.mesh).expandByScalar(.15);
+    const point=raycaster.ray.intersectBox(bounds,new THREE.Vector3());
+    if(point){const distance=origin.distanceTo(point);if(distance<best){best=distance;picked=b;}}
+  }
+  return picked;
+}
 function updatePlayer(dt){
   const p=G.player;
   let x=Number(keys.has("d")||keys.has("arrowright"))-Number(keys.has("a")||keys.has("arrowleft"));
   let z=Number(keys.has("s")||keys.has("arrowdown"))-Number(keys.has("w")||keys.has("arrowup"));
   if(Math.hypot(joyVec.x,joyVec.y)>.1){x=joyVec.x;z=joyVec.y;}
-  const manualMove=Math.hypot(x,z)>.1;
+  const manualMove=Math.hypot(x,z)>.1;G.manualApproach=manualMove;
   const target=G.auto?chooseTarget(dt):null;
   const move=new THREE.Vector3(x,0,z);
   if(target&&!manualMove){
@@ -825,19 +897,12 @@ function updatePlayer(dt){
   }
   for(let i=0;i<p.mesh.userData.legs.children.length;i++)p.mesh.userData.legs.children[i].rotation.x=move.lengthSq()>.01?Math.sin(G.time*11+i*Math.PI)*.35:0;
   if(pointer&&!G.auto)aimFromScreen(pointer.x,pointer.y);
+  G.hoverTarget=G.auto?null:pickHoveredMob();
   let dir;
   if(target)dir=target.mesh.position.clone().sub(p.mesh.position);
-  else dir=aimPoint.clone().sub(p.mesh.position);
+  else dir=(G.hoverTarget?G.hoverTarget.mesh.position:aimPoint).clone().sub(p.mesh.position);
   dir.y=0;if(dir.lengthSq()<.01)dir.set(0,0,-1);else dir.normalize();
   p.yaw=Math.atan2(-dir.x,-dir.z);p.mesh.rotation.y=p.yaw;
-  G.hoverTarget=null;
-  if(!G.auto){
-    let best=1.5;
-    for(const b of G.bots)if(!b.dead){
-      const distance=b.mesh.position.distanceTo(aimPoint);
-      if(distance<best){best=distance;G.hoverTarget=b;}
-    }
-  }
   const firing=((mouseDown||keys.has(" "))&&!coarse)||(mobileFiring&&coarse)||
     (target&&target.mesh.position.distanceTo(p.mesh.position)<33&&visibleTarget(p.mesh.position,target.mesh.position));
   // Preserve the previous frame's remainder so sustained fire averages 7 shots/sec.
@@ -915,19 +980,25 @@ function updateCamera(dt){
 }
 
 function step(dt){
-  if(state!=="playing")return;
+  if(state!=="playing"||G.choosing)return;
   G.time+=dt;
   const stagePaused=stageUpdate(dt);
   G.spawnShield=Math.max(0,G.spawnShield-dt);
 
   G.feedbackCd=Math.max(0,G.feedbackCd-dt);
   G.shake=Math.max(0,G.shake-dt*1.5);
-  if(!stagePaused){updatePlayer(dt);updateFollowers(dt);updateBots(dt);}
+  if(!stagePaused){updatePlayer(dt);updateFollowers(dt);updateBots(dt);updateSupply(dt);}
   updateCamera(dt);
   updateCaptures(dt);
 
   for(const t of G.tracers){
     t.life-=dt;
+    if(t.weapon!=="laser"){
+      const traveled=t.length*clamp(1-t.life/t.max,0,1);
+      t.mesh.position.copy(t.origin).addScaledVector(t.direction,traveled);
+      t.mesh.scale.y=Math.min(t.mesh.scale.y,Math.max(.01,t.length-traveled));
+    }
+    if(t.life<=0&&t.weapon==="rocket"){impactEffect(t.end);const blast=G.impacts.at(-1);blast.max=blast.life=.5;blast.blast=true;G.shake=Math.max(G.shake,.12);}
     const opacity=clamp(t.life/t.max,0,1);
     for(const child of t.mesh.children)child.material.opacity=opacity*(t.kind==="enemy"?.45:1);
     if(t.life<=0)releaseEffect(t,beamPool[t.kind]);
@@ -937,7 +1008,7 @@ function step(dt){
   for(const impact of G.impacts){
     impact.life-=dt;
     const progress=1-impact.life/impact.max;
-    impact.mesh.scale.setScalar(1+progress*2.5);
+    impact.mesh.scale.setScalar(1+progress*(impact.blast?18:2.5));
     for(const child of impact.mesh.children)child.material.opacity=clamp(impact.life/impact.max,0,1);
     if(impact.life<=0)releaseEffect(impact,impactPool);
   }
@@ -977,12 +1048,20 @@ function drawMap(){
     const size=b.type==="boss"?7:3;
     mapCtx.fillRect(mx(b.mesh.position.x)-size/2,mz(b.mesh.position.z)-size/2,size,size);
   }
+  if(G.supply){
+    const s=G.supply;mapCtx.fillStyle=Math.sin(G.time*5)>0?"#fff2bd":"#efa82c";
+    mapCtx.fillRect(mx(s.pos.x)-5,mz(s.pos.z)-5,10,10);
+    mapCtx.strokeStyle="#ffda81";mapCtx.beginPath();mapCtx.moveTo(mx(G.player.mesh.position.x),mz(G.player.mesh.position.z));mapCtx.lineTo(mx(s.pos.x),mz(s.pos.z));mapCtx.stroke();
+  }
   mapCtx.fillStyle="#dcef72";mapCtx.beginPath();
   mapCtx.arc(mx(G.player.mesh.position.x),mz(G.player.mesh.position.z),4,0,TAU);mapCtx.fill();
 }
 
 function updateHud(){
   if(!G)return;
+  $("supplyProgress").textContent="空投情報 "+G.intel+" / 100";
+  $("supplyHint").textContent=G.supply?"空投 "+Math.round(G.player.mesh.position.distanceTo(G.supply.pos))+"m · 黃色雷達標記":"捕獲累積 · 殭屍 6 / 士兵 10 / BOSS 30";
+  $("weaponStatus").textContent="主火力："+["玩家","左隨從","右隨從"][G.gunner]+" / "+WEAPONS[G.weapon];
   $("alive").textContent=G.alive;
   $("kills").textContent="捕獲 "+String(G.kills).padStart(3,"0");
   $("stageProgress").style.transform="scaleX("+G.stageTime/240+")";
@@ -1038,27 +1117,31 @@ function resize(){
   camera.aspect=rect.width/rect.height;camera.updateProjectionMatrix();
 }
 
+$("equipPlayer").addEventListener("click",()=>equipSupply(0));
+$("equipLeft").addEventListener("click",()=>equipSupply(1));
+$("equipRight").addEventListener("click",()=>equipSupply(2));
 document.addEventListener("keydown",e=>{
   const k=e.key.toLowerCase();
   if([" ","arrowup","arrowdown","arrowleft","arrowright"].includes(k)&&state==="playing")e.preventDefault();
-  if(state!=="playing")return;
+  if(state!=="playing"||G.choosing)return;
   keys.add(k);
   if(k==="escape")finish(false,"你撤離了戰場");
 });
 document.addEventListener("keyup",e=>keys.delete(e.key.toLowerCase()));
 
-canvas.addEventListener("pointermove",e=>{if(!coarse){pointer={x:e.clientX,y:e.clientY};aimFromScreen(e.clientX,e.clientY);}else if(e.pointerId===aimPointer)aimFromScreen(e.clientX,e.clientY);});
+canvas.addEventListener("pointermove",e=>{if(!coarse){pointer={x:e.clientX,y:e.clientY};aimFromScreen(e.clientX,e.clientY);}else if(e.pointerId===aimPointer){pointer={x:e.clientX,y:e.clientY};aimFromScreen(e.clientX,e.clientY);}});
 canvas.addEventListener("pointerdown",e=>{
-  if(state!=="playing"||G.transition>0)return;
+  if(state!=="playing"||G.transition>0||G.choosing)return;
   canvas.setPointerCapture(e.pointerId);
-  if(!coarse){aimFromScreen(e.clientX,e.clientY);mouseDown=true;}
+  if(!coarse){pointer={x:e.clientX,y:e.clientY};aimFromScreen(e.clientX,e.clientY);mouseDown=true;}
   else if(e.clientX>innerWidth*.45){
-    aimPointer=e.pointerId;
+    aimPointer=e.pointerId;pointer={x:e.clientX,y:e.clientY};
     const r=canvas.getBoundingClientRect();
     aimFromScreen(e.clientX,e.clientY);
   }
 });
 canvas.addEventListener("pointerup",e=>{if(!coarse)mouseDown=false;if(e.pointerId===aimPointer)aimPointer=null;});
+canvas.addEventListener("pointerleave",()=>{if(!mouseDown&&!coarse){pointer=null;if(G)G.hoverTarget=null;}});
 canvas.addEventListener("pointercancel",e=>{mouseDown=false;if(e.pointerId===aimPointer)aimPointer=null;});
 
 const joy=$("joy"),stick=$("stick");
