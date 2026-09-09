@@ -27,27 +27,18 @@ button:focus-visible{outline:2px solid var(--acid);outline-offset:3px}
 .top{position:absolute;left:2.5%;right:2.5%;top:3%;display:flex;align-items:start;justify-content:space-between}
 .brand{font:900 italic 2cqw Arial;letter-spacing:.05cqw}.brand span{color:var(--acid)}
 .stats{text-align:right;font:1.05cqw monospace;line-height:1.65}.stats strong{font-size:1.9cqw;color:#fff}
-.vitals{position:absolute;left:2.5%;bottom:12%;width:24cqw}
-.row{display:flex;align-items:center;gap:.8cqw;margin-top:.45cqw;font:bold 1cqw monospace}
-.row label{width:4.8cqw}
-.track{flex:1;height:.72cqw;background:#151b18;border:1px solid #ffffff24}
-.fill{height:100%;transition:width .12s linear}
-#hpFill{background:#d8ef72}#armorFill{background:#68c9df}
-.weapon{position:absolute;right:2.5%;bottom:12%;text-align:right}
-#ammo{font:900 3.5cqw monospace;letter-spacing:-.2cqw}
-#weapon{font:bold 1cqw monospace;color:var(--muted)}
-.legend{margin-top:.35cqw;font:bold .9cqw monospace}.ally{color:#fff37b}.hostile{color:#ff5a4d;margin-left:.8cqw}
 #zoneBox{position:absolute;left:50%;top:3%;transform:translateX(-50%);min-width:18cqw;text-align:center;background:#111713c9;border-top:2px solid var(--acid);padding:.6cqw 1.2cqw;font:1cqw monospace}
 #zoneTime{font:bold 1.5cqw monospace;color:#fff}
-#economy{position:absolute;left:50%;bottom:1.5%;transform:translateX(-50%);display:flex;align-items:stretch;gap:.75cqw;pointer-events:auto;filter:drop-shadow(0 .3cqw .35cqw #0009)}
-.metal{background:linear-gradient(#5e6566,#202526 13%,#111516 78%,#343a3b);border:.16cqw solid #aab2af;box-shadow:inset 0 0 0 .22cqw #161b1c,inset 0 .12cqw .15cqw #e9efec7a;min-height:5.4cqw}
-.betPanel{width:11cqw;padding:.45cqw .7cqw;text-align:center}.panelTitle{font:1.45cqw Georgia,serif;letter-spacing:.08cqw;color:#fff;text-shadow:0 2px #000}
+#economy{position:absolute;left:50%;bottom:2.2%;transform:translateX(-50%);display:flex;align-items:stretch;gap:.55cqw;pointer-events:auto;filter:drop-shadow(0 .35cqw .45cqw #000b)}
+.metal{background:linear-gradient(180deg,#4b5152 0,#202526 18%,#0d1112 76%,#2d3334 100%);border:.13cqw solid #929c99;box-shadow:inset 0 0 0 .18cqw #151a1b,inset 0 .1cqw .12cqw #f1f6f366;min-height:5.8cqw}
+.betPanel{width:10.5cqw;padding:.55cqw .65cqw;text-align:center}.panelTitle{font:1.2cqw Georgia,serif;letter-spacing:.08cqw;color:#fff;text-shadow:0 2px #000}
 .betControls{display:grid;grid-template-columns:2.2cqw 1fr 2.2cqw;gap:.3cqw;margin-top:.25cqw}.betControls button{border:1px solid #747c7b;background:#171b1c;color:#d8ef72;font:bold 1.25cqw monospace}.betControls strong{background:#090b0c;border:1px solid #303637;font:1.75cqw monospace;padding:.12cqw}
-.playerPanel{width:32cqw;padding:.45cqw .8cqw;display:grid;grid-template-columns:3.4cqw 1fr 9cqw;grid-template-rows:1fr 1fr;column-gap:.7cqw;align-items:center}
-.avatar{grid-row:1/3;width:3.1cqw;height:3.1cqw;border-radius:16%;display:grid;place-items:center;background:linear-gradient(145deg,#d8ef72,#4b662f);border:2px solid #dce4df;color:#10150c;font:900 1.2cqw Arial}
-.playerName{font:bold 1.2cqw monospace}.credits{font:bold 1.12cqw monospace;color:#dce7df}.credits small{color:#9ca8a1;font-size:.72cqw;margin-right:.4cqw}
-.winBox{grid-column:3;grid-row:1/3;background:#821e19;border:.15cqw solid #fa3028;align-self:stretch;display:grid;place-items:center;text-align:center;font:bold 1.2cqw monospace}.winBox strong{display:block;font-size:1.55cqw;color:#fff7a5}.winBox small{font-size:.68cqw;color:#ffd5cc}
-.autoPanel{width:10.5cqw;padding:.45cqw .7cqw;text-align:center;border-color:#ffcf9b;box-shadow:inset 0 0 0 .22cqw #382215,inset 0 .12cqw .15cqw #fff8,0 0 .7cqw #ff993c66}.autoPanel button{display:block;width:100%;height:2.35cqw;margin-top:.25cqw;border:1px solid #925c36;background:#21130d;color:#fff;font:bold 1.4cqw monospace}.autoPanel button.active{color:#fff4a0;background:#863519;box-shadow:inset 0 0 .7cqw #ffb247}
+.playerPanel{width:29cqw;padding:.55cqw .7cqw;display:grid;grid-template-columns:4cqw 1fr 8.6cqw;grid-template-rows:1fr 1fr;column-gap:.75cqw;align-items:center}
+.avatar{grid-row:1/3;width:3.5cqw;height:3.5cqw;border-radius:12%;display:grid;place-items:center;background:linear-gradient(145deg,#d8ef72,#3f582a);border:2px solid #dce4df;color:#10150c;font:900 1.2cqw Arial;box-shadow:0 0 .55cqw #d8ef7255}
+.playerName{font:bold 1.08cqw monospace;color:#f4f7f5}.credits{font:bold 1.35cqw monospace;color:#dce7df}.credits small{display:block;color:#84928a;font-size:.62cqw;letter-spacing:.08cqw}
+.winBox{grid-column:3;grid-row:1/3;background:linear-gradient(#7c211b,#3b1210);border:.13cqw solid #ef4a3f;align-self:stretch;display:grid;place-items:center;text-align:center;font:bold 1cqw monospace}.winBox strong{display:block;font-size:1.5cqw;color:#fff3a5}.winBox small{font-size:.62cqw;color:#ffd5cc}
+.autoPanel{width:9.8cqw;padding:.55cqw .65cqw;text-align:center;border-color:#eeb77f;box-shadow:inset 0 0 0 .18cqw #382215,inset 0 .1cqw .12cqw #fff7,0 0 .6cqw #ff993c55}.autoPanel button{display:block;width:100%;height:2.45cqw;margin-top:.25cqw;border:1px solid #925c36;background:#21130d;color:#fff;font:bold 1.25cqw monospace}.autoPanel button.active{color:#fff4a0;background:#863519;box-shadow:inset 0 0 .7cqw #ffb247}
+.lootBurst{position:absolute;z-index:7;transform:translate(-50%,-50%);display:grid;place-items:center;pointer-events:none;animation:lootBurst 1.15s ease-out forwards}.lootIcon{position:relative;width:4.2cqw;height:4.2cqw;min-width:42px;min-height:42px;border:.18cqw solid #fff;border-radius:.55cqw;background:#18201c;box-shadow:0 0 0 .3cqw #111a,0 0 1.5cqw currentColor}.lootText{margin-top:.55cqw;padding:.25cqw .6cqw;background:#080b09df;border:1px solid currentColor;font:900 1.15cqw monospace;white-space:nowrap;text-shadow:0 2px 3px #000}.loot-med{color:#78ee91}.loot-ammo{color:#ffd160}.loot-armor{color:#72cfff}.loot-med .lootIcon:before,.loot-med .lootIcon:after{content:"";position:absolute;left:50%;top:50%;background:#78ee91;transform:translate(-50%,-50%)}.loot-med .lootIcon:before{width:55%;height:20%}.loot-med .lootIcon:after{width:20%;height:55%}.loot-ammo .lootIcon:before{content:"";position:absolute;inset:19% 15%;border:3px solid #ffd160;border-radius:.18cqw;background:repeating-linear-gradient(90deg,transparent 0 17%,#ffd160 18% 27%)}.loot-armor .lootIcon:before{content:"";position:absolute;inset:12% 18%;background:#72cfff;clip-path:polygon(50% 0,94% 18%,85% 70%,50% 100%,15% 70%,6% 18%)}@keyframes lootBurst{0%{opacity:0;transform:translate(-50%,-20%) scale(.4)}18%{opacity:1;transform:translate(-50%,-80%) scale(1.18)}72%{opacity:1;transform:translate(-50%,-125%) scale(1)}100%{opacity:0;transform:translate(-50%,-190%) scale(.82)}}
 #stageCurtain{position:absolute;inset:0;z-index:8;display:none;place-items:center;background:#050807ad;text-align:center;pointer-events:none}#stageCurtain.show{display:grid}#stageCurtain strong{display:block;font:900 italic 4cqw Arial;color:var(--acid);letter-spacing:.1cqw}#stageCurtain span{display:block;margin-top:.8cqw;font:bold 1.35cqw monospace;color:#fff}
 #feed{position:absolute;right:2.5%;top:15%;width:25cqw;text-align:right;font:1cqw monospace;line-height:1.8;color:#dce6df}
 .feedItem{animation:feed 3.8s forwards}@keyframes feed{0%{opacity:0;transform:translateX(12px)}10%,75%{opacity:1;transform:none}100%{opacity:0}}
@@ -66,11 +57,9 @@ button:focus-visible{outline:2px solid var(--acid);outline-offset:3px}
 .controls{position:absolute;inset:0;pointer-events:none}
 .joy{display:none;position:absolute;left:4%;bottom:10%;width:14cqw;height:14cqw;min-width:100px;min-height:100px;border-radius:50%;border:1px solid #ffffff3d;background:#101a1545;pointer-events:auto}
 #stick{position:absolute;left:50%;top:50%;width:38%;height:38%;border-radius:50%;background:#d9e8d544;border:1px solid #fff8;transform:translate(-50%,-50%)}
-.actions{position:absolute;right:3.5%;bottom:11%;display:none;align-items:end;gap:1cqw;pointer-events:auto}
+.actions{position:absolute;right:3.5%;bottom:5%;display:none;align-items:end;gap:1cqw;pointer-events:auto}
 .round{width:7cqw;height:7cqw;min-width:58px;min-height:58px;border-radius:50%;border:1px solid #ffffff5c;background:#152019bd}
 #fire{width:10cqw;height:10cqw;background:#546126c7;border-color:var(--acid);font-weight:bold}
-#heal{font-size:.9cqw}
-.interact{position:absolute;left:50%;bottom:19%;transform:translateX(-50%);padding:.75cqw 1.2cqw;background:#111a14e8;border:1px solid var(--acid);font:bold 1cqw monospace;display:none;pointer-events:auto}
 .overlay{position:absolute;inset:0;z-index:10;background:linear-gradient(100deg,#080d09f7 0%,#111911e8 55%,#172015dc);display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:5cqw;padding:5cqw 8cqw}
 .overlay[hidden]{display:none}
 .eyebrow{font:bold 1cqw monospace;letter-spacing:.2cqw;color:var(--acid)}
@@ -83,7 +72,7 @@ h1{font:900 italic 6.4cqw/.84 Arial;margin:1.1cqw 0;letter-spacing:-.35cqw}h1 sp
 .load{margin-top:1cqw;font:1cqw monospace;color:#91a097}
 #result h1{font-size:5cqw}
 #rotate{display:none;position:fixed;left:0;right:0;bottom:3%;text-align:center;color:#fff;font-size:14px;z-index:20}
-@media(pointer:coarse){.joy,.actions{display:flex}.joy{display:block}#crosshair{display:none}.interact{bottom:24%}}
+@media(pointer:coarse){.joy,.actions{display:flex}.joy{display:block}#crosshair{display:none}}
 @media(orientation:portrait){#rotate{display:block}}
 </style>
 </head>
@@ -105,14 +94,9 @@ h1{font:900 italic 6.4cqw/.84 Arial;margin:1.1cqw 0;letter-spacing:-.35cqw}h1 sp
   <div id="message"></div>
   <div id="crosshair"></div>
   <div id="hitmark"></div>
-  <div class="vitals">
-    <div class="row"><label>生命</label><div class="track"><div class="fill" id="hpFill"></div></div><span id="hp">100</span></div>
-    <div class="row"><label>護甲</label><div class="track"><div class="fill" id="armorFill"></div></div><span id="armor">50</span></div>
-  </div>
-  <div class="weapon"><div id="ammo">30 / 90</div><div id="weapon">AR-7 自動步槍 · R 裝填</div><div class="legend"><span class="ally">你的彈道</span><span class="hostile">敵方彈道</span></div></div>
   <div id="economy">
     <div class="metal betPanel"><div class="panelTitle">BET</div><div class="betControls"><button id="betDown">−</button><strong id="betValue">1</strong><button id="betUp">+</button></div></div>
-    <div class="metal playerPanel"><div class="avatar">P1</div><div class="playerName">PLAYER_08352</div><div class="credits"><small>虛擬點數</small><span id="credits">200,000</span></div><div class="winBox"><small>總贏分</small><strong id="winTotal">0</strong><small id="lastOdds">等待擊殺</small></div></div>
+    <div class="metal playerPanel"><div class="avatar">P1</div><div class="playerName">PLAYER_08352</div><div class="credits"><small>玩家點數</small><span id="credits">200,000</span></div><div class="winBox"><small>總贏分</small><strong id="winTotal">0</strong><small id="lastOdds">等待捕獲</small></div></div>
     <div class="metal autoPanel"><div class="panelTitle">AUTO</div><button id="autoButton">OFF</button></div>
   </div>
 </div>
@@ -120,11 +104,8 @@ h1{font:900 italic 6.4cqw/.84 Arial;margin:1.1cqw 0;letter-spacing:-.35cqw}h1 sp
 <div class="controls">
   <div class="joy" id="joy"><div id="stick"></div></div>
   <div class="actions">
-    <button class="round" id="heal">醫療包<br><span id="meds">2</span></button>
-    <button class="round" id="reload">裝填</button>
     <button class="round" id="fire">射擊</button>
   </div>
-  <button class="interact" id="pickup">拾取</button>
 </div>
 <section class="overlay" id="menu">
   <div>
@@ -137,9 +118,8 @@ h1{font:900 italic 6.4cqw/.84 Arial;margin:1.1cqw 0;letter-spacing:-.35cqw}h1 sp
     <h2>快速部署</h2>
     <p>WASD／方向鍵：移動
 滑鼠：瞄準　按住左鍵：射擊
-R：裝填　F：拾取　Q：使用醫療包
 手機：左搖桿移動，右側按鍵操作</p>
-    <p>殭屍倍率 ×5～20，士兵倍率 ×25～50。敵人互鬥不會死亡，只有你的攻擊能擊殺並取得虛擬贏分。</p>
+    <p>敵人只會彼此交戰，不會攻擊玩家。捕獲後自動獲得醫療包 ×5～10、彈藥箱 ×10～25或護甲 ×25～35。</p>
     <button class="start" id="start">開始空投 / DEPLOY</button>
     <div class="load" id="load">載入 Three.js 中…</div>
   </div>
@@ -376,8 +356,7 @@ function startGame(){
   G={
     time:0,stage:1,totalStages:2,stageTime:240,transition:0,enemySerial:0,alive:0,kills:0,
     bet:selectedBet,credits:200000,winTotal:0,lastOdds:0,auto:false,respawnTimer:0,
-    hp:100,armor:50,ammo:30,reserve:90,meds:2,
-    fireCd:0,reloading:0,healCd:0,hurtCd:0,feedbackCd:0,spawnShield:4,dead:false,
+    fireCd:0,feedbackCd:0,spawnShield:4,dead:false,
     bots:[],pickups:[],tracers:[],impacts:[],near:null,messageTime:0,shake:0
   };
 
@@ -386,7 +365,6 @@ function startGame(){
   G.player={mesh,vel:new THREE.Vector3(),yaw:Math.PI,hp:100};
 
   for(let i=0;i<8;i++)spawnBot(i);
-  for(let i=0;i<10;i++)spawnPickup(i%3);
 
   state="playing";
   $("menu").hidden=true;$("result").hidden=true;
@@ -402,16 +380,15 @@ function randomSpawn(min=16,max=52){
 
 function spawnBot(i){
   const type=i%2===0?"zombie":"soldier";
-  const odds=type==="zombie"?Math.floor(rand(5,21)):Math.floor(rand(25,51));
   const mesh=type==="zombie"
     ?makeZombie(false)
     :makeSoldier([0x6c4035,0x4d5362,0x6a5e35][i%3],true);
-  mesh.add(makeOddsLabel((type==="zombie"?"殭屍 ":"士兵 ")+"×"+odds,type==="zombie"?0x9ed870:0xff796d));
+  mesh.add(makeOddsLabel(type==="zombie"?"殭屍":"士兵",type==="zombie"?0x9ed870:0xff796d));
   mesh.position.copy(randomSpawn(16,50));scene.add(mesh);
   const serial=++G.enemySerial;
   const boost=1+(G.stage-1)*.22;
   G.bots.push({
-    mesh,type,faction:type,odds,hp:(type==="zombie"?52:78)*boost,armor:type==="soldier"?20:0,dead:false,fireCd:rand(1.2,2.4),
+    mesh,type,faction:type,hp:(type==="zombie"?52:78)*boost,dead:false,fireCd:rand(1.2,2.4),
     think:rand(.4,1.5),dir:new THREE.Vector3(0,0,-1),
     speed:(type==="zombie"?rand(3.5,4.4):rand(3,3.8))*boost,
     name:(type==="zombie"?"殭屍-":"士兵-")+String(serial).padStart(2,"0"),
@@ -544,22 +521,22 @@ function damageNumber(position,amount){
   setTimeout(()=>node.remove(),700);
 }
 
-function winNumber(position,amount,odds){
+function showLootBurst(position,loot,amount){
   const point=worldToScreen(position);
-  const node=document.createElement("div");node.className="damageNumber";
-  node.textContent="WIN +"+amount+"  ×"+odds;
+  const node=document.createElement("div");node.className="lootBurst loot-"+loot.type;
   node.style.left=point.x+"px";node.style.top=point.y+"px";
-  node.style.color="#d8ef72";node.style.fontSize="1.7cqw";
-  $("floaters").append(node);setTimeout(()=>node.remove(),900);
+  const icon=document.createElement("div");icon.className="lootIcon";
+  const text=document.createElement("div");text.className="lootText";
+  text.textContent=loot.label+" ×"+loot.odds+"  +"+amount;
+  node.append(icon,text);$("floaters").append(node);setTimeout(()=>node.remove(),1200);
 }
 
 function shoot(shooter,dir,isPlayer=false){
   if(isPlayer){
-    if(G.reloading>0||G.fireCd>0)return;
-    if(G.ammo<=0){reload();return;}
+    if(G.fireCd>0)return;
     if(G.credits<G.bet){G.auto=false;message("點數不足",1.4);return;}
     G.credits-=G.bet;
-    G.ammo--;G.fireCd=.095;
+    G.fireCd=.095;
   }
 
   const origin=shooter.mesh.position.clone().add(new THREE.Vector3(0,1.55,0));
@@ -588,8 +565,6 @@ function shoot(shooter,dir,isPlayer=false){
       damageNumber(centerOf(hit),damage);
       showHit(end,hit.hp<=0);
       if(hit.hp<=0)killBot(hit,"你");
-    }else{
-      damagePlayer(rand(8,13),shooter.name,shooter.mesh.position);
     }
   }
 }
@@ -604,51 +579,19 @@ function killBot(bot,killer){
   G.alive=G.bots.filter(b=>!b.dead).length;
   if(killer==="你"){
     G.kills++;
-    const win=G.bet*bot.odds;
-    G.credits+=win;G.winTotal+=win;G.lastOdds=bot.odds;
-    winNumber(bot.mesh.position.clone().add(new THREE.Vector3(0,2,0)),win,bot.odds);
+    const roll=Math.random();
+    const loot=roll<.42
+      ?{type:"med",label:"醫療包",odds:Math.floor(rand(5,11))}
+      :roll<.78
+        ?{type:"ammo",label:"彈藥箱",odds:Math.floor(rand(10,26))}
+        :{type:"armor",label:"護甲",odds:Math.floor(rand(25,36))};
+    const win=G.bet*loot.odds;
+    G.credits+=win;G.winTotal+=win;G.lastOdds=loot.odds;
+    showLootBurst(bot.mesh.position.clone().add(new THREE.Vector3(0,2,0)),loot,win);
+    feed("自動取得 "+loot.label+" ×"+loot.odds+"，贏分 +"+win);
   }
-  feed(killer+" 擊倒 "+bot.name);
-  if(Math.random()<.62)spawnPickup(Math.floor(rand(0,3)),bot.mesh.position.x,bot.mesh.position.z);
+  feed(killer+" 捕獲 "+bot.name);
   G.respawnTimer=Math.max(G.respawnTimer,1.5);
-}
-
-function damagePlayer(amount,from="敵人",sourcePosition=null){
-  if(state!=="playing"||G.dead)return;
-  if(G.spawnShield>0||G.hurtCd>0)return;
-  G.hurtCd=.16;
-  if(G.armor>0){
-    const block=Math.min(G.armor,amount*.65);
-    G.armor-=block;amount-=block;
-  }
-  G.hp-=amount;
-  if(G.feedbackCd<=0){
-    G.feedbackCd=.24;
-    G.shake=Math.max(G.shake,.24);
-    G.player.mesh.userData.body.material.emissive.setHex(0xff1808);
-    impactEffect(G.player.mesh.position.clone().add(new THREE.Vector3(0,1.4,0)),true);
-    showDamageDirection(sourcePosition);
-  }
-  if(G.hp<=0){
-    G.hp=0;G.dead=true;finish(false,from);
-  }
-}
-
-function showDamageDirection(sourcePosition){
-  const flash=$("damageFlash");
-  flash.classList.remove("on");void flash.offsetWidth;flash.classList.add("on");
-  if(!sourcePosition)return;
-  const dx=sourcePosition.x-G.player.mesh.position.x;
-  const dz=sourcePosition.z-G.player.mesh.position.z;
-  const degrees=Math.atan2(dx,-dz)*180/Math.PI;
-  const arrow=$("damageArrow");
-  arrow.style.transform="translate(-50%,-50%) rotate("+degrees+"deg) translateY(-10cqw)";
-  arrow.classList.remove("on");void arrow.offsetWidth;arrow.classList.add("on");
-}
-
-function reload(){
-  if(!G||state!=="playing"||G.reloading>0||G.ammo===30||G.reserve<=0)return;
-  G.reloading=1.35;message("裝填中",.7);
 }
 
 function finish(win,from=""){
@@ -665,30 +608,14 @@ function finish(win,from=""){
     "\n總贏分："+G.winTotal.toLocaleString("zh-TW")+
     "\n剩餘虛擬點數："+G.credits.toLocaleString("zh-TW")+
     "\n作戰時間："+Math.floor(G.time)+" 秒"+
-    "\n剩餘生命："+Math.ceil(G.hp)+
     "\n完成關卡："+(win?2:G.stage)+" / 2";
   $("result").hidden=false;
-}
-
-function useMed(){
-  if(!G||state!=="playing"||G.meds<=0||G.hp>=95||G.healCd>0)return;
-  G.meds--;G.healCd=2.2;message("使用醫療包",1.2);
-}
-
-function pickup(){
-  if(!G||!G.near)return;
-  const p=G.near;p.dead=true;scene.remove(p.mesh);
-  if(p.type===0){G.reserve=Math.min(180,G.reserve+45);feed("取得步槍彈藥 +45");}
-  if(p.type===1){G.armor=Math.min(100,G.armor+35);feed("取得防彈板 +35");}
-  if(p.type===2){G.meds=Math.min(4,G.meds+1);feed("取得醫療包");}
-  G.near=null;$("pickup").style.display="none";updateHud();
 }
 
 function beginStage(stage){
   for(const b of G.bots)if(!b.dead)scene.remove(b.mesh);
   G.bots=[];G.stage=stage;G.stageTime=240;G.transition=0;G.respawnTimer=0;
-  G.player.mesh.position.set(0,0,28);G.hp=Math.min(100,G.hp+30);G.armor=Math.min(100,G.armor+25);
-  G.ammo=30;G.reserve=Math.max(G.reserve,90);G.spawnShield=3;
+  G.player.mesh.position.set(0,0,28);G.spawnShield=3;
   const count=stage===1?8:12;
   for(let i=0;i<count;i++)spawnBot(i);
   $("stageCurtain").classList.remove("show");
@@ -760,43 +687,24 @@ function updatePlayer(dt){
   if(mobileFiring&&coarse)shoot(p,dir,true);
   if(G.auto&&autoTarget&&autoTarget.mesh.position.distanceTo(p.mesh.position)<33)shoot(p,dir,true);
   if(G.fireCd>0)G.fireCd-=dt;
-
-  if(G.reloading>0){
-    G.reloading-=dt;
-    if(G.reloading<=0){
-      const need=30-G.ammo,take=Math.min(need,G.reserve);
-      G.ammo+=take;G.reserve-=take;
-    }
-  }
-  if(G.healCd>0){
-    G.healCd-=dt;
-    if(G.healCd<=0)G.hp=Math.min(100,G.hp+55);
-  }
-
-  G.near=null;
-  let nearest=2.4;
-  for(const pick of G.pickups){
-    if(pick.dead)continue;
-    pick.spin+=dt;pick.mesh.rotation.y=pick.spin;
-    pick.mesh.position.y=.08+Math.sin(pick.spin*2)*.08;
-    const d=pick.mesh.position.distanceTo(p.mesh.position);
-    if(d<nearest){nearest=d;G.near=pick;}
-  }
-  $("pickup").style.display=G.near?"block":"none";
-  if(G.near){
-    $("pickup").textContent=["拾取彈藥","拾取護甲","拾取醫療包"][G.near.type];
-  }
 }
 
 function updateBots(dt){
   const living=G.bots.filter(b=>!b.dead);
   for(const b of living){
     b.fireCd-=dt;b.think-=dt;b.walk+=dt;
-    let target=G.player,best=G.player.mesh.position.distanceToSquared(b.mesh.position);
+    let target=null,best=Infinity;
     for(const other of living){
       if(other===b||other.faction===b.faction)continue;
       const d=other.mesh.position.distanceToSquared(b.mesh.position);
       if(d<best){best=d;target=other;}
+    }
+    if(!target){
+      if(b.think<=0){const a=rand(0,TAU);b.dir.set(Math.sin(a),0,Math.cos(a));b.think=rand(1,2.2);}
+      moveEntity(b,b.dir.clone().multiplyScalar(dt*b.speed*.55));
+      b.mesh.rotation.y=Math.atan2(-b.dir.x,-b.dir.z);
+      b.mesh.userData.legs.rotation.z=Math.sin(b.walk*8)*.08;
+      continue;
     }
     const toTarget=target.mesh.position.clone().sub(b.mesh.position);toTarget.y=0;
     const distance=toTarget.length();const aim=toTarget.normalize();
@@ -814,24 +722,16 @@ function updateBots(dt){
     b.mesh.rotation.y=Math.atan2(-aim.x,-aim.z);
     b.mesh.userData.legs.rotation.z=Math.sin(b.walk*10)*.1;
 
-    if(b.type==="soldier"&&distance<25&&b.fireCd<=0&&!G.dead){
+    if(b.type==="soldier"&&distance<25&&b.fireCd<=0){
       const origin=b.mesh.position.clone().add(new THREE.Vector3(0,1.55,0));
       const end=target.mesh.position.clone().add(new THREE.Vector3(0,1.35,0));
-      const shotDir=end.clone().sub(origin).normalize();
-      if(target===G.player){
-        shotDir.x+=rand(-.07,.07);shotDir.z+=rand(-.07,.07);shotDir.normalize();
-        shoot(b,shotDir,false);
-      }else{
-        makeBeam(origin,end,false);impactEffect(end,false);
-        target.mesh.userData.body.material.emissive.setHex(0xff351f);
-      }
+      makeBeam(origin,end,false);impactEffect(end,false);
+      target.mesh.userData.body.material.emissive.setHex(0xff351f);
       b.fireCd=rand(.65,1.15);
     }
-    if(b.type==="zombie"&&distance<1.8&&b.fireCd<=0&&!G.dead){
+    if(b.type==="zombie"&&distance<1.8&&b.fireCd<=0){
       const point=target.mesh.position.clone().add(new THREE.Vector3(0,1.3,0));
-      impactEffect(point,target===G.player);
-      if(target===G.player)damagePlayer(rand(7,11),b.name,b.mesh.position);
-      else target.mesh.userData.body.material.emissive.setHex(0xff351f);
+      impactEffect(point,false);target.mesh.userData.body.material.emissive.setHex(0xff351f);
       b.fireCd=rand(.75,1.2);
     }
   }
@@ -918,19 +818,13 @@ function updateHud(){
   if(!G)return;
   $("alive").textContent=G.alive;
   $("kills").textContent="擊倒 "+G.kills;
-  $("hp").textContent=Math.ceil(G.hp);
-  $("armor").textContent=Math.ceil(G.armor);
-  $("hpFill").style.width=clamp(G.hp,0,100)+"%";
-  $("armorFill").style.width=clamp(G.armor,0,100)+"%";
-  $("ammo").textContent=(G.reloading>0?"裝填中":G.ammo)+" / "+G.reserve;
-  $("meds").textContent=G.meds;
   const seconds=Math.max(0,Math.ceil(G.stageTime));
   $("zoneTime").textContent=String(Math.floor(seconds/60)).padStart(2,"0")+":"+String(seconds%60).padStart(2,"0");
   $("stageLabel").textContent="STAGE "+G.stage+" / "+G.totalStages;
   $("betValue").textContent=G.bet;
   $("credits").textContent=G.credits.toLocaleString("zh-TW");
   $("winTotal").textContent=G.winTotal.toLocaleString("zh-TW");
-  $("lastOdds").textContent=G.lastOdds?"最近倍率 ×"+G.lastOdds:"等待擊殺";
+  $("lastOdds").textContent=G.lastOdds?"最近掉落 ×"+G.lastOdds:"等待捕獲";
   $("autoButton").textContent=G.auto?"∞ ON":"OFF";
   $("autoButton").classList.toggle("active",G.auto);
   if(G.transition>0)$("nextStage").textContent="距離 00:"+String(Math.ceil(G.transition)).padStart(2,"0")+" 到下關卡";
@@ -974,9 +868,6 @@ document.addEventListener("keydown",e=>{
   if([" ","arrowup","arrowdown","arrowleft","arrowright"].includes(k)&&state==="playing")e.preventDefault();
   if(state!=="playing")return;
   keys.add(k);
-  if(k==="r"&&!e.repeat)reload();
-  if(k==="q"&&!e.repeat)useMed();
-  if(k==="f"&&!e.repeat)pickup();
   if(k==="escape")finish(false,"你撤離了戰場");
 });
 document.addEventListener("keyup",e=>keys.delete(e.key.toLowerCase()));
@@ -1019,9 +910,6 @@ $("fire").addEventListener("pointerdown",e=>{
 });
 $("fire").addEventListener("pointerup",()=>mobileFiring=false);
 $("fire").addEventListener("pointercancel",()=>mobileFiring=false);
-$("reload").onclick=reload;
-$("heal").onclick=useMed;
-$("pickup").onclick=pickup;
 function setBet(value){
   selectedBet=clamp(Math.round(value),1,20);
   if(G)G.bet=selectedBet;
