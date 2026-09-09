@@ -1179,8 +1179,14 @@ function updatePlayer(dt){
   const move=new THREE.Vector3(x,0,z);
   if(target&&!manualMove){
     const d=target.mesh.position.clone().sub(p.mesh.position);d.y=0;
-    if(d.length()>11||!visibleTarget(p.mesh.position,target.mesh.position))move.copy(d.normalize());
-  }
+    const distance=d.length(),clear=visibleTarget(p.mesh.position,target.mesh.position);
+    // Separate stopping and restarting distances prevent repeated tiny chase steps.
+    if(p.chaseTarget!==target){p.chaseTarget=target;p.chasing=distance>18;p.blockedTime=0;p.nav=null;}
+    p.blockedTime=clear?0:(p.blockedTime||0)+dt;
+    if(clear&&distance<=12){p.chasing=false;p.nav=null;}
+    else if(distance>18||p.blockedTime>.45)p.chasing=true;
+    if(p.chasing)move.copy(d.normalize());
+  }else{p.chaseTarget=null;p.chasing=false;p.blockedTime=0;p.nav=null;}
   if(move.lengthSq()>.01){
     move.normalize();
     if(G.auto&&!manualMove){
