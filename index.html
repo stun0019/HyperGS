@@ -706,7 +706,7 @@ function startGame(){
   });
   updateFollowers(0,true);
 
-  for(let i=0;i<16;i++)spawnBot(i);
+  for(let i=0;i<48;i++)spawnBot(i);
 
   camera.position.set(0,15,45);camera.lookAt(0,1,25);
   state="playing";
@@ -1084,7 +1084,7 @@ function beginStage(stage){
   G.bots=[];G.stage=stage;G.stageTime=240;G.transition=0;G.respawnTimer=0;G.bossTimer=30;
   G.player.mesh.position.set(0,0,28);G.spawnShield=3;
   updateFollowers(0,true);
-  const count=stage===1?16:22;
+  const count=stage===1?48:66;
   for(let i=0;i<count;i++)spawnBot(i);
   $("stageCurtain").classList.remove("show");
   message("STAGE "+stage+" START",1.8);
@@ -1097,7 +1097,7 @@ function stageUpdate(dt){
     return true;
   }
   G.stageTime=Math.max(0,G.stageTime-dt);
-  const cap=G.stage===1?16:22;
+  const cap=G.stage===1?48:66;
   if(G.bots.filter(b=>!b.dead&&b.type!=="boss").length<cap){
     G.respawnTimer-=dt;
     if(G.respawnTimer<=0){spawnBot(G.enemySerial);G.respawnTimer=rand(1.2,2.4);}
