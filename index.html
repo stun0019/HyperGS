@@ -182,7 +182,7 @@ const $=id=>document.getElementById(id);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const rand=(a,b)=>a+Math.random()*(b-a);
 const TAU=Math.PI*2;
-const WORLD=70;
+const WORLD=105;
 const game=$("game");
 const canvas=$("view");
 const mapCanvas=$("map");
@@ -199,17 +199,17 @@ let joyVec={x:0,y:0},touchAim={x:0,z:-1};
 const keys=new Set();
 const RTP=.985;
 const LOOT_TABLE=[
- {type:"med",label:"醫療包",min:5,max:10,weight:.42},
- {type:"ammo",label:"彈藥箱",min:10,max:25,weight:.36},
- {type:"armor",label:"護甲",min:25,max:35,weight:.22}
+ {type:"med",label:"醫療包",min:5,max:10,weight:.62},
+ {type:"ammo",label:"彈藥箱",min:10,max:25,weight:.30},
+ {type:"armor",label:"護甲",min:25,max:35,weight:.08}
 ];
 const LOOT_MEAN=LOOT_TABLE.reduce((sum,t)=>sum+t.weight*(t.min+t.max)/2,0);
 const WEAPONS={rifle:"步槍",laser:"雷射槍",shotgun:"散彈槍",rocket:"火箭筒",grenade:"手榴彈"};
-const WEAPON_RATES={rifle:4,laser:4.5,shotgun:2.5,rocket:1.5,grenade:1.2};
+const WEAPON_RATES={rifle:5.5,laser:6,shotgun:3.5,rocket:2,grenade:1.8};
 const BOSS_TYPES=[
- {name:"裝甲暴君",color:0x792c32,scale:2,min:100,max:200,speed:1.7},
- {name:"劇毒巨獸",color:0x547b28,scale:2.15,min:200,max:400,speed:1.9},
- {name:"重裝督軍",color:0x364f72,scale:2.3,min:400,max:800,speed:1.45}
+ {name:"裝甲暴君",color:0x792c32,scale:2,min:60,max:120,speed:1.7},
+ {name:"劇毒巨獸",color:0x547b28,scale:2.15,min:120,max:220,speed:1.9},
+ {name:"重裝督軍",color:0x364f72,scale:2.3,min:220,max:400,speed:1.45}
 ];
 function lootMean(bot){return bot.type==="boss"?(BOSS_TYPES[bot.variant].min+BOSS_TYPES[bot.variant].max)/2:LOOT_MEAN;}
 function captureProbability(bot,count=1){return RTP/(count*lootMean(bot));}
@@ -277,7 +277,20 @@ function updateAudio(){
 const UP=new THREE.Vector3(0,1,0);
 const tempV=new THREE.Vector3();
 const coverBounds=[];
-const mobPool={zombie:[],soldier:[],boss:[]};
+const MOB_TYPES={
+ zombie:{name:"遊蕩殭屍",faction:"zombie",speed:2.6,radius:.55,intel:6,range:2.2},
+ soldier:{name:"突擊士兵",faction:"soldier",speed:3.1,radius:.55,intel:10,range:22},
+ villager:{name:"村民",faction:"civilian",speed:2,radius:.5,intel:6,range:0,peaceful:true},
+ brute:{name:"肥胖感染者",faction:"zombie",speed:1.8,radius:.85,intel:6,range:3},
+ spitter:{name:"毒液感染者",faction:"zombie",speed:2.3,radius:.55,intel:6,range:10},
+ shield:{name:"盾牌衛兵",faction:"soldier",speed:2.1,radius:.65,intel:10,range:12},
+ sniper:{name:"狙擊手",faction:"soldier",speed:2.5,radius:.55,intel:10,range:28},
+ jeep:{name:"武裝吉普車",faction:"soldier",speed:4.2,radius:1.15,intel:10,range:22,vehicle:true},
+ scavenger:{name:"拾荒者",faction:"civilian",speed:2.7,radius:.6,intel:6,range:0,peaceful:true},
+ tank:{name:"主戰坦克",faction:"soldier",speed:1.8,radius:1.8,intel:10,range:26,vehicle:true}
+};
+const MOB_KEYS=Object.keys(MOB_TYPES);
+const mobPool=Object.fromEntries([...MOB_KEYS,"boss"].map(type=>[type,[]]));
 const beamPool={player:[],enemy:[]},impactPool=[];
 let hudElapsed=0;
 function disposeMesh(root){
@@ -398,6 +411,7 @@ function steer(entity,dir,dt,speed){
 }
 function animateMob(b,dt,moving){
   b.walk+=dt*b.speed;
+  for(const wheel of b.mesh.userData.wheels||[])if(moving)wheel.rotation.x+=dt*b.speed*2;
   const legs=b.mesh.userData.legs.children;
   for(let i=0;i<legs.length;i++)legs[i].rotation.x=moving?Math.sin(b.walk*3+i*Math.PI)*.4:0;
   b.hitTime=Math.max(0,(b.hitTime||0)-dt);
@@ -447,6 +461,64 @@ function makeSoldier(color=0x334c3b,enemy=false){
   return root;
 }
 
+function makeVehicle(type){
+  const root=new THREE.Group(),heavy=type!=="jeep",tank=type==="tank";
+  const body=box(tank?2.9:heavy?2.45:1.9,heavy?.9:.55,tank?3.8:heavy?3.5:2.8,tank?0x69714a:heavy?0x5e6f79:0x9d7645);
+  body.position.y=heavy?1.05:.85;root.add(body);
+  const wheels=[];
+  for(const side of [-1,1]){
+    if(tank){const track=box(.5,.8,4.1,0x242827);track.position.set(side*1.5,.55,0);root.add(track);}
+    for(const z of (heavy?[-1.2,0,1.2]:[-.95,.95])){
+      const wheel=new THREE.Mesh(new THREE.CylinderGeometry(.43,.43,.3,10),mat(0x24292b));
+      wheel.rotation.z=Math.PI/2;wheel.position.set(side*(tank?1.53:heavy?1.22:1),.5,z);root.add(wheel);wheels.push(wheel);
+    }
+  }
+  if(!tank){
+    const cabin=box(heavy?2.1:1.65,heavy?.65:.7,heavy?1.65:1.1,heavy?0x485762:0x665543);
+    cabin.position.set(0,1.55,-.55);root.add(cabin);
+    const glass=box(heavy?1.5:1.4,.36,.06,0x83bbc7);glass.position.set(0,1.64,-(heavy?1.39:1.13));root.add(glass);
+  }
+  const turret=new THREE.Group();turret.position.set(0,tank?1.7:1.95,tank?0:.65);root.add(turret);
+  const housing=box(tank?1.65:.75,tank?.6:.35,tank?1.5:.7,tank?0x454f32:0x333d40);turret.add(housing);
+  const gun=box(tank?.22:.12,tank?.22:.12,tank?2.7:1.3,0x26302b);gun.position.z=tank?-1.6:-.8;turret.add(gun);
+  root.userData={body,legs:new THREE.Group(),wheels,turret,gun,vehicle:true};
+  return root;
+}
+function makeMob(type){
+  if(MOB_TYPES[type].vehicle)return makeVehicle(type);
+  if(MOB_TYPES[type].peaceful){
+    const root=makeSoldier(type==="villager"?0xc19d72:0x9a6d45,false);
+    root.userData.gun.visible=false;
+    const pack=box(type==="villager"?.65:.95,type==="villager"?.7:1.15,.6,type==="villager"?0x947544:0x555341);
+    pack.position.set(0,1.45,.55);root.add(pack);
+    if(type==="villager"){
+      const hat=cylinder(.62,.1,0xc5a66b,10);hat.position.y=2.64;root.add(hat);
+    }else{
+      const roll=cylinder(.2,1.05,0x998a63,8);roll.rotation.z=Math.PI/2;roll.position.set(0,2.12,.65);root.add(roll);
+    }
+    return root;
+  }
+  if(MOB_TYPES[type].faction==="zombie"){
+    const root=makeZombie(type==="brute");
+    if(type==="brute")root.userData.baseScale=1.08;
+    if(type==="spitter"){
+      root.userData.body.material.color.setHex(0x91a533);
+      const sac=new THREE.Mesh(new THREE.SphereGeometry(.5,9,7),mat(0x829a2d));sac.position.set(0,1.8,.5);root.add(sac);
+    }
+    return root;
+  }
+  const root=makeSoldier(type==="sniper"?0x7a7656:type==="shield"?0x354454:0x536479,true);
+  if(type==="shield"){
+    const shield=box(.95,1.55,.15,0x354355);shield.position.set(-.55,1.45,-.65);root.add(shield);
+    const slit=box(.48,.16,.17,0x88c4cb);slit.position.set(-.55,1.96,-.66);root.add(slit);
+  }
+  if(type==="sniper"){
+    root.userData.gun.scale.z=1.9;
+    const scope=box(.18,.18,.5,0x20292a);scope.position.set(.48,1.82,-.65);root.add(scope);
+    const cape=box(1.1,1.2,.16,0x666944);cape.position.set(0,1.4,.4);root.add(cape);
+  }
+  return root;
+}
 function makeBoss(variant=0){
   const spec=BOSS_TYPES[variant],root=variant===2?makeSoldier(spec.color,true):makeZombie(true);
   root.scale.setScalar(spec.scale);root.userData.baseScale=spec.scale;root.userData.bossVariant=variant;
@@ -518,9 +590,9 @@ function createWorld(){
 
   const roadMat=new THREE.MeshStandardMaterial({color:0x404643,roughness:1});
   for(const r of [
-    {x:0,z:0,w:10,d:140},
-    {x:0,z:0,w:140,d:9},
-    {x:30,z:-25,w:8,d:90}
+    {x:0,z:0,w:10,d:WORLD*2},
+    {x:0,z:0,w:WORLD*2,d:9},
+    {x:30,z:-25,w:8,d:WORLD*1.5}
   ]){
     const road=new THREE.Mesh(new THREE.PlaneGeometry(r.w,r.d),roadMat);
     road.rotation.x=-Math.PI/2;road.position.set(r.x,.012,r.z);road.receiveShadow=true;scene.add(road);
@@ -557,7 +629,9 @@ function applyStageTheme(stage){
 function addBuildings(){
   const specs=[
     [-23,-22,10,6,8],[-16,16,8,6,12],[18,-19,12,8,6],[24,18,9,7,10],
-    [-39,2,7,5,8],[42,-5,8,5,11],[-4,-38,10,5,7],[6,39,11,6,8]
+    [-39,2,7,5,8],[42,-5,8,5,11],[-4,-38,10,5,7],[6,39,11,6,8],
+    [-65,-55,9,6,10],[62,-58,10,7,8],[-60,58,10,6,8],[67,55,8,7,10],
+    [-78,10,8,5,9],[78,-15,10,6,8],[-16,-77,9,6,10],[16,77,9,6,8]
   ];
   for(const [x,z,w,h,d] of specs){
     const root=new THREE.Group();
@@ -590,7 +664,7 @@ function addBuildings(){
 
 function addTrees(){
   for(let i=0;i<55;i++){
-    const a=rand(0,TAU),r=rand(18,64);
+    const a=rand(0,TAU),r=rand(18,WORLD-7);
     const x=Math.cos(a)*r,z=Math.sin(a)*r;
     if(Math.abs(x)<7||Math.abs(z)<6)continue;
     const root=new THREE.Group();
@@ -632,7 +706,7 @@ function startGame(){
   });
   updateFollowers(0,true);
 
-  for(let i=0;i<8;i++)spawnBot(i);
+  for(let i=0;i<16;i++)spawnBot(i);
 
   camera.position.set(0,15,45);camera.lookAt(0,1,25);
   state="playing";
@@ -709,29 +783,36 @@ function equipSupply(index){
   message(["玩家","左隨從","右隨從"][index]+" 裝備 "+WEAPONS[s.weapon],2);sound("equip");
 }
 
-function randomSpawn(min=16,max=52){
-  const a=rand(0,TAU),r=rand(min,max);
+function randomSpawn(min=12,max=WORLD*.84){
+  const a=rand(0,TAU),r=Math.sqrt(rand(min*min,max*max));
   return new THREE.Vector3(Math.cos(a)*r,0,Math.sin(a)*r);
 }
 
 function spawnBot(i,boss=false){
   // Count captured bodies until their exit animation finishes as well.
   if(boss&&G.bots.filter(b=>b.type==="boss").length>=3)return false;
-  const type=boss?"boss":i%2===0?"zombie":"soldier";
+  const type=boss?"boss":MOB_KEYS[i%MOB_KEYS.length],spec=MOB_TYPES[type];
   const variant=boss?G.bossSerial% BOSS_TYPES.length:null;
   const pool=mobPool[type],poolIndex=boss?pool.findIndex(m=>m.userData.bossVariant===variant):pool.length-1;
-  const mesh=(poolIndex>=0?pool.splice(poolIndex,1)[0]:null)||(boss?makeBoss(variant):type==="zombie"?makeZombie(false):makeSoldier(0x536479,true));
-  const radius=boss?1.7:1;
-  let pos=randomSpawn(12,46),attempt=0;
-  while((collides(pos,radius)||pos.distanceToSquared(G.player.mesh.position)<36)&&attempt++<120)pos=randomSpawn(10,52);
-  if(collides(pos,radius)||pos.distanceToSquared(G.player.mesh.position)<36){mobPool[type].push(mesh);return false;}
+  const mesh=(poolIndex>=0?pool.splice(poolIndex,1)[0]:null)||(boss?makeBoss(variant):makeMob(type));
+  const radius=boss?1.7:spec.radius+.2;
+  let pos=null,bestSpace=-1;
+  for(let attempt=0;attempt<40;attempt++){
+    const candidate=randomSpawn();
+    if(collides(candidate,radius)||candidate.distanceToSquared(G.player.mesh.position)<64)continue;
+    const space=G.bots.filter(b=>!b.dead).reduce((min,b)=>Math.min(min,candidate.distanceToSquared(b.mesh.position)),2500);
+    if(space<49)continue;
+    if(space>bestSpace){pos=candidate;bestSpace=space;}
+    if(attempt>=11&&pos)break;
+  }
+  if(!pos){mobPool[type].push(mesh);return false;}
   mesh.position.copy(pos);scene.add(mesh);
   const serial=++G.enemySerial,boost=1+(G.stage-1)*.22;
-  G.bots.push({mesh,type,variant,faction:boss?(variant===2?"soldier":"zombie"):type,dead:false,radius:boss?1.5:.55,
+  G.bots.push({mesh,type,variant,faction:boss?(variant===2?"soldier":"zombie"):spec.faction,dead:false,radius:boss?1.5:spec.radius,
     fireCd:rand(.5,2),think:rand(.1,.4),dir:new THREE.Vector3(0,0,-1),
-    speed:(boss?BOSS_TYPES[variant].speed:type==="zombie"?rand(2.2,3.2):rand(2.7,3.4))*boost,
-    name:(boss?"BOSS · "+BOSS_TYPES[variant].name:type==="zombie"?"殭屍":"士兵")+"-"+String(serial).padStart(2,"0"),
-    target:null,walk:rand(0,10),wander:randomSpawn(8,45),engage:0,rest:rand(1,3),turnSide:i%2?1:-1,hitTime:0});
+    speed:(boss?BOSS_TYPES[variant].speed:spec.speed)*boost,
+    name:(boss?"BOSS · "+BOSS_TYPES[variant].name:spec.name)+"-"+String(serial).padStart(2,"0"),
+    target:null,walk:rand(0,10),patrolHome:pos.clone(),wander:pos.clone(),engage:0,rest:rand(3,6),turnSide:i%2?1:-1,hitTime:0});
   G.alive++;
   if(boss){G.bossSerial++;message("BOSS 出現 · "+BOSS_TYPES[variant].name,2.5);feed(BOSS_TYPES[variant].name+" 已進入戰區");sound("boss");}
   return true;
@@ -875,8 +956,8 @@ function shoot(shooter,dir,isPlayer=false){
       if(along<0||along>range)continue;
       const distance=origin.clone().addScaledVector(direction,along).distanceTo(center);
       if(weapon==="grenade"){
-        if(distance<(b.type==="boss"?2.5:2.2))candidates.push(b);
-      }else if(distance<(b.type==="boss"?1.5:.7)&&along<best){best=along;hit=b;}
+        if(distance<Math.max(2.2,(b.radius||.55)+1))candidates.push(b);
+      }else if(distance<Math.max(.7,b.radius||.55)&&along<best){best=along;hit=b;}
     }
     if(hit)candidates.push(hit);
     const end=origin.clone().addScaledVector(direction,best);
@@ -962,7 +1043,7 @@ function killBot(bot,killer,bet=G.bet,awardedLoot=null){
   bot.dead=true;bot.captureAge=0;bot.lootShown=false;G.alive--;
   if(G.autoTarget===bot)G.autoTarget=null;
   if(killer==="你"){
-    G.kills++;G.intel+=bot.type==="boss"?30:bot.type==="soldier"?10:6;
+    G.kills++;G.intel+=bot.type==="boss"?30:MOB_TYPES[bot.type].intel;
     const loot=awardedLoot||rollMobLoot(bot);
     const win=bet*loot.odds;
     G.credits+=win;G.winTotal+=win;G.lastOdds=loot.odds;
@@ -1003,7 +1084,7 @@ function beginStage(stage){
   G.bots=[];G.stage=stage;G.stageTime=240;G.transition=0;G.respawnTimer=0;G.bossTimer=30;
   G.player.mesh.position.set(0,0,28);G.spawnShield=3;
   updateFollowers(0,true);
-  const count=stage===1?8:12;
+  const count=stage===1?16:22;
   for(let i=0;i<count;i++)spawnBot(i);
   $("stageCurtain").classList.remove("show");
   message("STAGE "+stage+" START",1.8);
@@ -1016,7 +1097,7 @@ function stageUpdate(dt){
     return true;
   }
   G.stageTime=Math.max(0,G.stageTime-dt);
-  const cap=G.stage===1?8:12;
+  const cap=G.stage===1?16:22;
   if(G.bots.filter(b=>!b.dead&&b.type!=="boss").length<cap){
     G.respawnTimer-=dt;
     if(G.respawnTimer<=0){spawnBot(G.enemySerial);G.respawnTimer=rand(1.2,2.4);}
@@ -1070,7 +1151,7 @@ function updateLock(){
   const pad=4;
   el.style.display="block";el.style.left=(left-pad)+"px";el.style.top=(top-pad)+"px";
   el.style.width=(right-left+pad*2)+"px";el.style.height=(bottom-top+pad*2)+"px";
-  $("lockName").textContent=(G.auto?"LOCK / ":"")+ (b.type==="boss"?"BOSS · "+BOSS_TYPES[b.variant].name:b.type==="zombie"?"殭屍":"士兵");
+  $("lockName").textContent=(G.auto?"LOCK / ":"")+ (b.type==="boss"?"BOSS · "+BOSS_TYPES[b.variant].name:MOB_TYPES[b.type].name);
 }
 function pickHoveredMob(){
   if(!pointer)return null;
@@ -1138,44 +1219,67 @@ function updateFollowers(dt,snap=false){
   }
 }
 
+function patrolDestination(b){
+  for(let attempt=0;attempt<25;attempt++){
+    const angle=rand(0,TAU),distance=rand(8,20);
+    const p=b.patrolHome.clone().add(new THREE.Vector3(Math.cos(angle)*distance,0,Math.sin(angle)*distance));
+    if(!collides(p,b.radius||.55)&&walkClear(b.mesh.position.clone().setY(0),p,b.radius||.55))return p;
+  }
+  return b.patrolHome.clone();
+}
 function updateBots(dt){
   for(const b of G.bots){
     if(b.dead||b.airborne)continue;
-    const ranged=b.type==="soldier"||(b.type==="boss"&&b.variant===2);
-    const toxic=b.type==="boss"&&b.variant===1;
+    const spec=MOB_TYPES[b.type],peaceful=!!spec?.peaceful;
+    const ranged=(spec?.range>10)||(b.type==="boss"&&b.variant===2);
+    const toxic=b.type==="spitter"||(b.type==="boss"&&b.variant===1);
     b.fireCd-=dt;b.think-=dt;b.engage-=dt;b.rest=Math.max(0,b.rest-dt);
     if(b.target&&(b.target.dead||b.engage<=0)){
-      b.target=null;b.rest=rand(2,4);b.wander=randomSpawn(8,48);b.think=0;
+      b.target=null;b.rest=rand(4,7);b.wander=patrolDestination(b);b.think=0;
     }
     if(b.think<=0){
       b.think=rand(.22,.42);
-      if(!b.target&&b.rest<=0){
-        b.target=null;let best=18*18;
+      if(!peaceful&&!b.target&&b.rest<=0){
+        b.target=null;let best=12*12;
         for(const o of G.bots){
-          if(o.dead||o.faction===b.faction)continue;
+          if(o.dead||o.faction===b.faction||o.faction==="civilian")continue;
           const d=o.mesh.position.distanceToSquared(b.mesh.position);
           if(d<best){best=d;b.target=o;}
         }
-        if(b.target)b.engage=rand(2,4);
-        else b.rest=.5;
+        if(b.target)b.engage=rand(1.2,2.4);
+        else b.rest=rand(1.5,3);
       }
-      if(b.mesh.position.distanceToSquared(b.wander)<9)b.wander=randomSpawn(8,48);
+      if(b.mesh.position.distanceToSquared(b.wander)<9)b.wander=patrolDestination(b);
       const destination=b.target?b.target.mesh.position:b.wander;
       b.dir.copy(destination).sub(b.mesh.position);b.dir.y=0;b.dir.normalize();
+      if(peaceful){
+        const threat=G.bots.find(o=>!o.dead&&o.target&&o.mesh.position.distanceToSquared(b.mesh.position)<100);
+        if(threat)b.dir.copy(b.mesh.position).sub(threat.mesh.position).setY(0).normalize();
+        else if(b.hitTime>0)b.dir.copy(b.mesh.position).sub(G.player.mesh.position).setY(0).normalize();
+      }
       if(b.target&&ranged&&b.mesh.position.distanceToSquared(destination)<100)b.dir.applyAxisAngle(UP,b.turnSide*1.4);
     }
     if(b.target&&b.target.dead)b.target=null;
     let distance=b.target?b.mesh.position.distanceTo(b.target.mesh.position):100;
     const moving=!b.target||distance>(ranged?7:toxic?5:b.type==="boss"?3:1.6);
-    if(moving)steer(b,b.dir,dt,b.speed);
+    const travel=moving?b.dir.clone():new THREE.Vector3();
+    for(const other of G.bots){
+      if(other===b||other.dead)continue;
+      const away=b.mesh.position.clone().sub(other.mesh.position).setY(0),distance=away.length();
+      const separation=Math.max(3.5,(b.radius||.55)+(other.radius||.55)+1);
+      if(distance<separation&&distance>.01)travel.addScaledVector(away.normalize(),(1-distance/separation)*2.5);
+    }
+    if(travel.lengthSq()>.01)steer(b,travel.normalize(),dt,b.speed);
     const aim=b.target?b.target.mesh.position.clone().sub(b.mesh.position).normalize():b.dir;
-    const yaw=Math.atan2(-aim.x,-aim.z),diff=Math.atan2(Math.sin(yaw-b.mesh.rotation.y),Math.cos(yaw-b.mesh.rotation.y));
+    const aimYaw=Math.atan2(-aim.x,-aim.z);
+    const yaw=spec?.vehicle&&travel.lengthSq()>.01?Math.atan2(-travel.x,-travel.z):aimYaw,diff=Math.atan2(Math.sin(yaw-b.mesh.rotation.y),Math.cos(yaw-b.mesh.rotation.y));
     b.mesh.rotation.y+=diff*Math.min(1,dt*7);animateMob(b,dt,moving);
-    if(b.target&&b.fireCd<=0&&distance<(ranged?22:toxic?7:b.type==="boss"?3.6:2.2)&&visibleTarget(b.mesh.position,b.target.mesh.position)){
+    if(b.mesh.userData.turret)b.mesh.userData.turret.rotation.y=aimYaw-b.mesh.rotation.y;
+    if(!peaceful&&b.target&&b.fireCd<=0&&distance<(spec?.range||(ranged?22:toxic?7:3.6))&&visibleTarget(b.mesh.position,b.target.mesh.position)){
       const end=b.target.mesh.position.clone().add(new THREE.Vector3(0,1.3,0));
-      if(ranged||toxic)makeBeam(b.mesh.position.clone().add(new THREE.Vector3(0,1.55,0)),end,false,toxic?"acid":"rifle");
+      if(ranged||toxic)makeBeam(b.mesh.position.clone().add(new THREE.Vector3(0,1.55,0)),end,false,toxic?"acid":b.type==="tank"?"rocket":"rifle");
       impactEffect(end,true);b.target.hitTime=.1;
-      b.fireCd=ranged?rand(.7,1.2):rand(1,1.6);
+      b.fireCd=b.type==="tank"||b.type==="sniper"?rand(1.8,2.8):ranged?rand(.7,1.2):rand(1,1.6);
     }
   }
 }
@@ -1258,8 +1362,8 @@ function drawMap(){
   const s=180/(WORLD*2),mx=x=>(x+WORLD)*s,mz=z=>(z+WORLD)*s;
   for(const b of G.bots){
     if(b.dead)continue;
-    mapCtx.fillStyle=b.type==="boss"?"#ffbb55":b.type==="zombie"?"#a8c874":"#ff6759";
-    const size=b.type==="boss"?7:3;
+    mapCtx.fillStyle=b.type==="boss"?"#ffbb55":b.faction==="civilian"?"#8cdae5":b.faction==="zombie"?"#a8c874":"#ff6759";
+    const size=b.type==="boss"?7:b.mesh.userData.vehicle?5:3;
     mapCtx.fillRect(mx(b.mesh.position.x)-size/2,mz(b.mesh.position.z)-size/2,size,size);
   }
   for(const s of G.supplies){
@@ -1275,7 +1379,7 @@ function updateHud(){
   if(!G)return;
   $("supplyProgress").textContent="空投情報 "+G.intel+" / 100";
   const distance=G.supplies.length?Math.min(...G.supplies.map(s=>G.player.mesh.position.distanceTo(s.pos))):0;
-  $("supplyHint").textContent=G.supplies.length?"場上 "+G.supplies.length+" / 3 · 最近 "+Math.round(distance)+"m":"捕獲累積 · 殭屍 6 / 士兵 10 / BOSS 30";
+  $("supplyHint").textContent=G.supplies.length?"場上 "+G.supplies.length+" / 3 · 最近 "+Math.round(distance)+"m":"情報 · 感染者／村民 6 · 軍隊 10 · BOSS 30";
   $("supplyAlert").hidden=!G.supplies.length;
   $("supplyAlert").textContent="空投待回收 "+G.supplies.length+" 箱 · 最近 "+Math.round(distance)+"m · 依雷達前往";
   $("weaponStatus").textContent=G.weapons.map((w,i)=>["玩家","左","右"][i]+":"+WEAPONS[w]).join(" / ");
