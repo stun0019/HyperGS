@@ -183,6 +183,12 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const rand=(a,b)=>a+Math.random()*(b-a);
 const TAU=Math.PI*2;
 const WORLD=105;
+const SECTORS=[
+ {name:"A區 · 西北",minX:-WORLD,maxX:0,minZ:-WORLD,maxZ:0},
+ {name:"B區 · 東北",minX:0,maxX:WORLD,minZ:-WORLD,maxZ:0},
+ {name:"C區 · 西南",minX:-WORLD,maxX:0,minZ:0,maxZ:WORLD},
+ {name:"D區 · 東南",minX:0,maxX:WORLD,minZ:0,maxZ:WORLD}
+];
 const game=$("game");
 const canvas=$("view");
 const mapCanvas=$("map");
@@ -706,7 +712,7 @@ function startGame(){
   });
   updateFollowers(0,true);
 
-  for(let i=0;i<48;i++)spawnBot(i);
+  for(let i=0;i<72;i++)spawnBot(i);
 
   camera.position.set(0,15,45);camera.lookAt(0,1,25);
   state="playing";
@@ -796,15 +802,14 @@ function beginBounty(){
   message("懸賞發布 · "+MOB_TYPES[bot.type].name+" · 獎勵倍率加倍",3);sound("supply");return true;
 }
 function beginInfection(){
-  let pos=null;
-  for(let i=0;i<30;i++){
-    const angle=rand(0,TAU),distance=rand(20,35),p=G.player.mesh.position.clone().add(new THREE.Vector3(Math.cos(angle)*distance,0,Math.sin(angle)*distance));
-    if(!collides(p,3)&&(walkClear(G.player.mesh.position,p)||findPath(G.player.mesh.position,p))){pos=p;break;}
-  }
-  if(!pos)return false;
-  G.infection={pos,life:35,mesh:eventRing(pos,13,0x9bdc48)};
-  for(let i=0;i<8;i++)spawnBot(i,false,pos);
-  message("感染爆發 · 雷達綠色區域",3);sound("boss");return true;
+  if(G.infection)return false;
+  const sector=SECTORS[Math.floor(Math.random()*SECTORS.length)];
+  const pos=new THREE.Vector3((sector.minX+sector.maxX)/2,0,(sector.minZ+sector.maxZ)/2);
+  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(WORLD,WORLD),new THREE.MeshBasicMaterial({color:0x93b92c,transparent:true,opacity:.13,depthWrite:false,side:THREE.DoubleSide}));
+  mesh.rotation.x=-Math.PI/2;mesh.position.copy(pos).setY(.04);scene.add(mesh);
+  G.infection={pos,sector,life:35,mesh};
+  for(let i=0;i<16;i++)spawnBot(i,false,sector);
+  message("感染爆發 · "+sector.name+" 全區警戒",3);sound("boss");return true;
 }
 function updateEvents(dt){
   if(G.bounty){
@@ -816,7 +821,7 @@ function updateEvents(dt){
     }
   }else{G.bountyTimer-=dt;if(G.bountyTimer<=0&&!beginBounty())G.bountyTimer=3;}
   if(G.infection){
-    G.infection.life-=dt;G.infection.mesh.material.opacity=.35+Math.sin(G.time*3)*.2;
+    G.infection.life-=dt;G.infection.mesh.material.opacity=.12+Math.sin(G.time*3)*.035;
     if(G.infection.life<=0){
       disposeMesh(G.infection.mesh);G.infection=null;G.infectionTimer=75;
       G.bots=G.bots.filter(b=>{
@@ -843,7 +848,7 @@ function spawnBot(i,boss=false,eventPos=null){
   let pos=null,bestSpace=-1;
   for(let attempt=0;attempt<40;attempt++){
     const angle=rand(0,TAU),r=rand(2,12);
-    const candidate=eventPos?eventPos.clone().add(new THREE.Vector3(Math.cos(angle)*r,0,Math.sin(angle)*r)):randomSpawn();
+    const candidate=eventPos?new THREE.Vector3(rand(eventPos.minX+4,eventPos.maxX-4),0,rand(eventPos.minZ+4,eventPos.maxZ-4)):randomSpawn();
     if(collides(candidate,radius)||candidate.distanceToSquared(G.player.mesh.position)<(eventPos?16:64))continue;
     const space=G.bots.filter(b=>!b.dead).reduce((min,b)=>Math.min(min,candidate.distanceToSquared(b.mesh.position)),2500);
     if(space<(eventPos?9:49))continue;
@@ -853,7 +858,7 @@ function spawnBot(i,boss=false,eventPos=null){
   if(!pos){mobPool[type].push(mesh);return false;}
   mesh.position.copy(pos);scene.add(mesh);
   const serial=++G.enemySerial,boost=1+(G.stage-1)*.22;
-  G.bots.push({mesh,type,variant,eventSpawn:!!eventPos,faction:boss?(variant===2?"soldier":"zombie"):spec.faction,dead:false,radius:boss?1.5:spec.radius,
+  G.bots.push({mesh,type,variant,eventSpawn:!!eventPos,sector:eventPos,faction:boss?(variant===2?"soldier":"zombie"):spec.faction,dead:false,radius:boss?1.5:spec.radius,
     fireCd:rand(.5,2),think:rand(.1,.4),dir:new THREE.Vector3(0,0,-1),
     speed:(boss?BOSS_TYPES[variant].speed:spec.speed)*boost,
     name:(boss?"BOSS · "+BOSS_TYPES[variant].name:spec.name)+"-"+String(serial).padStart(2,"0"),
@@ -1129,7 +1134,7 @@ function beginStage(stage){
   G.bots=[];G.stage=stage;G.stageTime=240;G.transition=0;G.respawnTimer=0;G.bossTimer=30;G.infectionTimer=50;G.bountyTimer=20;
   G.player.mesh.position.set(0,0,28);G.spawnShield=3;
   updateFollowers(0,true);
-  const count=stage===1?48:66;
+  const count=stage===1?72:96;
   for(let i=0;i<count;i++)spawnBot(i);
   $("stageCurtain").classList.remove("show");
   message("STAGE "+stage+" START",1.8);
@@ -1142,7 +1147,7 @@ function stageUpdate(dt){
     return true;
   }
   G.stageTime=Math.max(0,G.stageTime-dt);
-  const cap=G.stage===1?48:66;
+  const cap=G.stage===1?72:96;
   if(G.bots.filter(b=>!b.dead&&!b.eventSpawn&&b.type!=="boss").length<cap){
     G.respawnTimer-=dt;
     if(G.respawnTimer<=0){spawnBot(G.enemySerial);G.respawnTimer=rand(1.2,2.4);}
@@ -1274,6 +1279,7 @@ function patrolDestination(b){
   for(let attempt=0;attempt<25;attempt++){
     const angle=rand(0,TAU),distance=rand(8,20);
     const p=b.patrolHome.clone().add(new THREE.Vector3(Math.cos(angle)*distance,0,Math.sin(angle)*distance));
+    if(b.sector){p.x=clamp(p.x,b.sector.minX+3,b.sector.maxX-3);p.z=clamp(p.z,b.sector.minZ+3,b.sector.maxZ-3);}
     if(!collides(p,b.radius||.55)&&walkClear(b.mesh.position.clone().setY(0),p,b.radius||.55))return p;
   }
   return b.patrolHome.clone();
@@ -1411,10 +1417,14 @@ function drawMap(){
   mapCtx.strokeStyle="#6a786d";mapCtx.strokeRect(1,1,178,178);
   if(!G)return;
   const s=180/(WORLD*2),mx=x=>(x+WORLD)*s,mz=z=>(z+WORLD)*s;
+  if(G.infection){const q=G.infection.sector;mapCtx.fillStyle="#759b354d";mapCtx.fillRect(mx(q.minX),mz(q.minZ),90,90);mapCtx.strokeStyle="#a5e54e";mapCtx.strokeRect(mx(q.minX)+1,mz(q.minZ)+1,88,88);}
+  mapCtx.strokeStyle="#75868188";mapCtx.beginPath();mapCtx.moveTo(90,0);mapCtx.lineTo(90,180);mapCtx.moveTo(0,90);mapCtx.lineTo(180,90);mapCtx.stroke();
+  mapCtx.fillStyle="#c2ceb5";mapCtx.font="11px monospace";
+  SECTORS.forEach((q,i)=>mapCtx.fillText("ABCD"[i],mx(q.minX)+5,mz(q.minZ)+13));
   for(const b of G.bots){
-    if(b.dead)continue;
-    mapCtx.fillStyle=b.type==="boss"?"#ffbb55":b.faction==="civilian"?"#8cdae5":b.faction==="zombie"?"#a8c874":"#ff6759";
-    const size=b.type==="boss"?7:b.mesh.userData.vehicle?5:3;
+    if(b.dead||b.type!=="boss")continue;
+    mapCtx.fillStyle="#ffbb55";
+    const size=7;
     mapCtx.fillRect(mx(b.mesh.position.x)-size/2,mz(b.mesh.position.z)-size/2,size,size);
   }
   for(const s of G.supplies){
@@ -1422,8 +1432,6 @@ function drawMap(){
     mapCtx.fillRect(mx(s.pos.x)-5,mz(s.pos.z)-5,10,10);
     mapCtx.strokeStyle="#ffda81";mapCtx.beginPath();mapCtx.moveTo(mx(G.player.mesh.position.x),mz(G.player.mesh.position.z));mapCtx.lineTo(mx(s.pos.x),mz(s.pos.z));mapCtx.stroke();
   }
-  if(G.infection){mapCtx.strokeStyle="#a5e54e";mapCtx.beginPath();mapCtx.arc(mx(G.infection.pos.x),mz(G.infection.pos.z),13*s,0,TAU);mapCtx.stroke();}
-  if(G.bounty){const pos=G.bounty.bot.mesh.position;mapCtx.strokeStyle="#ffd16b";mapCtx.strokeRect(mx(pos.x)-5,mz(pos.z)-5,10,10);}
   mapCtx.fillStyle="#dcef72";mapCtx.beginPath();
   mapCtx.arc(mx(G.player.mesh.position.x),mz(G.player.mesh.position.z),4,0,TAU);mapCtx.fill();
 }
@@ -1431,7 +1439,7 @@ function drawMap(){
 function updateHud(){
   if(!G)return;
   $("supplyProgress").textContent="空投情報 "+G.intel+" / 100";
-  $("eventHud").textContent=[G.bounty?"懸賞 · "+MOB_TYPES[G.bounty.bot.type].name+"\n倍率加倍 / "+Math.ceil(G.bounty.life)+"秒 / "+Math.round(G.player.mesh.position.distanceTo(G.bounty.bot.mesh.position))+"m":"",G.infection?"感染爆發 / "+Math.ceil(G.infection.life)+"秒 / "+Math.round(G.player.mesh.position.distanceTo(G.infection.pos))+"m":""].filter(Boolean).join("\n");
+  $("eventHud").textContent=[G.bounty?"懸賞 · "+MOB_TYPES[G.bounty.bot.type].name+"\n倍率加倍 / "+Math.ceil(G.bounty.life)+"秒 / "+Math.round(G.player.mesh.position.distanceTo(G.bounty.bot.mesh.position))+"m":"",G.infection?"感染爆發 · "+G.infection.sector.name+"\n全區警戒 / "+Math.ceil(G.infection.life)+"秒":""].filter(Boolean).join("\n");
   const distance=G.supplies.length?Math.min(...G.supplies.map(s=>G.player.mesh.position.distanceTo(s.pos))):0;
   $("supplyHint").textContent=G.supplies.length?"場上 "+G.supplies.length+" / 3 · 最近 "+Math.round(distance)+"m":"情報 · 感染者／村民 6 · 軍隊 10 · BOSS 30";
   $("supplyAlert").hidden=G.supplyNotice<=0;
